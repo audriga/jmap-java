@@ -37,6 +37,7 @@ public class SessionResource {
 
     @Getter(AccessLevel.NONE)
     private Map<Class<? extends AccountCapability>, String> primaryAccounts;
+
     // TODO @Singular annotation doesn’t seem to compile. Maybe report with lombok?
     @Getter(AccessLevel.NONE)
     private Map<Class<? extends Capability>, Capability> capabilities;

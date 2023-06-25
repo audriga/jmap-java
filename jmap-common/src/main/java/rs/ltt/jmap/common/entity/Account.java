@@ -30,6 +30,7 @@ public class Account {
     private String name;
     private Boolean isPersonal;
     private Boolean isReadOnly;
+
     // TODO @Singular annotation doesn’t seem to compile. Maybe report with lombok?
     @Getter(AccessLevel.NONE)
     private Map<Class<? extends AccountCapability>, AccountCapability> accountCapabilities;

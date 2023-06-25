@@ -54,10 +54,10 @@ public class EmailGenerator {
                     "In in orci non sapien tempus ullamcorper id a mi. Nullam sit amet nisl"
                         + " viverra, dapibus ante in, bibendum ante. Aenean sodales ipsum nec enim"
                         + " ornare, vitae lacinia mauris venenatis. Integer gravida sollicitudin"
-                        + " orci, eget porta nibh tempus ornare. Sed at convallis dui. Donec"
-                        + " mattis rhoncus pharetra. Quisque sed libero posuere, malesuada magna"
-                        + " non, hendrerit justo. Nulla eget sem eget enim porttitor tempus"
-                        + " imperdiet nec ligula.",
+                        + " orci, eget porta nibh tempus ornare. Sed at convallis dui. Donec mattis"
+                        + " rhoncus pharetra. Quisque sed libero posuere, malesuada magna non,"
+                        + " hendrerit justo. Nulla eget sem eget enim porttitor tempus imperdiet"
+                        + " nec ligula.",
                     "Nulla vitae tempus ligula. Lorem ipsum dolor sit amet, consectetur adipiscing"
                             + " elit. Vivamus vel neque vitae turpis molestie mollis. Suspendisse"
                             + " auctor ullamcorper felis, non auctor velit pretium ut. Sed sit amet"
@@ -65,12 +65,12 @@ public class EmailGenerator {
                             + " lacus.",
                     "Duis et mattis purus, at sodales tellus. Suspendisse et auctor arcu. Maecenas"
                         + " vel urna blandit, fringilla velit a, consectetur metus. Pellentesque"
-                        + " bibendum ullamcorper purus commodo consectetur. Nulla facilisi."
-                        + " Integer aliquet posuere ante quis faucibus. Duis augue ante, varius"
-                        + " vel molestie et, consequat eget diam. Mauris tincidunt ac est non"
+                        + " bibendum ullamcorper purus commodo consectetur. Nulla facilisi. Integer"
+                        + " aliquet posuere ante quis faucibus. Duis augue ante, varius vel"
+                        + " molestie et, consequat eget diam. Mauris tincidunt ac est non"
                         + " sollicitudin. Fusce aliquet feugiat facilisis. Maecenas venenatis,"
-                        + " lectus vel dapibus pellentesque, lacus orci pharetra est, sed"
-                        + " vulputate erat quam eget libero.",
+                        + " lectus vel dapibus pellentesque, lacus orci pharetra est, sed vulputate"
+                        + " erat quam eget libero.",
                     "Vivamus rhoncus dictum lectus, sed bibendum nisi. Sed sodales nibh ac nunc"
                             + " porttitor, sit amet accumsan nisi sagittis. Donec imperdiet metus"
                             + " molestie diam scelerisque vestibulum. Sed aliquam eros sapien, sed"
