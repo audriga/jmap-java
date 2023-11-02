@@ -1,0 +1,8 @@
+steps:
+    build:
+        image: debian
+        commands:
+            - apt-get update
+            - apt-get -y install openjdk-17-jdk-headless maven
+            - mvn -B package -DskipTests=true -Dmaven.javadoc.skip=true
+            - mvn -B test
