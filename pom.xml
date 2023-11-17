@@ -56,9 +56,9 @@
     </modules>
 
     <scm>
-        <connection>scm:git:git://github.com/iNPUTmice/jmap.git</connection>
-        <developerConnection>scm:git:ssh:///github.com:iNPUTmice/jmap.git</developerConnection>
-        <url>https://github.com/iNPUTmice/jmap/tree/master/</url>
+        <connection>scm:git:https://codeberg.org/iNPUTmice/jmap.git</connection>
+        <developerConnection>scm:git:ssh://git@codeberg.org:iNPUTmice/jmap.git</developerConnection>
+        <url>https://codeberg.org/iNPUTmice/jmap</url>
     </scm>
 
     <distributionManagement>

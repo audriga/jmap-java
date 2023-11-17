@@ -1,8 +1,6 @@
 # Java JMAP library
 [![Apache 2.0 License](https://img.shields.io/github/license/inputmice/jmap?color=informational)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
-![Build Status](https://github.com/inputmice/jmap/actions/workflows/maven.yml/badge.svg)
-[![Codacy Badge](https://img.shields.io/codacy/grade/329b10e923d74c9881f9e8cf53616735?logo=codacy)](https://www.codacy.com/manual/iNPUTmice/jmap)
-[![codecov](https://img.shields.io/codecov/c/gh/inputmice/jmap/master?logo=codecov&label=code%20coverage&token=W35RI2ASHI)](https://codecov.io/gh/iNPUTmice/jmap)
+[![status-badge](https://ci.codeberg.org/api/badges/12402/status.svg)](https://ci.codeberg.org/repos/12402)
 [![Maven Central](https://img.shields.io/maven-central/v/rs.ltt.jmap/jmap.svg?label=Maven%20Central&color=informational)](https://search.maven.org/search?q=g:%22rs.ltt.jmap%22%20AND%20a:%22jmap%22)
 [![Liberapay patrons](https://img.shields.io/liberapay/patrons/inputmice?logo=liberapay&style=flat&color=informational)](https://liberapay.com/iNPUTmice)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/inputmice?label=GitHub%20Sponsors)](https://github.com/sponsors/iNPUTmice/)
@@ -142,4 +140,4 @@ Maven:
 
 jmap-mua serves as the backend for:
 *  [Ltt.rs for Unix](https://github.com/inputmice/lttrs-cli)
-*  [Ltt.rs for Android](https://github.com/inputmice/lttrs-android).
+*  [Ltt.rs for Android](https://codeberg.org/inputmice/lttrs-android).
