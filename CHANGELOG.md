@@ -1,3 +1,7 @@
+### 0.8.14 (2023-11-17)
+
+* Add support for draft-gultsch-jmap-webpush-vapid-01
+
 ### 0.8.13 (2022-01-19)
 
 * MockMailServer: store all uploaded attachments in memory
