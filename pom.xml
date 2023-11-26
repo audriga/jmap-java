@@ -19,7 +19,7 @@
 
     <groupId>rs.ltt.jmap</groupId>
     <artifactId>jmap</artifactId>
-    <version>0.8.14</version>
+    <version>0.8.15</version>
     <packaging>pom</packaging>
 
     <name>Java JMAP library</name>
@@ -71,6 +71,16 @@
             <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
+
+    <!-- dependency versions -->
+    <properties>
+        <guava.version>31.0.1-jre</guava.version>
+        <gson.version>2.10.1</gson.version>
+        <lombok.version>1.18.30</lombok.version>
+        <junit.jupiter.version>5.10.1</junit.jupiter.version>
+        <junit.platform.version>1.10.1</junit.platform.version>
+        <okhttp.version>4.12.0</okhttp.version>
+    </properties>
 
     <build>
         <plugins>

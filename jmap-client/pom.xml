@@ -21,7 +21,7 @@
     <parent>
         <groupId>rs.ltt.jmap</groupId>
         <artifactId>jmap</artifactId>
-        <version>0.8.14</version>
+        <version>0.8.15</version>
     </parent>
 
     <artifactId>jmap-client</artifactId>
@@ -41,21 +41,35 @@
         </dependency>
 
         <dependency>
+            <groupId>rs.ltt.jmap</groupId>
+            <artifactId>jmap-annotation-processor</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
-            <version>4.12.0</version>
+            <version>${okhttp.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp-sse</artifactId>
-            <version>4.12.0</version>
+            <version>${okhttp.version}</version>
         </dependency>
 
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>logging-interceptor</artifactId>
-            <version>4.12.0</version>
+            <version>${okhttp.version}</version>
         </dependency>
 
         <dependency>
@@ -67,28 +81,21 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.9.2</version>
+            <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-runner</artifactId>
-            <version>1.8.2</version>
+            <version>${junit.platform.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>mockwebserver</artifactId>
-            <version>4.12.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>rs.ltt.jmap</groupId>
-            <artifactId>jmap-annotation-processor</artifactId>
-            <version>${project.version}</version>
+            <version>${okhttp.version}</version>
             <scope>test</scope>
         </dependency>
 
