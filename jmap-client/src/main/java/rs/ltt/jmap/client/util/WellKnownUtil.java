@@ -31,17 +31,25 @@ public final class WellKnownUtil {
         if (domain.isEmpty()) {
             throw new MalformedUsernameException("Domain part was empty");
         }
-        return new HttpUrl.Builder()
-                .scheme("https")
-                .host(domain)
-                .addPathSegment(".well-known")
-                .addPathSegment("jmap")
-                .build();
+        try {
+            return new HttpUrl.Builder()
+                    .scheme("https")
+                    .host(domain)
+                    .addPathSegment(".well-known")
+                    .addPathSegment("jmap")
+                    .build();
+        } catch (final IllegalArgumentException e) {
+            throw new MalformedUsernameException(e);
+        }
     }
 
-    public static class MalformedUsernameException extends Exception {
-        MalformedUsernameException(String message) {
+    public static final class MalformedUsernameException extends Exception {
+        private MalformedUsernameException(final String message) {
             super(message);
+        }
+
+        public MalformedUsernameException(final Exception e) {
+            super(e);
         }
     }
 }

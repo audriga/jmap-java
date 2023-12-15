@@ -35,4 +35,11 @@ public class WellKnownUtilTest {
                 WellKnownUtil.MalformedUsernameException.class,
                 () -> WellKnownUtil.fromUsername("example.com"));
     }
+
+    @Test
+    public void trailingSpaceUsername() {
+        Assertions.assertThrows(
+                WellKnownUtil.MalformedUsernameException.class,
+                () -> WellKnownUtil.fromUsername("test@example.com "));
+    }
 }

@@ -31,6 +31,7 @@ import rs.ltt.jmap.client.api.ErrorResponseException;
 import rs.ltt.jmap.client.api.InvalidSessionResourceException;
 import rs.ltt.jmap.client.api.MethodErrorResponseException;
 import rs.ltt.jmap.client.api.UnauthorizedException;
+import rs.ltt.jmap.client.util.WellKnownUtil;
 import rs.ltt.jmap.common.ErrorResponse;
 import rs.ltt.jmap.common.GenericResponse;
 import rs.ltt.jmap.common.Request;
@@ -142,6 +143,28 @@ public class JmapMuaTest {
                     CoreMatchers.instanceOf(UnauthorizedException.class));
         }
         server.shutdown();
+    }
+
+    @Test
+    public void trailingSpaceUsername() throws IOException {
+        try (final MockWebServer server = new MockWebServer()) {
+            final EmailServer emailServer = new EmailServer();
+            server.setDispatcher(emailServer);
+
+            try (final Mua mua =
+                    Mua.builder()
+                            .username("test@example.com ")
+                            .password("wrong")
+                            .accountId(emailServer.getAccountId())
+                            .build()) {
+                final ExecutionException executionException =
+                        Assertions.assertThrows(
+                                ExecutionException.class, () -> mua.refreshIdentities().get());
+                MatcherAssert.assertThat(
+                        executionException.getCause(),
+                        CoreMatchers.instanceOf(WellKnownUtil.MalformedUsernameException.class));
+            }
+        }
     }
 
     @Test
