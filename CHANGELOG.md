@@ -1,3 +1,11 @@
+### 0.8.16 (2023-12-15)
+
+* Throw proper exception on invalid user names
+
+### 0.8.15 (2023-11-26)
+
+* Fix issues with guava on older Android versions
+
 ### 0.8.14 (2023-11-17)
 
 * Add support for draft-gultsch-jmap-webpush-vapid-01
