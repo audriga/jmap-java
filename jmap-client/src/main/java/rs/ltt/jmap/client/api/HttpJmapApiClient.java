@@ -27,9 +27,11 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import okhttp3.*;
+import okhttp3.internal.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rs.ltt.jmap.client.JmapRequest;
@@ -123,9 +125,14 @@ public class HttpJmapApiClient extends AbstractJmapApiClient {
                             return;
                         }
                         if (code == 401) {
+                            final List<Challenge> challenges =
+                                    HttpHeaders.parseChallenges(
+                                            response.headers(),
+                                            com.google.common.net.HttpHeaders.WWW_AUTHENTICATE);
                             settableInputStreamFuture.setException(
                                     new UnauthorizedException(
-                                            String.format("API URL(%s) was unauthorized", apiUrl)));
+                                            String.format("API URL(%s) was unauthorized", apiUrl),
+                                            challenges));
                             return;
                         }
 

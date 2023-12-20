@@ -23,9 +23,11 @@ import com.google.gson.JsonParseException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import okhttp3.Challenge;
 import okhttp3.Dispatcher;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockResponse;
@@ -39,6 +41,7 @@ import org.junit.jupiter.api.io.TempDir;
 import rs.ltt.jmap.client.api.EndpointNotFoundException;
 import rs.ltt.jmap.client.api.MethodErrorResponseException;
 import rs.ltt.jmap.client.api.MethodResponseNotFoundException;
+import rs.ltt.jmap.client.api.UnauthorizedException;
 import rs.ltt.jmap.client.event.CloseAfter;
 import rs.ltt.jmap.client.session.FileSessionCache;
 import rs.ltt.jmap.client.session.InMemorySessionCache;
@@ -553,5 +556,33 @@ public class HttpJmapClientTest {
                 0,
                 dispatcher.runningCallsCount() + dispatcher.queuedCallsCount(),
                 "Call has not been cancelled");
+    }
+
+    @Test
+    public void authenticationRequired() throws IOException {
+        final MockWebServer server = new MockWebServer();
+        server.enqueue(
+                new MockResponse()
+                        .setResponseCode(401)
+                        .addHeader(
+                                "WWW-Authenticate",
+                                "Digest"
+                                    + " nonce=\"arSDq0NLJbAtLqpKIGcP6hSK4GA78ggjJZ+48c2FGqs=\",realm=\"example\",qop=\"auth\",charset=utf-8,algorithm=md5-sess")
+                        .addHeader("WWW-Authenticate", "Basic realm=\"example\"")
+                        .addHeader("WWW-Authenticate", "Bearer"));
+        try (final JmapClient jmapClient =
+                new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH))) {
+            final ListenableFuture<Session> future = jmapClient.getSession();
+
+            final ExecutionException executionException =
+                    Assertions.assertThrows(ExecutionException.class, future::get);
+            final Throwable cause = executionException.getCause();
+            MatcherAssert.assertThat(cause, CoreMatchers.instanceOf(UnauthorizedException.class));
+            final UnauthorizedException unauthorizedException = (UnauthorizedException) cause;
+            final Collection<Challenge> challenges = unauthorizedException.getChallenges();
+            Assertions.assertEquals(3, challenges.size());
+            Assertions.assertTrue(challenges.stream().anyMatch(c -> "Bearer".equals(c.scheme())));
+        }
+        server.shutdown();
     }
 }

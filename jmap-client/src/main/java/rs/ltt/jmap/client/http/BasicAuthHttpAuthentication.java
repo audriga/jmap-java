@@ -16,6 +16,7 @@
 
 package rs.ltt.jmap.client.http;
 
+import com.google.common.net.HttpHeaders;
 import okhttp3.Credentials;
 import okhttp3.Request;
 
@@ -24,14 +25,14 @@ public class BasicAuthHttpAuthentication implements HttpAuthentication {
     private final String username;
     private final String password;
 
-    public BasicAuthHttpAuthentication(String username, String password) {
+    public BasicAuthHttpAuthentication(final String username, final String password) {
         this.username = username;
         this.password = password;
     }
 
     @Override
-    public void authenticate(Request.Builder builder) {
-        builder.header("Authorization", Credentials.basic(username, password));
+    public void authenticate(final Request.Builder builder) {
+        builder.header(HttpHeaders.AUTHORIZATION, Credentials.basic(username, password));
     }
 
     @Override

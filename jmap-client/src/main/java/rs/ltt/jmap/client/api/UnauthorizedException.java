@@ -16,9 +16,19 @@
 
 package rs.ltt.jmap.client.api;
 
+import java.util.Collection;
+import okhttp3.Challenge;
+
 public class UnauthorizedException extends JmapApiException {
 
-    public UnauthorizedException(String message) {
+    private final Collection<Challenge> challenges;
+
+    public UnauthorizedException(final String message, final Collection<Challenge> challenges) {
         super(message);
+        this.challenges = challenges;
+    }
+
+    public Collection<Challenge> getChallenges() {
+        return this.challenges;
     }
 }

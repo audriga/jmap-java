@@ -26,7 +26,9 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import okhttp3.*;
+import okhttp3.internal.http.HttpHeaders;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,8 +161,12 @@ public class SessionClient {
                 return session;
             }
         } else if (code == 401) {
+            final List<Challenge> challenges =
+                    HttpHeaders.parseChallenges(
+                            response.headers(), com.google.common.net.HttpHeaders.WWW_AUTHENTICATE);
             throw new UnauthorizedException(
-                    String.format("Session object(%s) was unauthorized", base.toString()));
+                    String.format("Session object(%s) was unauthorized", base.toString()),
+                    challenges);
         } else {
             throw new EndpointNotFoundException(
                     String.format("Unable to fetch session object(%s)", base.toString()));
