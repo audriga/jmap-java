@@ -17,6 +17,7 @@
 package rs.ltt.jmap.client.api;
 
 import com.google.common.base.Preconditions;
+import com.google.common.net.HttpHeaders;
 import java.io.Closeable;
 import java.io.EOFException;
 import java.time.Duration;
@@ -31,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import rs.ltt.jmap.client.JmapRequest;
 import rs.ltt.jmap.client.Services;
 import rs.ltt.jmap.client.event.State;
-import rs.ltt.jmap.client.http.Headers;
 import rs.ltt.jmap.client.http.HttpAuthentication;
 import rs.ltt.jmap.client.session.Session;
 import rs.ltt.jmap.common.GenericResponse;
@@ -149,7 +149,7 @@ public class WebSocketJmapApiClient extends AbstractJmapApiClient implements Clo
         final Request.Builder requestBuilder = new Request.Builder();
         requestBuilder.url(this.webSocketUrl);
         authentication.authenticate(requestBuilder);
-        requestBuilder.header(Headers.SEC_WEB_SOCKET_PROTOCOL, JMAP);
+        requestBuilder.header(HttpHeaders.SEC_WEBSOCKET_PROTOCOL, JMAP);
         final Request request = requestBuilder.build();
         final OkHttpClient okHttpClient =
                 Services.OK_HTTP_CLIENT

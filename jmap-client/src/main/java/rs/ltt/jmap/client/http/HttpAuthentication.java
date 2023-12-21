@@ -16,6 +16,13 @@
 
 package rs.ltt.jmap.client.http;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableSet;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
+import okhttp3.Challenge;
 import okhttp3.Request;
 
 public interface HttpAuthentication {
@@ -23,4 +30,26 @@ public interface HttpAuthentication {
     void authenticate(Request.Builder builder);
 
     String getUsername();
+
+    enum Scheme {
+        BASIC,
+        BEARER,
+        DIGEST;
+
+        public static Set<Scheme> of(final Collection<Challenge> challenges) {
+            return ImmutableSet.copyOf(
+                    Collections2.filter(
+                            Collections2.transform(
+                                    challenges,
+                                    c -> {
+                                        try {
+                                            return Scheme.valueOf(
+                                                    Strings.nullToEmpty(c.scheme()).toUpperCase());
+                                        } catch (final IllegalArgumentException e) {
+                                            return null;
+                                        }
+                                    }),
+                            Objects::nonNull));
+        }
+    }
 }

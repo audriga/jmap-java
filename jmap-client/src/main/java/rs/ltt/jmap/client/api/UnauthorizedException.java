@@ -17,7 +17,9 @@
 package rs.ltt.jmap.client.api;
 
 import java.util.Collection;
+import java.util.Set;
 import okhttp3.Challenge;
+import rs.ltt.jmap.client.http.HttpAuthentication;
 
 public class UnauthorizedException extends JmapApiException {
 
@@ -30,5 +32,9 @@ public class UnauthorizedException extends JmapApiException {
 
     public Collection<Challenge> getChallenges() {
         return this.challenges;
+    }
+
+    public Set<HttpAuthentication.Scheme> getAuthenticationSchemes() {
+        return HttpAuthentication.Scheme.of(this.challenges);
     }
 }

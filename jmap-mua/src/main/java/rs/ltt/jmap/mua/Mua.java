@@ -32,6 +32,8 @@ import rs.ltt.jmap.client.JmapClient;
 import rs.ltt.jmap.client.blob.Download;
 import rs.ltt.jmap.client.blob.Progress;
 import rs.ltt.jmap.client.blob.Uploadable;
+import rs.ltt.jmap.client.http.BasicAuthHttpAuthentication;
+import rs.ltt.jmap.client.http.HttpAuthentication;
 import rs.ltt.jmap.client.session.InMemorySessionCache;
 import rs.ltt.jmap.client.session.SessionCache;
 import rs.ltt.jmap.common.entity.*;
@@ -370,6 +372,7 @@ public class Mua extends MuaSession {
                 ImmutableClassToInstanceMap.builder();
         private String username;
         private String password;
+        private HttpAuthentication httpAuthentication;
         private HttpUrl sessionResource;
         private String accountId;
         private SessionCache sessionCache = new InMemorySessionCache();
@@ -386,6 +389,11 @@ public class Mua extends MuaSession {
 
         public Builder password(String password) {
             this.password = password;
+            return this;
+        }
+
+        public Builder httpAuthentication(HttpAuthentication httpAuthentication) {
+            this.httpAuthentication = httpAuthentication;
             return this;
         }
 
@@ -434,15 +442,23 @@ public class Mua extends MuaSession {
         }
 
         public Mua build() {
-            Preconditions.checkNotNull(accountId, "accountId is required");
+            Preconditions.checkState(accountId != null, "accountId is required");
+            final HttpAuthentication authentication;
+            if (this.httpAuthentication != null) {
+                Preconditions.checkState(
+                        this.username == null && this.password == null,
+                        "Set either HttpAuthentication or username and password but not both");
+                authentication = this.httpAuthentication;
+            } else {
+                authentication = new BasicAuthHttpAuthentication(this.username, this.password);
+            }
 
-            final JmapClient jmapClient =
-                    new JmapClient(this.username, this.password, this.sessionResource);
+            final JmapClient jmapClient = new JmapClient(authentication, this.sessionResource);
             jmapClient.setSessionCache(this.sessionCache);
             if (this.useWebSocket != null) {
                 jmapClient.setUseWebSocket(this.useWebSocket);
             }
-            ClassToInstanceMap<PluginService.Plugin> plugins = pluginBuilder.build();
+            final ClassToInstanceMap<PluginService.Plugin> plugins = pluginBuilder.build();
             final Mua mua = new Mua(jmapClient, cache, accountId, plugins);
             mua.setQueryPageSize(this.queryPageSize);
             return mua;

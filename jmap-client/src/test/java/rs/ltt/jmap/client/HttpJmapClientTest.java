@@ -17,6 +17,7 @@
 package rs.ltt.jmap.client;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Resources;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.JsonParseException;
@@ -43,6 +44,7 @@ import rs.ltt.jmap.client.api.MethodErrorResponseException;
 import rs.ltt.jmap.client.api.MethodResponseNotFoundException;
 import rs.ltt.jmap.client.api.UnauthorizedException;
 import rs.ltt.jmap.client.event.CloseAfter;
+import rs.ltt.jmap.client.http.HttpAuthentication;
 import rs.ltt.jmap.client.session.FileSessionCache;
 import rs.ltt.jmap.client.session.InMemorySessionCache;
 import rs.ltt.jmap.client.session.Session;
@@ -582,6 +584,12 @@ public class HttpJmapClientTest {
             final Collection<Challenge> challenges = unauthorizedException.getChallenges();
             Assertions.assertEquals(3, challenges.size());
             Assertions.assertTrue(challenges.stream().anyMatch(c -> "Bearer".equals(c.scheme())));
+            Assertions.assertEquals(
+                    ImmutableSet.of(
+                            HttpAuthentication.Scheme.BASIC,
+                            HttpAuthentication.Scheme.BEARER,
+                            HttpAuthentication.Scheme.DIGEST),
+                    unauthorizedException.getAuthenticationSchemes());
         }
         server.shutdown();
     }
