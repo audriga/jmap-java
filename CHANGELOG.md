@@ -1,3 +1,7 @@
+### 0.8.17 (2023-12-21)
+
+* Allow jmap-mua to be setup with any HttpAuthentication (not just Basic Auth)
+
 ### 0.8.16 (2023-12-15)
 
 * Throw proper exception on invalid user names
