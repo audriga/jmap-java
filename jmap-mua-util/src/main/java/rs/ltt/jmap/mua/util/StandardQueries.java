@@ -21,6 +21,7 @@ import rs.ltt.jmap.common.entity.Comparator;
 import rs.ltt.jmap.common.entity.Email;
 import rs.ltt.jmap.common.entity.IdentifiableMailboxWithRole;
 import rs.ltt.jmap.common.entity.filter.EmailFilterCondition;
+import rs.ltt.jmap.common.entity.filter.FilterOperator;
 import rs.ltt.jmap.common.entity.query.EmailQuery;
 
 public final class StandardQueries {
@@ -65,6 +66,23 @@ public final class StandardQueries {
                         .text(searchTerm)
                         .inMailboxOtherThan(trashAndJunk)
                         .build(),
+                SORT_DEFAULT,
+                true);
+    }
+
+    public static EmailQuery contact(final String contact, final String[] trashAndJunk) {
+        Preconditions.checkNotNull(contact);
+        Preconditions.checkNotNull(trashAndJunk);
+        Preconditions.checkArgument(
+                trashAndJunk.length <= 2, "Provide mailbox ids for trash and junk");
+        return EmailQuery.of(
+                FilterOperator.and(
+                        FilterOperator.or(
+                                EmailFilterCondition.builder().from(contact).build(),
+                                EmailFilterCondition.builder().to(contact).build(),
+                                EmailFilterCondition.builder().cc(contact).build(),
+                                EmailFilterCondition.builder().bcc(contact).build()),
+                        EmailFilterCondition.builder().inMailboxOtherThan(trashAndJunk).build()),
                 SORT_DEFAULT,
                 true);
     }

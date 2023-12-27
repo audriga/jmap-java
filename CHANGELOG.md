@@ -1,3 +1,7 @@
+### 0.8.18 (2023-12-27)
+
+* Add Standard Query to filter by contact
+
 ### 0.8.17 (2023-12-21)
 
 * Allow jmap-mua to be setup with any HttpAuthentication (not just Basic Auth)
