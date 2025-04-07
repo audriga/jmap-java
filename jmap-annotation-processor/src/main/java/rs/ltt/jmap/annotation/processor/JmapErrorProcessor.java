@@ -34,7 +34,7 @@ import rs.ltt.jmap.common.Utils;
 import rs.ltt.jmap.common.method.MethodErrorResponse;
 
 @SupportedAnnotationTypes("rs.ltt.jmap.annotation.JmapError")
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedSourceVersion(SourceVersion.RELEASE_17)
 @AutoService(Processor.class)
 public class JmapErrorProcessor extends AbstractProcessor {
 

@@ -25,10 +25,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import okhttp3.HttpUrl;
 import org.jetbrains.annotations.Nullable;
+import rs.ltt.jmap.client.ConnectionConfig;
 import rs.ltt.jmap.client.Services;
 import rs.ltt.jmap.client.api.SessionStateListener;
 import rs.ltt.jmap.client.api.WebSocketJmapApiClient;
-import rs.ltt.jmap.client.http.HttpAuthentication;
 import rs.ltt.jmap.client.util.Durations;
 import rs.ltt.jmap.common.websocket.PushDisableWebSocketMessage;
 import rs.ltt.jmap.common.websocket.PushEnableWebSocketMessage;
@@ -48,10 +48,10 @@ public class WebSocketPushService extends WebSocketJmapApiClient
     private String pushState = null;
 
     public WebSocketPushService(
-            HttpUrl webSocketUrl,
-            HttpAuthentication httpAuthentication,
+            final HttpUrl webSocketUrl,
+            final ConnectionConfig connectionConfig,
             @Nullable SessionStateListener sessionStateListener) {
-        super(webSocketUrl, httpAuthentication, sessionStateListener);
+        super(webSocketUrl, connectionConfig, sessionStateListener);
     }
 
     @Override

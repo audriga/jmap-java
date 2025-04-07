@@ -16,13 +16,13 @@
 
 package rs.ltt.jmap.client;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Resources;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.gson.JsonParseException;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
@@ -91,7 +91,7 @@ public class HttpJmapClientTest {
     }
 
     public static String readResourceAsString(String filename) throws IOException {
-        return Resources.asCharSource(Resources.getResource(filename), Charsets.UTF_8)
+        return Resources.asCharSource(Resources.getResource(filename), StandardCharsets.UTF_8)
                 .read()
                 .trim();
     }
@@ -520,7 +520,7 @@ public class HttpJmapClientTest {
         final ListenableFuture<MethodResponses> future =
                 jmapClient.call(GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
 
-        final Dispatcher dispatcher = Services.OK_HTTP_CLIENT.dispatcher();
+        final Dispatcher dispatcher = Services.okHttpClient().dispatcher();
         future.cancel(true);
         Thread.sleep(1000); // wait for cancel to propagate.
         Assertions.assertEquals(
@@ -548,7 +548,7 @@ public class HttpJmapClientTest {
         final ListenableFuture<MethodResponses> future =
                 jmapClient.call(GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
 
-        final Dispatcher dispatcher = Services.OK_HTTP_CLIENT.dispatcher();
+        final Dispatcher dispatcher = Services.okHttpClient().dispatcher();
 
         Thread.sleep(1000);
         future.cancel(true);

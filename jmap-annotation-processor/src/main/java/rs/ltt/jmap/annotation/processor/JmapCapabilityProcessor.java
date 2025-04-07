@@ -34,7 +34,7 @@ import rs.ltt.jmap.common.Utils;
 import rs.ltt.jmap.common.entity.Capability;
 
 @SupportedAnnotationTypes("rs.ltt.jmap.annotation.JmapCapability")
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedSourceVersion(SourceVersion.RELEASE_17)
 @AutoService(Processor.class)
 public class JmapCapabilityProcessor extends AbstractProcessor {
 

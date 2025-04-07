@@ -38,7 +38,7 @@ import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
 import rs.ltt.jmap.common.entity.filter.FilterCondition;
 
 @SupportedAnnotationTypes("rs.ltt.jmap.annotation.JmapEntity")
-@SupportedSourceVersion(SourceVersion.RELEASE_8)
+@SupportedSourceVersion(SourceVersion.RELEASE_17)
 @AutoService(Processor.class)
 public class JmapEntityProcessor extends AbstractProcessor {
 

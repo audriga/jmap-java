@@ -28,8 +28,8 @@ import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rs.ltt.jmap.client.ConnectionConfig;
 import rs.ltt.jmap.client.Services;
-import rs.ltt.jmap.client.http.HttpAuthentication;
 import rs.ltt.jmap.client.util.SettableCallFuture;
 import rs.ltt.jmap.common.ErrorResponse;
 import rs.ltt.jmap.common.entity.Upload;
@@ -44,20 +44,23 @@ public class BinaryDataClient {
     private static final Pattern CONTENT_RANGE_PATTERN =
             Pattern.compile("(^[a-zA-Z][\\w]*)\\s+(\\d+)\\s?-\\s?(\\d+)?\\s?/?\\s?(\\d+|\\*)?");
 
-    private final HttpAuthentication httpAuthentication;
+    private final ConnectionConfig connectionConfig;
 
-    public BinaryDataClient(final HttpAuthentication httpAuthentication) {
-        this.httpAuthentication = httpAuthentication;
+    public BinaryDataClient(final ConnectionConfig connectionConfig) {
+        this.connectionConfig = connectionConfig;
     }
 
     public ListenableFuture<Download> download(final HttpUrl httpUrl, final long rangeStart) {
+        final var authentication = this.connectionConfig.getAuthentication();
         final Request.Builder requestBuilder = new Request.Builder();
         requestBuilder.url(httpUrl);
         if (rangeStart > 0) {
             requestBuilder.header(HTTP_HEADER_RANGE, String.format("bytes=%d-", rangeStart));
         }
-        this.httpAuthentication.authenticate(requestBuilder);
-        final Call call = Services.OK_HTTP_CLIENT.newCall(requestBuilder.build());
+        authentication.authenticate(requestBuilder);
+        final Call call =
+                Services.okHttpClient(connectionConfig.getTrustManager())
+                        .newCall(requestBuilder.build());
         final SettableCallFuture<Download> settableFuture = SettableCallFuture.create(call);
         LOGGER.info("Downloading blob from {}", httpUrl);
         call.enqueue(
@@ -121,12 +124,15 @@ public class BinaryDataClient {
 
     public ListenableFuture<Upload> upload(
             final HttpUrl httpUrl, final Uploadable uploadable, final Progress progress) {
+        final var authentication = this.connectionConfig.getAuthentication();
         final RequestBody requestBody = RequestBodies.of(uploadable, progress);
         final Request.Builder requestBuilder = new Request.Builder();
         requestBuilder.url(httpUrl);
-        httpAuthentication.authenticate(requestBuilder);
+        authentication.authenticate(requestBuilder);
         requestBuilder.post(requestBody);
-        final Call call = Services.OK_HTTP_CLIENT.newCall(requestBuilder.build());
+        final Call call =
+                Services.okHttpClient(connectionConfig.getTrustManager())
+                        .newCall(requestBuilder.build());
         final SettableCallFuture<Upload> settableFuture = SettableCallFuture.create(call);
         call.enqueue(
                 new Callback() {

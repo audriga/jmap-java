@@ -17,7 +17,6 @@
 package rs.ltt.jmap.client.api;
 
 import static rs.ltt.jmap.client.Services.GSON;
-import static rs.ltt.jmap.client.Services.OK_HTTP_CLIENT_LOGGING;
 
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.FutureCallback;
@@ -34,9 +33,9 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rs.ltt.jmap.client.ConnectionConfig;
 import rs.ltt.jmap.client.JmapRequest;
-import rs.ltt.jmap.client.http.BasicAuthHttpAuthentication;
-import rs.ltt.jmap.client.http.HttpAuthentication;
+import rs.ltt.jmap.client.Services;
 import rs.ltt.jmap.client.session.Session;
 import rs.ltt.jmap.client.util.SettableCallFuture;
 import rs.ltt.jmap.common.GenericResponse;
@@ -48,23 +47,15 @@ public class HttpJmapApiClient extends AbstractJmapApiClient {
     private static final MediaType MEDIA_TYPE_JSON = MediaType.get("application/json");
 
     private final HttpUrl apiUrl;
-    private final HttpAuthentication httpAuthentication;
-
-    public HttpJmapApiClient(final HttpUrl apiUrl, String username, String password) {
-        this(apiUrl, new BasicAuthHttpAuthentication(username, password), null);
-    }
+    private final ConnectionConfig connectionConfig;
 
     public HttpJmapApiClient(
             final HttpUrl apiUrl,
-            final HttpAuthentication httpAuthentication,
+            final ConnectionConfig connectionConfig,
             @Nullable final SessionStateListener sessionStateListener) {
         super(sessionStateListener);
         this.apiUrl = Preconditions.checkNotNull(apiUrl, "This API URL must not be null");
-        this.httpAuthentication = httpAuthentication;
-    }
-
-    public HttpJmapApiClient(final HttpUrl apiUrl, final HttpAuthentication httpAuthentication) {
-        this(apiUrl, httpAuthentication, null);
+        this.connectionConfig = connectionConfig;
     }
 
     @Override
@@ -103,9 +94,12 @@ public class HttpJmapApiClient extends AbstractJmapApiClient {
     private ListenableFuture<InputStream> send(final String out) {
         final Request.Builder requestBuilder = new Request.Builder();
         requestBuilder.url(apiUrl);
-        this.httpAuthentication.authenticate(requestBuilder);
+        final var authentication = this.connectionConfig.getAuthentication();
+        authentication.authenticate(requestBuilder);
         requestBuilder.post(RequestBody.create(out, MEDIA_TYPE_JSON));
-        final Call call = OK_HTTP_CLIENT_LOGGING.newCall(requestBuilder.build());
+        final Call call =
+                Services.okHttpClientLogging(connectionConfig.getTrustManager())
+                        .newCall(requestBuilder.build());
         final SettableCallFuture<InputStream> settableInputStreamFuture =
                 SettableCallFuture.create(call);
         call.enqueue(

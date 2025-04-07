@@ -23,11 +23,13 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Collection;
+import javax.net.ssl.X509TrustManager;
 import okhttp3.HttpUrl;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rs.ltt.jmap.client.ConnectionConfig;
 import rs.ltt.jmap.client.JmapClient;
 import rs.ltt.jmap.client.blob.Download;
 import rs.ltt.jmap.client.blob.Progress;
@@ -374,6 +376,7 @@ public class Mua extends MuaSession {
         private String password;
         private HttpAuthentication httpAuthentication;
         private HttpUrl sessionResource;
+        private X509TrustManager trustManager;
         private String accountId;
         private SessionCache sessionCache = new InMemorySessionCache();
         private Cache cache = new InMemoryCache();
@@ -403,6 +406,11 @@ public class Mua extends MuaSession {
 
         public Builder sessionResource(HttpUrl sessionResource) {
             this.sessionResource = sessionResource;
+            return this;
+        }
+
+        public Builder trustManager(final X509TrustManager trustManager) {
+            this.trustManager = trustManager;
             return this;
         }
 
@@ -452,8 +460,9 @@ public class Mua extends MuaSession {
             } else {
                 authentication = new BasicAuthHttpAuthentication(this.username, this.password);
             }
-
-            final JmapClient jmapClient = new JmapClient(authentication, this.sessionResource);
+            final var connectionConfig =
+                    new ConnectionConfig(authentication, this.sessionResource, this.trustManager);
+            final var jmapClient = new JmapClient(connectionConfig);
             jmapClient.setSessionCache(this.sessionCache);
             if (this.useWebSocket != null) {
                 jmapClient.setUseWebSocket(this.useWebSocket);

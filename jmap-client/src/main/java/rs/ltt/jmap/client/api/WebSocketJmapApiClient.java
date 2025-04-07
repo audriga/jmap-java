@@ -29,10 +29,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rs.ltt.jmap.client.ConnectionConfig;
 import rs.ltt.jmap.client.JmapRequest;
 import rs.ltt.jmap.client.Services;
 import rs.ltt.jmap.client.event.State;
-import rs.ltt.jmap.client.http.HttpAuthentication;
 import rs.ltt.jmap.client.session.Session;
 import rs.ltt.jmap.common.GenericResponse;
 import rs.ltt.jmap.common.websocket.AbstractApiWebSocketMessage;
@@ -45,7 +45,7 @@ public class WebSocketJmapApiClient extends AbstractJmapApiClient implements Clo
     private static final String JMAP = "jmap";
     protected final List<Long> connectionDurations = new ArrayList<>();
     private final HttpUrl webSocketUrl;
-    private final HttpAuthentication authentication;
+    private final ConnectionConfig connectionConfig;
     private final ArrayList<JmapRequest> requestQueue = new ArrayList<>();
     private final HashMap<String, JmapRequest> inFlightRequests = new HashMap<>();
     protected int attempt = 0;
@@ -56,12 +56,12 @@ public class WebSocketJmapApiClient extends AbstractJmapApiClient implements Clo
 
     public WebSocketJmapApiClient(
             final HttpUrl webSocketUrl,
-            final HttpAuthentication httpAuthentication,
+            final ConnectionConfig connectionConfig,
             @Nullable final SessionStateListener sessionStateListener) {
         super(sessionStateListener);
         this.webSocketUrl =
                 Preconditions.checkNotNull(webSocketUrl, "This WebSocket URL must not be null");
-        this.authentication = httpAuthentication;
+        this.connectionConfig = connectionConfig;
     }
 
     @Override
@@ -145,6 +145,7 @@ public class WebSocketJmapApiClient extends AbstractJmapApiClient implements Clo
     }
 
     private void startWebSocket() {
+        final var authentication = this.connectionConfig.getAuthentication();
         LOGGER.info("Using WebSocket URL {}", this.webSocketUrl);
         final Request.Builder requestBuilder = new Request.Builder();
         requestBuilder.url(this.webSocketUrl);
@@ -152,7 +153,7 @@ public class WebSocketJmapApiClient extends AbstractJmapApiClient implements Clo
         requestBuilder.header(HttpHeaders.SEC_WEBSOCKET_PROTOCOL, JMAP);
         final Request request = requestBuilder.build();
         final OkHttpClient okHttpClient =
-                Services.OK_HTTP_CLIENT
+                Services.okHttpClient(connectionConfig.getTrustManager())
                         .newBuilder()
                         .callTimeout(30, TimeUnit.SECONDS)
                         .pingInterval(getPingInterval())

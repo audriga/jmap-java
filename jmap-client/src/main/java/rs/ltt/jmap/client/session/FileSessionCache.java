@@ -18,12 +18,12 @@ package rs.ltt.jmap.client.session;
 
 import static rs.ltt.jmap.client.Services.GSON;
 
-import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executors;
 import okhttp3.HttpUrl;
 import org.jspecify.annotations.NonNull;
@@ -95,6 +95,6 @@ public class FileSessionCache implements SessionCache {
     private static String getFilename(String username, HttpUrl sessionResource) {
         final String name =
                 username + ':' + (sessionResource == null ? '\00' : sessionResource.toString());
-        return "session-cache-" + Hashing.sha256().hashString(name, Charsets.UTF_8).toString();
+        return "session-cache-" + Hashing.sha256().hashString(name, StandardCharsets.UTF_8);
     }
 }

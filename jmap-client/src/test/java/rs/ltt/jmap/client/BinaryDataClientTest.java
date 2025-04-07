@@ -48,8 +48,10 @@ public class BinaryDataClientTest {
         server.enqueue(new MockResponse().setBody("{}"));
         server.start();
 
-        final BinaryDataClient binaryDataClient =
-                new BinaryDataClient(new BasicAuthHttpAuthentication("foo", "bar"));
+        final var connectionConfig =
+                new ConnectionConfig(new BasicAuthHttpAuthentication("foo", "bar"), null, null);
+
+        final BinaryDataClient binaryDataClient = new BinaryDataClient(connectionConfig);
 
         ExecutionException ee =
                 Assertions.assertThrows(
@@ -74,8 +76,10 @@ public class BinaryDataClientTest {
         server.enqueue(new MockResponse().setResponseCode(401).setBody("{}"));
         server.start();
 
-        final BinaryDataClient binaryDataClient =
-                new BinaryDataClient(new BasicAuthHttpAuthentication("foo", "bar"));
+        final var connectionConfig =
+                new ConnectionConfig(new BasicAuthHttpAuthentication("foo", "bar"), null, null);
+
+        final BinaryDataClient binaryDataClient = new BinaryDataClient(connectionConfig);
 
         ExecutionException ee =
                 Assertions.assertThrows(

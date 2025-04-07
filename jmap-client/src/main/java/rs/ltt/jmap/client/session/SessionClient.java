@@ -17,7 +17,6 @@
 package rs.ltt.jmap.client.session;
 
 import static rs.ltt.jmap.client.Services.GSON;
-import static rs.ltt.jmap.client.Services.OK_HTTP_CLIENT_LOGGING;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -32,10 +31,11 @@ import okhttp3.internal.http.HttpHeaders;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rs.ltt.jmap.client.ConnectionConfig;
+import rs.ltt.jmap.client.Services;
 import rs.ltt.jmap.client.api.EndpointNotFoundException;
 import rs.ltt.jmap.client.api.InvalidSessionResourceException;
 import rs.ltt.jmap.client.api.UnauthorizedException;
-import rs.ltt.jmap.client.http.HttpAuthentication;
 import rs.ltt.jmap.client.util.SettableCallFuture;
 import rs.ltt.jmap.client.util.WellKnownUtil;
 import rs.ltt.jmap.common.SessionResource;
@@ -44,31 +44,24 @@ public class SessionClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SessionClient.class);
 
-    private final HttpUrl sessionResource;
-    private final HttpAuthentication httpAuthentication;
+    private ConnectionConfig connectionConfig;
     private SessionCache sessionCache;
     private Session currentSession = null;
     private ListenableFuture<Session> currentSessionFuture = Futures.immediateCancelledFuture();
     private boolean sessionResourceChanged = false;
 
-    public SessionClient(final HttpAuthentication authentication) {
-        this.sessionResource = null;
-        this.httpAuthentication = authentication;
-    }
-
-    public SessionClient(final HttpAuthentication authentication, final HttpUrl sessionResource) {
-        this.sessionResource = sessionResource;
-        this.httpAuthentication = authentication;
+    public SessionClient(final ConnectionConfig connectionConfig) {
+        this.connectionConfig = connectionConfig;
     }
 
     public synchronized ListenableFuture<Session> get() {
         if (!sessionResourceChanged && currentSession != null) {
             return Futures.immediateFuture(currentSession);
         }
-        final String username = httpAuthentication.getUsername();
+        final String username = connectionConfig.getAuthentication().getUsername();
         final HttpUrl resource;
         try {
-            resource = getSessionResource();
+            resource = connectionConfig.getSessionResource();
         } catch (final WellKnownUtil.MalformedUsernameException e) {
             return Futures.immediateFailedFuture(e);
         }
@@ -77,15 +70,6 @@ public class SessionClient {
         }
         this.currentSessionFuture = fetchSession(username, resource);
         return this.currentSessionFuture;
-    }
-
-    private HttpUrl getSessionResource() throws WellKnownUtil.MalformedUsernameException {
-        final String username = httpAuthentication.getUsername();
-        if (sessionResource != null) {
-            return sessionResource;
-        } else {
-            return WellKnownUtil.fromUsername(username);
-        }
     }
 
     private ListenableFuture<Session> fetchSession(
@@ -112,10 +96,13 @@ public class SessionClient {
     }
 
     private ListenableFuture<Session> fetchSession(final HttpUrl sessionResource) {
+        final var authentication = this.connectionConfig.getAuthentication();
         final Request.Builder requestBuilder = new Request.Builder();
         requestBuilder.url(sessionResource);
-        httpAuthentication.authenticate(requestBuilder);
-        final Call call = OK_HTTP_CLIENT_LOGGING.newCall(requestBuilder.build());
+        authentication.authenticate(requestBuilder);
+        final Call call =
+                Services.okHttpClientLogging(connectionConfig.getTrustManager())
+                        .newCall(requestBuilder.build());
         final SettableCallFuture<Session> settableFuture = SettableCallFuture.create(call);
         call.enqueue(
                 new Callback() {
@@ -185,7 +172,7 @@ public class SessionClient {
         this.currentSession = session;
         final SessionCache cache = sessionCache;
         if (cache != null) {
-            final String username = httpAuthentication.getUsername();
+            final String username = this.connectionConfig.getAuthentication().getUsername();
             LOGGER.debug("caching to {}", cache.getClass().getSimpleName());
             cache.store(username, resource, session);
         }

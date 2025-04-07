@@ -24,7 +24,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
@@ -34,24 +33,22 @@ import rs.ltt.jmap.common.method.MethodCall;
 import rs.ltt.jmap.common.method.MethodResponse;
 
 @SupportedAnnotationTypes("rs.ltt.jmap.annotation.JmapMethod")
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedSourceVersion(SourceVersion.RELEASE_17)
 @AutoService(Processor.class)
 public class JmapMethodProcessor extends AbstractProcessor {
 
-    private static Class[] INTERFACES = {MethodCall.class, MethodResponse.class};
+    private static final Class<?>[] INTERFACES = {MethodCall.class, MethodResponse.class};
 
     private Filer filer;
     private TypeMirror[] typeMirrors;
     private Types types;
-    private Elements elements;
-    private HashMap<Class, List<TypeElement>> typeElementMap = new HashMap<>();
+    private final HashMap<Class<?>, List<TypeElement>> typeElementMap = new HashMap<>();
 
     @Override
-    public synchronized void init(ProcessingEnvironment processingEnvironment) {
+    public synchronized void init(final ProcessingEnvironment processingEnvironment) {
         super.init(processingEnvironment);
         this.filer = processingEnvironment.getFiler();
         this.types = processingEnvironment.getTypeUtils();
-        this.elements = processingEnvironment.getElementUtils();
         this.typeMirrors = new TypeMirror[INTERFACES.length];
         for (int i = 0; i < INTERFACES.length; ++i) {
             this.typeMirrors[i] =
@@ -67,13 +64,12 @@ public class JmapMethodProcessor extends AbstractProcessor {
         Set<? extends Element> elements =
                 roundEnvironment.getElementsAnnotatedWith(JmapMethod.class);
         boolean emptyPass = true;
-        for (Element element : elements) {
-            if (element instanceof TypeElement) {
-                final TypeElement typeElement = (TypeElement) element;
+        for (final Element element : elements) {
+            if (element instanceof TypeElement typeElement) {
                 for (int i = 0; i < INTERFACES.length; ++i) {
                     if (types.isAssignable(element.asType(), typeMirrors[i])) {
                         if (!typeElementMap.containsKey(INTERFACES[i])) {
-                            typeElementMap.put(INTERFACES[i], new ArrayList<TypeElement>());
+                            typeElementMap.put(INTERFACES[i], new ArrayList<>());
                         }
                         typeElementMap.get(INTERFACES[i]).add(typeElement);
                         emptyPass = false;
@@ -84,13 +80,13 @@ public class JmapMethodProcessor extends AbstractProcessor {
         if (emptyPass) {
             return true;
         }
-        for (Map.Entry<Class, List<TypeElement>> entry : typeElementMap.entrySet()) {
+        for (final Map.Entry<Class<?>, List<TypeElement>> entry : typeElementMap.entrySet()) {
             createSourceFile(entry.getKey(), entry.getValue());
         }
         return true;
     }
 
-    private void createSourceFile(Class clazz, Collection<TypeElement> classes) {
+    private void createSourceFile(final Class<?> clazz, final Collection<TypeElement> classes) {
 
         try {
             FileObject resourceFile =
@@ -104,7 +100,7 @@ public class JmapMethodProcessor extends AbstractProcessor {
             }
             printWriter.flush();
             printWriter.close();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

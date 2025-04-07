@@ -21,7 +21,7 @@
     <parent>
         <groupId>rs.ltt.jmap</groupId>
         <artifactId>jmap</artifactId>
-        <version>0.8.18</version>
+        <version>0.9.0</version>
     </parent>
 
     <artifactId>jmap-mua-util</artifactId>
@@ -69,10 +69,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>${maven.compiler.version}</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <release>${java.version}</release>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>

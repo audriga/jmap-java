@@ -17,7 +17,6 @@
 package rs.ltt.jmap.client.event;
 
 import static rs.ltt.jmap.client.Services.GSON;
-import static rs.ltt.jmap.client.Services.OK_HTTP_CLIENT;
 
 import com.google.common.base.Strings;
 import com.google.common.net.HttpHeaders;
@@ -37,8 +36,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import rs.ltt.jmap.client.ConnectionConfig;
 import rs.ltt.jmap.client.Services;
-import rs.ltt.jmap.client.http.HttpAuthentication;
 import rs.ltt.jmap.client.session.Session;
 import rs.ltt.jmap.common.entity.StateChange;
 
@@ -47,7 +46,7 @@ public class EventSourcePushService implements PushService, OnStateChangeListene
     private static final Logger LOGGER = LoggerFactory.getLogger(EventSourcePushService.class);
 
     private final Session session;
-    private final HttpAuthentication authentication;
+    private final ConnectionConfig connectionConfig;
     private final OnStateChangeListenerManager onStateChangeListenerManager =
             new OnStateChangeListenerManager(this);
     private final List<OnConnectionStateChangeListener> onConnectionStateListeners =
@@ -62,9 +61,9 @@ public class EventSourcePushService implements PushService, OnStateChangeListene
 
     // TODO do we want to pass JmapClient instead to always have access to the session. or an
     // SessionRetriever interface
-    public EventSourcePushService(final Session session, final HttpAuthentication authentication) {
+    public EventSourcePushService(final Session session, final ConnectionConfig connectionConfig) {
         this.session = session;
-        this.authentication = authentication;
+        this.connectionConfig = connectionConfig;
     }
 
     private void disconnect(final State state) {
@@ -129,9 +128,10 @@ public class EventSourcePushService implements PushService, OnStateChangeListene
     }
 
     private void connectEventSource(final HttpUrl eventSourceUrl) {
+        final var authentication = this.connectionConfig.getAuthentication();
         final EventSource.Factory factory =
                 EventSources.createFactory(
-                        OK_HTTP_CLIENT
+                        Services.okHttpClient(this.connectionConfig.getTrustManager())
                                 .newBuilder()
                                 .readTimeout(pingInterval.plus(PING_INTERVAL_TOLERANCE))
                                 .retryOnConnectionFailure(true)

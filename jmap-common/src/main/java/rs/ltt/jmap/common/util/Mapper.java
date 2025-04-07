@@ -16,7 +16,6 @@
 
 package rs.ltt.jmap.common.util;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
@@ -27,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -129,7 +129,7 @@ public final class Mapper {
                             url -> {
                                 try {
                                     return new BufferedReader(
-                                            Resources.asCharSource(url, Charsets.UTF_8)
+                                            Resources.asCharSource(url, StandardCharsets.UTF_8)
                                                     .openStream());
                                 } catch (IOException e) {
                                     LOGGER.warn(

@@ -17,20 +17,22 @@
 package rs.ltt.jmap.client.api;
 
 import okhttp3.HttpUrl;
+import org.jspecify.annotations.NonNull;
+import rs.ltt.jmap.client.ConnectionConfig;
 import rs.ltt.jmap.client.event.WebSocketPushService;
-import rs.ltt.jmap.client.http.HttpAuthentication;
 import rs.ltt.jmap.client.session.Session;
 import rs.ltt.jmap.client.util.WebSocketUtil;
 import rs.ltt.jmap.common.entity.capability.WebSocketCapability;
 
 public class JmapApiClientFactory {
 
-    private final HttpAuthentication httpAuthentication;
+    private final ConnectionConfig connectionConfig;
     private final SessionStateListener sessionStateListener;
 
     public JmapApiClientFactory(
-            HttpAuthentication httpAuthentication, SessionStateListener sessionStateListener) {
-        this.httpAuthentication = httpAuthentication;
+            @NonNull final ConnectionConfig connectionConfig,
+            SessionStateListener sessionStateListener) {
+        this.connectionConfig = connectionConfig;
         this.sessionStateListener = sessionStateListener;
     }
 
@@ -41,12 +43,12 @@ public class JmapApiClientFactory {
             final HttpUrl url =
                     WebSocketUtil.normalizeUrl(session.getBase(), webSocketCapability.getUrl());
             if (Boolean.TRUE.equals(webSocketCapability.getSupportsPush())) {
-                return new WebSocketPushService(url, httpAuthentication, sessionStateListener);
+                return new WebSocketPushService(url, connectionConfig, sessionStateListener);
             } else {
-                return new WebSocketJmapApiClient(url, httpAuthentication, sessionStateListener);
+                return new WebSocketJmapApiClient(url, connectionConfig, sessionStateListener);
             }
         }
-        return new HttpJmapApiClient(session.getApiUrl(), httpAuthentication, sessionStateListener);
+        return new HttpJmapApiClient(session.getApiUrl(), connectionConfig, sessionStateListener);
     }
 
     private static boolean validWebSocketCapability(final WebSocketCapability capability) {

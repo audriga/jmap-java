@@ -45,9 +45,9 @@ import rs.ltt.jmap.common.method.MethodCall;
 
 public class JmapClient implements Closeable {
 
+    private final ConnectionConfig connectionConfig;
     private final SessionClient sessionClient;
     private final BinaryDataClient binaryDataClient;
-    private final HttpAuthentication authentication;
     private final SessionStateListener sessionStateListener =
             new SessionStateListener() {
                 @Override
@@ -59,27 +59,33 @@ public class JmapClient implements Closeable {
     private boolean useWebSocket = false;
 
     public JmapClient(final String username, final String password) {
-        this(new BasicAuthHttpAuthentication(username, password));
+        this(new ConnectionConfig(new BasicAuthHttpAuthentication(username, password), null, null));
     }
 
     public JmapClient(final HttpAuthentication httpAuthentication) {
-        this.authentication = httpAuthentication;
-        this.sessionClient = new SessionClient(httpAuthentication);
-        this.binaryDataClient = new BinaryDataClient(httpAuthentication);
+        this(new ConnectionConfig(httpAuthentication, null, null));
     }
 
     public JmapClient(final String username, final String password, final HttpUrl sessionResource) {
-        this(new BasicAuthHttpAuthentication(username, password), sessionResource);
+        this(
+                new ConnectionConfig(
+                        new BasicAuthHttpAuthentication(username, password),
+                        sessionResource,
+                        null));
     }
 
     public JmapClient(final HttpAuthentication httpAuthentication, final HttpUrl sessionResource) {
-        this.authentication = httpAuthentication;
-        this.sessionClient = new SessionClient(httpAuthentication, sessionResource);
-        this.binaryDataClient = new BinaryDataClient(httpAuthentication);
+        this(new ConnectionConfig(httpAuthentication, sessionResource, null));
+    }
+
+    public JmapClient(@NonNull final ConnectionConfig connectionConfig) {
+        this.connectionConfig = connectionConfig;
+        this.sessionClient = new SessionClient(connectionConfig);
+        this.binaryDataClient = new BinaryDataClient(connectionConfig);
     }
 
     public String getUsername() {
-        return authentication.getUsername();
+        return connectionConfig.getAuthentication().getUsername();
     }
 
     public ListenableFuture<MethodResponses> call(MethodCall methodCall) {
@@ -133,7 +139,7 @@ public class JmapClient implements Closeable {
             }
             // TODO remember to stop/close invalid clients
             final JmapApiClientFactory factory =
-                    new JmapApiClientFactory(authentication, sessionStateListener);
+                    new JmapApiClientFactory(connectionConfig, sessionStateListener);
             this.jmapApiClient = factory.getJmapApiClient(session, this.useWebSocket);
             return jmapApiClient;
         }
@@ -162,7 +168,7 @@ public class JmapClient implements Closeable {
         if (jmapApiClient instanceof PushService) {
             pushService = (PushService) jmapApiClient;
         } else {
-            pushService = new EventSourcePushService(session, authentication);
+            pushService = new EventSourcePushService(session, connectionConfig);
         }
         if (onStateChangeListener != null) {
             pushService.addOnStateChangeListener(onStateChangeListener);
