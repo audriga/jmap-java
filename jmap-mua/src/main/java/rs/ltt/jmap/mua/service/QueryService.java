@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rs.ltt.jmap.client.JmapClient;
@@ -92,7 +92,7 @@ public class QueryService extends AbstractMuaService {
     }
 
     public ListenableFuture<Status> query(
-            @Nonnull final EmailQuery query, final Boolean calculateTotal) {
+            @NonNull final EmailQuery query, final Boolean calculateTotal) {
         final ListenableFuture<QueryStateWrapper> queryStateFuture =
                 ioExecutorService.submit(() -> cache.getQueryState(query.asHash()));
 
@@ -120,7 +120,7 @@ public class QueryService extends AbstractMuaService {
     }
 
     public ListenableFuture<Status> query(
-            @Nonnull final EmailQuery query,
+            @NonNull final EmailQuery query,
             final Boolean calculateTotal,
             final String afterEmailId) {
         final ListenableFuture<QueryStateWrapper> queryStateFuture =
@@ -132,16 +132,16 @@ public class QueryService extends AbstractMuaService {
     }
 
     private ListenableFuture<Status> query(
-            @Nonnull final EmailQuery query,
+            @NonNull final EmailQuery query,
             final Boolean calculateTotal,
-            @Nonnull final String afterEmailId,
+            @NonNull final String afterEmailId,
             final QueryStateWrapper queryStateWrapper) {
         Preconditions.checkNotNull(query, "Query can not be null");
         Preconditions.checkNotNull(afterEmailId, "afterEmailId can not be null");
         Preconditions.checkNotNull(
                 queryStateWrapper, "QueryStateWrapper can not be null when paging");
 
-        LOGGER.info("Paging query {} after {}", query.toString(), afterEmailId);
+        LOGGER.info("Paging query {} after {}", query, afterEmailId);
 
         if (queryStateWrapper.canCalculateChanges && queryStateWrapper.queryState == null) {
             throw new InconsistentQueryStateException(
@@ -225,9 +225,9 @@ public class QueryService extends AbstractMuaService {
     }
 
     private ListenableFuture<Status> refreshQuery(
-            @Nonnull final EmailQuery query,
+            @NonNull final EmailQuery query,
             final Boolean calculateTotal,
-            @Nonnull final QueryStateWrapper queryStateWrapper) {
+            @NonNull final QueryStateWrapper queryStateWrapper) {
         final JmapClient.MultiCall multiCall = jmapClient.newMultiCall();
         ListenableFuture<Status> future =
                 refreshQuery(query, calculateTotal, queryStateWrapper, multiCall);
@@ -236,14 +236,14 @@ public class QueryService extends AbstractMuaService {
     }
 
     private ListenableFuture<Status> refreshQuery(
-            @Nonnull final EmailQuery query,
+            @NonNull final EmailQuery query,
             @Nullable final Boolean calculateTotal,
-            @Nonnull final QueryStateWrapper queryStateWrapper,
+            @NonNull final QueryStateWrapper queryStateWrapper,
             final JmapClient.MultiCall multiCall) {
         Preconditions.checkNotNull(
                 queryStateWrapper.queryState,
                 "QueryState can not be null when attempting to refresh query");
-        LOGGER.info("Refreshing query {}", query.toString());
+        LOGGER.info("Refreshing query {}", query);
 
         final List<ListenableFuture<Status>> piggyBackedFuturesList =
                 getService(RefreshService.class).refresh(queryStateWrapper.objectsState, multiCall);
@@ -335,7 +335,7 @@ public class QueryService extends AbstractMuaService {
                     public void onSuccess(@Nullable MethodResponses methodResponses) {}
 
                     @Override
-                    public void onFailure(@Nonnull Throwable throwable) {
+                    public void onFailure(@NonNull Throwable throwable) {
                         if (MethodErrorResponseException.matches(throwable, methodError)) {
                             if (evaluateAdditionalCondition(additionalCondition)) {
                                 LOGGER.info(
@@ -356,9 +356,9 @@ public class QueryService extends AbstractMuaService {
     }
 
     private ListenableFuture<Status> initialQuery(
-            @Nonnull final EmailQuery query,
+            @NonNull final EmailQuery query,
             @Nullable final Boolean calculateTotal,
-            @Nonnull final QueryStateWrapper queryStateWrapper) {
+            @NonNull final QueryStateWrapper queryStateWrapper) {
         return Futures.transformAsync(
                 jmapClient.getSession(),
                 session ->
@@ -372,10 +372,10 @@ public class QueryService extends AbstractMuaService {
     }
 
     private ListenableFuture<Status> initialQuery(
-            @Nonnull final EmailQuery query,
+            @NonNull final EmailQuery query,
             @Nullable final Boolean calculateTotal,
-            @Nonnull final QueryStateWrapper queryStateWrapper,
-            @Nonnull Session session) {
+            @NonNull final QueryStateWrapper queryStateWrapper,
+            @NonNull Session session) {
 
         Preconditions.checkState(
                 !queryStateWrapper.canCalculateChanges || queryStateWrapper.upTo == null,
@@ -526,7 +526,7 @@ public class QueryService extends AbstractMuaService {
         }
     }
 
-    private ListenableFuture<Status> fetchMissing(@Nonnull final String queryString) {
+    private ListenableFuture<Status> fetchMissing(@NonNull final String queryString) {
         Preconditions.checkNotNull(queryString, "QueryString can not be null");
         try {
             return fetchMissing(cache.getMissing(queryString));
@@ -539,7 +539,7 @@ public class QueryService extends AbstractMuaService {
         Preconditions.checkNotNull(missing, "Missing can not be null");
         Preconditions.checkNotNull(
                 missing.threadIds, "Missing.ThreadIds can not be null; pass empty list instead");
-        if (missing.threadIds.size() == 0) {
+        if (missing.threadIds.isEmpty()) {
             return Futures.immediateFuture(Status.UNCHANGED);
         }
         LOGGER.info("fetching " + missing.threadIds.size() + " missing threads");

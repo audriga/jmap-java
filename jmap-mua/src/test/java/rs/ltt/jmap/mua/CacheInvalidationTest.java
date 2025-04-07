@@ -23,10 +23,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import okhttp3.mockwebserver.MockWebServer;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import rs.ltt.jmap.client.api.MethodErrorResponseException;
@@ -154,7 +154,7 @@ public class CacheInvalidationTest {
         final MyInMemoryCache myInMemoryCache =
                 new MyInMemoryCache() {
                     @Override
-                    @Nonnull
+                    @NonNull
                     public QueryStateWrapper getQueryState(String query) {
                         final QueryStateWrapper queryStateWrapper = super.getQueryState(query);
                         return new QueryStateWrapper(

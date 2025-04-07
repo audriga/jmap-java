@@ -28,10 +28,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import okhttp3.*;
 import okhttp3.internal.http.HttpHeaders;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rs.ltt.jmap.client.JmapRequest;
@@ -93,7 +93,7 @@ public class HttpJmapApiClient extends AbstractJmapApiClient {
                     }
 
                     @Override
-                    public void onFailure(@Nonnull Throwable throwable) {
+                    public void onFailure(@NonNull Throwable throwable) {
                         jmapRequest.setException(throwable);
                     }
                 },
@@ -111,12 +111,12 @@ public class HttpJmapApiClient extends AbstractJmapApiClient {
         call.enqueue(
                 new Callback() {
                     @Override
-                    public void onFailure(@Nonnull Call call, @Nonnull IOException e) {
+                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
                         settableInputStreamFuture.setException(e);
                     }
 
                     @Override
-                    public void onResponse(@Nonnull Call call, @Nonnull Response response) {
+                    public void onResponse(@NonNull Call call, @NonNull Response response) {
                         final int code = response.code();
                         if (code == 404) {
                             settableInputStreamFuture.setException(

@@ -17,10 +17,9 @@
 package rs.ltt.jmap.mua.plugin;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import rs.ltt.jmap.common.entity.Email;
 
 public interface EmailBuildStagePlugin extends EventCallback {
-    @Nonnull
-    ListenableFuture<Email> onBuildEmail(final Email email);
+    @NonNull ListenableFuture<Email> onBuildEmail(final Email email);
 }

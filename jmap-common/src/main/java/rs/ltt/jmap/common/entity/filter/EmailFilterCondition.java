@@ -21,9 +21,9 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
 import java.time.Instant;
-import javax.annotation.Nonnull;
 import lombok.Builder;
 import lombok.Getter;
+import org.jspecify.annotations.NonNull;
 import rs.ltt.jmap.common.entity.Email;
 import rs.ltt.jmap.common.util.QueryStringUtils;
 
@@ -99,7 +99,7 @@ public class EmailFilterCondition implements FilterCondition<Email> {
     }
 
     @Override
-    public int compareTo(@Nonnull final Filter<Email> filter) {
+    public int compareTo(@NonNull final Filter<Email> filter) {
         if (filter instanceof EmailFilterCondition) {
             final EmailFilterCondition other = (EmailFilterCondition) filter;
             return ComparisonChain.start()

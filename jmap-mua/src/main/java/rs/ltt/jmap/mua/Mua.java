@@ -23,9 +23,9 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Collection;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import okhttp3.HttpUrl;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rs.ltt.jmap.client.JmapClient;
@@ -78,21 +78,21 @@ public class Mua extends MuaSession {
         return getService(MailboxService.class).createMailbox(mailbox);
     }
 
-    public ListenableFuture<Status> query(@Nonnull final EmailQuery query) {
+    public ListenableFuture<Status> query(@NonNull final EmailQuery query) {
         return getService(QueryService.class).query(query, null);
     }
 
-    public ListenableFuture<Status> query(@Nonnull final EmailQuery query, Boolean calculateTotal) {
+    public ListenableFuture<Status> query(@NonNull final EmailQuery query, Boolean calculateTotal) {
         return getService(QueryService.class).query(query, calculateTotal);
     }
 
     public ListenableFuture<Status> query(
-            @Nonnull final EmailQuery query, final String afterEmailId) {
+            @NonNull final EmailQuery query, final String afterEmailId) {
         return getService(QueryService.class).query(query, null, afterEmailId);
     }
 
     public ListenableFuture<Status> query(
-            @Nonnull final EmailQuery query, Boolean calculateTotal, final String afterEmailId) {
+            @NonNull final EmailQuery query, Boolean calculateTotal, final String afterEmailId) {
         return getService(QueryService.class).query(query, calculateTotal, afterEmailId);
     }
 
@@ -185,7 +185,7 @@ public class Mua extends MuaSession {
     }
 
     public ListenableFuture<Boolean> discardDraft(
-            final @Nonnull IdentifiableEmailWithKeywords email) {
+            final @NonNull IdentifiableEmailWithKeywords email) {
         return getService(EmailService.class).discardDraft(email);
     }
 
@@ -204,7 +204,7 @@ public class Mua extends MuaSession {
      * @return
      */
     public ListenableFuture<Boolean> copyToImportant(
-            @Nonnull final Collection<? extends IdentifiableEmailWithMailboxIds> emails) {
+            @NonNull final Collection<? extends IdentifiableEmailWithMailboxIds> emails) {
         return getService(EmailService.class).copyToImportant(emails);
     }
 
@@ -213,7 +213,7 @@ public class Mua extends MuaSession {
      * given mailbox. If a certain email of this collection is already in that mailbox it will be
      * skipped.
      *
-     * <p>This method is usually run as a 'add label' action.
+     * <p>This method is usually run as an 'add label' action.
      *
      * @param emails A collection of emails. Usually all messages in a thread
      * @param mailbox The mailbox those emails should be copied to.
@@ -288,7 +288,7 @@ public class Mua extends MuaSession {
      */
     public ListenableFuture<Boolean> removeFromMailbox(
             final Collection<? extends IdentifiableEmailWithMailboxIds> emails,
-            @Nonnull final Mailbox mailbox,
+            @NonNull final Mailbox mailbox,
             @Nullable final IdentifiableMailboxWithRole archive) {
         return getService(EmailService.class).removeFromMailbox(emails, mailbox, archive);
     }
@@ -325,7 +325,7 @@ public class Mua extends MuaSession {
         return getService(EmailService.class).emptyTrash();
     }
 
-    public ListenableFuture<Boolean> emptyTrash(@Nonnull IdentifiableMailboxWithRole trash) {
+    public ListenableFuture<Boolean> emptyTrash(@NonNull IdentifiableMailboxWithRole trash) {
         return getService(EmailService.class).emptyTrash(trash);
     }
 

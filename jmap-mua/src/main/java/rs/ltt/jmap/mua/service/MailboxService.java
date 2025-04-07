@@ -24,8 +24,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rs.ltt.jmap.client.JmapClient;
@@ -174,7 +174,7 @@ public class MailboxService extends AbstractMuaService {
      * @return
      */
     protected ListenableFuture<MethodResponses> createMailbox(
-            @Nonnull final Role role,
+            @NonNull final Role role,
             @Nullable ObjectsState objectsState,
             final JmapClient.MultiCall multiCall) {
         return createMailboxes(
@@ -184,7 +184,7 @@ public class MailboxService extends AbstractMuaService {
     }
 
     protected ListenableFuture<MethodResponses> createMailboxes(
-            @Nonnull Map<String, Mailbox> mailboxes,
+            @NonNull Map<String, Mailbox> mailboxes,
             @Nullable ObjectsState objectsState,
             final JmapClient.MultiCall multiCall) {
         final SetMailboxMethodCall setMailboxMethodCall =
@@ -208,7 +208,7 @@ public class MailboxService extends AbstractMuaService {
                 Futures.allAsList(futures), voids -> null, MoreExecutors.directExecutor());
     }
 
-    protected ListenableFuture<Void> ensureNoPreexistingMailbox(@Nonnull final Role role) {
+    protected ListenableFuture<Void> ensureNoPreexistingMailbox(@NonNull final Role role) {
         return Futures.transform(
                 ioExecutorService.submit(
                         () ->

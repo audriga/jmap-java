@@ -16,7 +16,7 @@
 
 package rs.ltt.jmap.client;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import rs.ltt.jmap.common.entity.filter.Filter;
 import rs.ltt.jmap.common.entity.filter.FilterCondition;
 
@@ -29,7 +29,7 @@ public class DummyFilterCondition implements FilterCondition<Dummy> {
     }
 
     @Override
-    public int compareTo(@Nonnull Filter<Dummy> dummyFilter) {
+    public int compareTo(@NonNull Filter<Dummy> dummyFilter) {
         return 0;
     }
 

@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
 import okhttp3.Credentials;
 import okhttp3.HttpUrl;
 import okhttp3.WebSocket;
@@ -44,6 +43,7 @@ import okio.Buffer;
 import okio.ByteString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 import rs.ltt.jmap.common.*;
 import rs.ltt.jmap.common.entity.*;
 import rs.ltt.jmap.common.entity.capability.CoreCapability;
@@ -175,7 +175,7 @@ public abstract class JmapDispatcher extends Dispatcher {
         return !this.pushEnabledWebSockets.isEmpty();
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public MockResponse dispatch(final RecordedRequest request) {
         final HttpUrl url = request.getRequestUrl();

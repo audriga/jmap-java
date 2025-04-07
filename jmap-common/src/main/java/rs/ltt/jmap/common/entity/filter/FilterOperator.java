@@ -18,7 +18,7 @@ package rs.ltt.jmap.common.entity.filter;
 
 import com.google.common.base.MoreObjects;
 import java.util.Arrays;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
 import rs.ltt.jmap.common.util.QueryStringUtils;
 
@@ -58,7 +58,7 @@ public class FilterOperator<T extends AbstractIdentifiableEntity> implements Fil
     }
 
     @Override
-    public int compareTo(@Nonnull Filter<T> filter) {
+    public int compareTo(@NonNull Filter<T> filter) {
         if (filter instanceof FilterOperator) {
             return 0;
         } else {

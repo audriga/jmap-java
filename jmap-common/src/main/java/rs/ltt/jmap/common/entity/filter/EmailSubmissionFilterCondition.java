@@ -18,9 +18,9 @@ package rs.ltt.jmap.common.entity.filter;
 
 import com.google.common.collect.ComparisonChain;
 import java.time.Instant;
-import javax.annotation.Nonnull;
 import lombok.Builder;
 import lombok.Getter;
+import org.jspecify.annotations.NonNull;
 import rs.ltt.jmap.common.entity.EmailSubmission;
 import rs.ltt.jmap.common.entity.UndoStatus;
 import rs.ltt.jmap.common.util.QueryStringUtils;
@@ -42,7 +42,7 @@ public class EmailSubmissionFilterCondition implements FilterCondition<EmailSubm
     private Instant after;
 
     @Override
-    public int compareTo(@Nonnull Filter<EmailSubmission> filter) {
+    public int compareTo(@NonNull Filter<EmailSubmission> filter) {
         if (filter instanceof EmailSubmissionFilterCondition) {
             final EmailSubmissionFilterCondition other = (EmailSubmissionFilterCondition) filter;
             return ComparisonChain.start()

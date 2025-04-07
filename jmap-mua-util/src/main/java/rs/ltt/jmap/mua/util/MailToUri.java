@@ -26,9 +26,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import lombok.*;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import rs.ltt.jmap.common.entity.EmailAddress;
 
 @Builder
@@ -67,12 +67,12 @@ public class MailToUri {
         }
     }
 
-    @Nonnull
+    @NonNull
     public static MailToUri get(final String input) throws IllegalArgumentException {
         return get(input, true);
     }
 
-    @Nonnull
+    @NonNull
     public static MailToUri get(final String input, final boolean stripNames)
             throws IllegalArgumentException {
         final int schemeDelimiter = input.indexOf(":");

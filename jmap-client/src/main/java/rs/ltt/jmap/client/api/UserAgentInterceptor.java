@@ -17,15 +17,15 @@
 package rs.ltt.jmap.client.api;
 
 import java.io.IOException;
-import javax.annotation.Nonnull;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.jspecify.annotations.NonNull;
 import rs.ltt.jmap.client.Version;
 
 public class UserAgentInterceptor implements Interceptor {
     @Override
-    @Nonnull
+    @NonNull
     public Response intercept(final Chain chain) throws IOException {
         final Request original = chain.request();
         final Request modified =

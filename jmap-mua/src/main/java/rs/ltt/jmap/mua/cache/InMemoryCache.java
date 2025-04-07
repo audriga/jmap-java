@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableList;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rs.ltt.jmap.common.entity.*;
@@ -54,7 +54,7 @@ public class InMemoryCache implements Cache {
     }
 
     @Override
-    @Nonnull
+    @NonNull
     public QueryStateWrapper getQueryState(String query) {
         synchronized (this.queryResults) {
             final String mailboxState = this.mailboxState;
@@ -84,7 +84,7 @@ public class InMemoryCache implements Cache {
         }
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public ObjectsState getObjectsState() {
         return new ObjectsState(mailboxState, threadState, emailState);

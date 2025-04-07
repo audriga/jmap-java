@@ -26,7 +26,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.io.*;
 import java.util.concurrent.Executors;
 import okhttp3.HttpUrl;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

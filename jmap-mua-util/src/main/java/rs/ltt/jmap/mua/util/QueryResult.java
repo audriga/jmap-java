@@ -26,7 +26,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import rs.ltt.jmap.client.MethodResponses;
 import rs.ltt.jmap.common.entity.AddedItem;
 import rs.ltt.jmap.common.entity.Email;
@@ -45,7 +45,7 @@ public class QueryResult {
     public final TypedState<Email> objectState;
 
     private QueryResult(
-            @Nonnull final QueryResultItem[] items,
+            @NonNull final QueryResultItem[] items,
             final TypedState<Email> queryState,
             final boolean canCalculateChanges,
             final long position,
@@ -59,7 +59,7 @@ public class QueryResult {
         this.objectState = objectState;
     }
 
-    @Nonnull
+    @NonNull
     public static ListenableFuture<QueryResult> of(
             final ListenableFuture<MethodResponses> queryResponsesFuture,
             final ListenableFuture<MethodResponses> getThreadIdsResponsesFuture) {

@@ -22,9 +22,9 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.io.Closeable;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import okhttp3.HttpUrl;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import rs.ltt.jmap.client.api.JmapApiClient;
 import rs.ltt.jmap.client.api.JmapApiClientFactory;
 import rs.ltt.jmap.client.api.SessionStateListener;
@@ -51,28 +51,28 @@ public class JmapClient implements Closeable {
     private final SessionStateListener sessionStateListener =
             new SessionStateListener() {
                 @Override
-                public void onSessionStateRetrieved(String sessionState) {
+                public void onSessionStateRetrieved(final String sessionState) {
                     sessionClient.setLatestSessionState(sessionState);
                 }
             };
     private JmapApiClient jmapApiClient;
     private boolean useWebSocket = false;
 
-    public JmapClient(String username, String password) {
+    public JmapClient(final String username, final String password) {
         this(new BasicAuthHttpAuthentication(username, password));
     }
 
-    public JmapClient(HttpAuthentication httpAuthentication) {
+    public JmapClient(final HttpAuthentication httpAuthentication) {
         this.authentication = httpAuthentication;
         this.sessionClient = new SessionClient(httpAuthentication);
         this.binaryDataClient = new BinaryDataClient(httpAuthentication);
     }
 
-    public JmapClient(String username, String password, HttpUrl base) {
-        this(new BasicAuthHttpAuthentication(username, password), base);
+    public JmapClient(final String username, final String password, final HttpUrl sessionResource) {
+        this(new BasicAuthHttpAuthentication(username, password), sessionResource);
     }
 
-    public JmapClient(HttpAuthentication httpAuthentication, HttpUrl sessionResource) {
+    public JmapClient(final HttpAuthentication httpAuthentication, final HttpUrl sessionResource) {
         this.authentication = httpAuthentication;
         this.sessionClient = new SessionClient(httpAuthentication, sessionResource);
         this.binaryDataClient = new BinaryDataClient(httpAuthentication);
@@ -105,7 +105,7 @@ public class JmapClient implements Closeable {
                     }
 
                     @Override
-                    public void onFailure(@Nonnull Throwable throwable) {
+                    public void onFailure(@NonNull Throwable throwable) {
                         request.setException(throwable);
                     }
                 },
@@ -214,8 +214,8 @@ public class JmapClient implements Closeable {
     }
 
     public ListenableFuture<Upload> upload(
-            @Nonnull final String accountId,
-            @Nonnull final Uploadable uploadable,
+            @NonNull final String accountId,
+            @NonNull final Uploadable uploadable,
             final Progress progress) {
         Preconditions.checkArgument(accountId != null, "accountId must not be null");
         Preconditions.checkArgument(uploadable != null, "Uploadable must not be null");

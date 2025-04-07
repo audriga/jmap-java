@@ -18,9 +18,9 @@ package rs.ltt.jmap.common.entity.filter;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
-import javax.annotation.Nonnull;
 import lombok.Builder;
 import lombok.Getter;
+import org.jspecify.annotations.NonNull;
 import rs.ltt.jmap.common.entity.Mailbox;
 import rs.ltt.jmap.common.entity.Role;
 import rs.ltt.jmap.common.util.QueryStringUtils;
@@ -40,7 +40,7 @@ public class MailboxFilterCondition implements FilterCondition<Mailbox> {
     private Boolean isSubscribed;
 
     @Override
-    public int compareTo(@Nonnull Filter<Mailbox> filter) {
+    public int compareTo(@NonNull Filter<Mailbox> filter) {
         if (filter instanceof MailboxFilterCondition) {
             final MailboxFilterCondition other = (MailboxFilterCondition) filter;
             return ComparisonChain.start()

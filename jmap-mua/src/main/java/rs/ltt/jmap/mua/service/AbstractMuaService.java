@@ -18,8 +18,8 @@ package rs.ltt.jmap.mua.service;
 
 import com.google.common.util.concurrent.*;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rs.ltt.jmap.client.JmapClient;
@@ -86,7 +86,7 @@ public abstract class AbstractMuaService {
                     }
 
                     @Override
-                    public void onFailure(@Nonnull Throwable throwable) {
+                    public void onFailure(@NonNull Throwable throwable) {
                         if (MethodErrorResponseException.matches(
                                 throwable, CannotCalculateChangesMethodErrorResponse.class)) {
                             runnable.run();

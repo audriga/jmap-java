@@ -17,8 +17,8 @@
 package rs.ltt.jmap.mua.cache;
 
 import java.util.Collection;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import rs.ltt.jmap.common.entity.*;
 import rs.ltt.jmap.common.entity.Thread;
 import rs.ltt.jmap.mua.cache.exception.CacheConflictException;
@@ -35,11 +35,9 @@ public interface Cache {
 
     String getMailboxState();
 
-    @Nonnull
-    QueryStateWrapper getQueryState(@Nullable String query);
+    @NonNull QueryStateWrapper getQueryState(@Nullable String query);
 
-    @Nonnull
-    ObjectsState getObjectsState();
+    @NonNull ObjectsState getObjectsState();
 
     void setMailboxes(TypedState<Mailbox> state, Mailbox[] mailboxes) throws CacheWriteException;
 

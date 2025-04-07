@@ -20,8 +20,8 @@ import com.google.common.util.concurrent.AbstractFuture;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import okhttp3.Call;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class SettableCallFuture<V> extends AbstractFuture<V> {
 
@@ -41,12 +41,12 @@ public class SettableCallFuture<V> extends AbstractFuture<V> {
     }
 
     @CanIgnoreReturnValue
-    public boolean setException(@NotNull Throwable throwable) {
+    public boolean setException(@NonNull Throwable throwable) {
         return super.setException(throwable);
     }
 
     @CanIgnoreReturnValue
-    public boolean setFuture(@NotNull ListenableFuture<? extends V> future) {
+    public boolean setFuture(@NonNull ListenableFuture<? extends V> future) {
         return super.setFuture(future);
     }
 

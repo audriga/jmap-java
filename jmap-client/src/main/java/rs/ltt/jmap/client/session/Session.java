@@ -22,8 +22,8 @@ import com.google.common.collect.Maps;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
-import javax.annotation.Nonnull;
 import okhttp3.HttpUrl;
+import org.jspecify.annotations.NonNull;
 import rs.ltt.jmap.client.event.CloseAfter;
 import rs.ltt.jmap.common.SessionResource;
 import rs.ltt.jmap.common.entity.*;
@@ -34,7 +34,7 @@ public class Session {
 
     private final SessionResource sessionResource;
 
-    public Session(@Nonnull HttpUrl base, @Nonnull SessionResource sessionResource) {
+    public Session(@NonNull HttpUrl base, @NonNull SessionResource sessionResource) {
         Preconditions.checkNotNull(base, "Base URL for session must not be null");
         Preconditions.checkNotNull(sessionResource, "Session Resource must not be null");
         this.base = base;
