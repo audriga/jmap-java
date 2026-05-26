@@ -1,10 +1,6 @@
 package rs.ltt.jmap.gson.adapter;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.TypeAdapter;
-import com.google.gson.TypeAdapterFactory;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -15,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
 import rs.ltt.jmap.gson.AtTypeSealedAdapterFactory;
@@ -39,16 +36,71 @@ public final class SumTypeAdapter<T> extends TypeAdapter<T> {
         TypeAdapter<T> adapterFor(String tag) throws JsonParseException;
     }
 
+    public static final class DynamicSource<T, D> implements VariantSource<T> {
+        private final BiFunction<String, D, T> constructor;
+        private final Function<T, String> tagFn;
+        private final Function<T, D> dataFn;
+        private final TypeAdapter<D> dataAdapter;
+
+        public DynamicSource(
+                BiFunction<String, D, T> constructor,
+                Function<T, String> tagFn,
+                Function<T, D> dataFn,
+                TypeAdapter<D> dataAdapter) {
+            this.constructor = constructor;
+            this.tagFn = tagFn;
+            this.dataFn = dataFn;
+            this.dataAdapter = dataAdapter;
+        }
+
+        @Override
+        public Variant<T> variantOf(T value) {
+            return new Variant<>(tagFn.apply(value), adapterFor(tagFn.apply(value)));
+        }
+
+        @Override
+        public TypeAdapter<T> adapterFor(String tag) throws JsonParseException {
+            return new TypeAdapter<>() {
+                @Override
+                public void write(JsonWriter out, T value) throws IOException {
+                    dataAdapter.write(out, dataFn.apply(value));
+                }
+
+                @Override
+                public T read(JsonReader in) throws IOException {
+                    return constructor.apply(tag, dataAdapter.read(in));
+                }
+            };
+        }
+    }
+
     public static final class SealedClassSource<T> implements VariantSource<T> {
         private final Class<? super T> base;
         private final Map<Class<?>, Variant<T>> variants;
         private final Map<String, TypeAdapter<T>> adapters;
+        private final VariantSource<T> fallback;
+
+        private final class ErrorFallback implements VariantSource<T> {
+            @Override
+            public Variant<T> variantOf(T value) {
+                throw new IllegalArgumentException("unexpected subtype " + value.getClass() + " of " + base.getName());
+            }
+
+            @Override
+            public TypeAdapter<T> adapterFor(String tag) throws JsonParseException {
+                throw new JsonParseException("invalid type tag '" + tag + "' for sealed class " + base.getName());
+            }
+        }
 
         private SealedClassSource(
-                Class<? super T> base, Map<Class<?>, Variant<T>> variants, Map<String, TypeAdapter<T>> adapters) {
+                Class<? super T> base,
+                Map<Class<?>, Variant<T>> variants,
+                Map<String, TypeAdapter<T>> adapters,
+                @Nullable VariantSource<T> fallback) {
             this.base = base;
             this.variants = Map.copyOf(variants);
             this.adapters = Map.copyOf(adapters);
+            this.fallback = fallback != null ? fallback : new ErrorFallback();
         }
 
         /**
@@ -64,7 +116,7 @@ public final class SumTypeAdapter<T> extends TypeAdapter<T> {
         public SumTypeAdapter.Variant<T> variantOf(T value) {
             var res = variants.get(value.getClass());
             if (res == null) {
-                throw new IllegalArgumentException("unexpected subtype " + value.getClass() + " of " + base.getName());
+                return fallback.variantOf(value);
             }
             return res;
         }
@@ -73,7 +125,7 @@ public final class SumTypeAdapter<T> extends TypeAdapter<T> {
         public TypeAdapter<T> adapterFor(String tag) throws JsonParseException {
             var res = adapters.get(tag);
             if (res == null) {
-                throw new JsonParseException("invalid type tag '" + tag + "' for sealed class " + base.getName());
+                return fallback.adapterFor(tag);
             }
             return res;
         }
@@ -85,12 +137,14 @@ public final class SumTypeAdapter<T> extends TypeAdapter<T> {
      * The intended use of this method is within a {@link TypeAdapterFactory}, where {@code null} should be passed on upwards to indicate a type not targeted by the respective factory.
      *
      * @param base        the base sealed class/interface; the generic variance is there to match {@link TypeToken#getRawType()}
-     * @param makeVariant a function which is called for every subclass to generate its variant; may throw {@link IllegalArgumentException} if the subclass is invalid
+     * @param makeVariant a function which is called for every subclass to generate its variant; may throw {@link IllegalArgumentException} if the subclass is invalid, or return {@code null} to skip the subclass
      * @return a {@link SealedClassSource} for the given base type, or {@code null} if the type is not targeted
      * @throws IllegalArgumentException if the base type is targeted, but invalid
      */
     public static <T> @Nullable SealedClassSource<T> sealedClassSource(
-            Class<? super T> base, Function<Class<?>, Variant<T>> makeVariant) {
+            Class<? super T> base,
+            Function<Class<?>, @Nullable Variant<T>> makeVariant,
+            @Nullable VariantSource<T> fallback) {
         var subclasses = base.getPermittedSubclasses();
         // not a sealed class, invalid for this adapter
         if (subclasses == null) return null;
@@ -106,6 +160,7 @@ public final class SumTypeAdapter<T> extends TypeAdapter<T> {
         var adapters = new HashMap<String, TypeAdapter<T>>();
         for (var sub : subclasses) {
             var variant = makeVariant.apply(sub);
+            if (variant == null) continue;
             if (adapters.put(variant.tag, variant.adapter) != null) {
                 var other = variants.entrySet().stream()
                         .filter(e -> e.getValue().tag().equals(variant.tag))
@@ -117,7 +172,7 @@ public final class SumTypeAdapter<T> extends TypeAdapter<T> {
             }
             variants.put(sub, variant);
         }
-        return new SealedClassSource<>(base, variants, adapters);
+        return new SealedClassSource<>(base, variants, adapters, fallback);
     }
 
     private final VariantSource<T> source;
@@ -146,7 +201,7 @@ public final class SumTypeAdapter<T> extends TypeAdapter<T> {
             variant.adapter().write(out, value);
         } else if (tagRepr instanceof TagRepr.Internal internal) {
             var object = variant.adapter().toJsonTree(value).getAsJsonObject();
-            var existing = object.remove(internal.property());
+            var existing = object.get(internal.property());
             // accept already present tag if it matches ours, fail otherwise
             if (existing != null
                     && !(existing instanceof JsonPrimitive primitive
@@ -160,8 +215,11 @@ public final class SumTypeAdapter<T> extends TypeAdapter<T> {
             out.name(internal.property());
             out.value(variant.tag());
             for (var entry : object.entrySet()) {
-                out.name(entry.getKey());
-                jsonElementAdapter.write(out, entry.getValue());
+                // don't serialize tag again
+                if (!entry.getKey().equals(internal.property())) {
+                    out.name(entry.getKey());
+                    jsonElementAdapter.write(out, entry.getValue());
+                }
             }
         } else throw new AssertionError();
         out.endObject();

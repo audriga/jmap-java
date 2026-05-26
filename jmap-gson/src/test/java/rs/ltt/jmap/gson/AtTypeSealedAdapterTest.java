@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
@@ -45,7 +46,11 @@ final class AtTypeSealedAdapterTest extends AbstractGsonTest {
     void withDefault() throws IOException {
         var listType = new TypeToken<List<WithDefault>>() {};
         JsonElement json = parseFromResource("sealed/at-type-default.json", JsonElement.class);
-        var objects = List.of(new WithDefault.A(3), new WithDefault.B(4), new WithDefault.B(5));
+        var cData = new JsonObject();
+        cData.addProperty("@type", "foo");
+        cData.addProperty("y", "~!");
+        var objects = List.of(
+                new WithDefault.A(3), new WithDefault.B(4), new WithDefault.B(5), new WithDefault.C("foo", cData));
         assertEquals(objects, gson.fromJson(json, listType));
         json.getAsJsonArray().get(2).getAsJsonObject().addProperty("@type", "B");
         assertEquals(json, gson.toJsonTree(objects, listType.getType()));
@@ -70,5 +75,7 @@ final class AtTypeSealedAdapterTest extends AbstractGsonTest {
 
         @Type
         record B(int x) implements WithDefault {}
+
+        record C(String type, JsonObject data) implements WithDefault, Type.Dynamic<JsonObject> {}
     }
 }

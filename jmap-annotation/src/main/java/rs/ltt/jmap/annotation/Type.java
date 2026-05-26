@@ -32,4 +32,10 @@ public @interface Type {
      * @return the {@code @type} value, or the empty string for default behavior
      */
     String value() default "";
+
+    interface Dynamic<D> {
+        String type();
+
+        D data();
+    }
 }
