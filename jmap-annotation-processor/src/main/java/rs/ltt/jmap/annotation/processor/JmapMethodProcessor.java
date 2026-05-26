@@ -95,8 +95,10 @@ public class JmapMethodProcessor extends AbstractProcessor {
             PrintWriter printWriter = new PrintWriter(resourceFile.openOutputStream());
             for (TypeElement typeElement : classes) {
                 JmapMethod annotation = typeElement.getAnnotation(JmapMethod.class);
-                printWriter.println(
-                        String.format("%s %s", typeElement.getQualifiedName(), annotation.value()));
+                printWriter.format(
+                        "%s %s%n",
+                        processingEnv.getElementUtils().getBinaryName(typeElement),
+                        annotation.value());
             }
             printWriter.flush();
             printWriter.close();

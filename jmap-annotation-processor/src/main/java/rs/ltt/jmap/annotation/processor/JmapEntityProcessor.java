@@ -108,7 +108,8 @@ public class JmapEntityProcessor extends AbstractProcessor {
             } else {
                 name = annotation.name();
             }
-            printWriter.println(String.format("%s %s", typeElement.getQualifiedName(), name));
+            printWriter.format(
+                    "%s %s%n", processingEnv.getElementUtils().getBinaryName(typeElement), name);
         }
         printWriter.flush();
         printWriter.close();
@@ -131,7 +132,9 @@ public class JmapEntityProcessor extends AbstractProcessor {
                 continue;
             }
             System.out.println(typeMirror);
-            printWriter.println(String.format("%s %s", typeElement.getQualifiedName(), typeMirror));
+            printWriter.format(
+                    "%s %s%n",
+                    processingEnv.getElementUtils().getBinaryName(typeElement), typeMirror);
         }
         printWriter.flush();
         printWriter.close();

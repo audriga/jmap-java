@@ -92,9 +92,10 @@ public class JmapCapabilityProcessor extends AbstractProcessor {
             PrintWriter printWriter = new PrintWriter(resourceFile.openOutputStream());
             for (TypeElement typeElement : classes) {
                 JmapCapability annotation = typeElement.getAnnotation(JmapCapability.class);
-                printWriter.println(
-                        String.format(
-                                "%s %s", typeElement.getQualifiedName(), annotation.namespace()));
+                printWriter.format(
+                        "%s %s%n",
+                        processingEnv.getElementUtils().getBinaryName(typeElement),
+                        annotation.namespace());
             }
             printWriter.flush();
             printWriter.close();

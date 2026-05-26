@@ -93,9 +93,10 @@ public class JmapAccountCapabilityProcessor extends AbstractProcessor {
             for (TypeElement typeElement : classes) {
                 JmapAccountCapability annotation =
                         typeElement.getAnnotation(JmapAccountCapability.class);
-                printWriter.println(
-                        String.format(
-                                "%s %s", typeElement.getQualifiedName(), annotation.namespace()));
+                printWriter.format(
+                        "%s %s%n",
+                        processingEnv.getElementUtils().getBinaryName(typeElement),
+                        annotation.namespace());
             }
             printWriter.flush();
             printWriter.close();
