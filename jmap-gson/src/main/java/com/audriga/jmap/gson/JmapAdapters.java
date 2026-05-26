@@ -37,6 +37,7 @@ public final class JmapAdapters {
         DateTimePeriodTypeAdapter.register(builder);
         DurationAsMillisAdapter.register(builder);
         OffsetDateTimeTypeAdapter.register(builder);
+        ZoneIdTypeAdapter.register(builder);
         ResultReferenceTypeAdapter.register(builder);
         PatchObjectNullTypeAdapter.register(builder);
         TypeStateMapAdapter.register(builder);

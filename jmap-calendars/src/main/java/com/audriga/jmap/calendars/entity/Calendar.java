@@ -4,6 +4,7 @@ import com.audriga.jmap.annotation.Default;
 import com.audriga.jmap.annotation.Immutable;
 import com.audriga.jmap.annotation.ServerSet;
 import com.audriga.jmap.common.entity.Identifiable;
+import java.time.ZoneId;
 import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
@@ -19,7 +20,7 @@ public record Calendar(
         String includeInAvailability,
         @Nullable Map<String, Alert> defaultAlertsWithTime,
         @Nullable Map<String, Alert> defaultAlertsWithoutTime,
-        @Nullable String timeZone,
+        @Nullable ZoneId timeZone,
         @Nullable Map<String, CalendarRights> shareWith,
         @ServerSet CalendarRights myRights)
         implements Identifiable {}

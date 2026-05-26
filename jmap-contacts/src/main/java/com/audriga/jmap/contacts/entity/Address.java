@@ -3,6 +3,7 @@ package com.audriga.jmap.contacts.entity;
 import com.audriga.jmap.annotation.Default;
 import com.audriga.jmap.annotation.Type;
 import java.net.URI;
+import java.time.ZoneId;
 import java.util.List;
 import org.jspecify.annotations.Nullable;
 
@@ -12,7 +13,7 @@ public record Address(
         @Default("false") boolean isOrdered,
         @Nullable String countryCode,
         @Nullable URI coordinates,
-        @Nullable String timeZone,
+        @Nullable ZoneId timeZone,
         @Nullable Contexts contexts,
         @Nullable String full,
         @Nullable String defaultSeparator,

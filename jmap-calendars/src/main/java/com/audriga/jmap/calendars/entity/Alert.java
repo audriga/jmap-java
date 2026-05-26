@@ -7,17 +7,22 @@ import com.audriga.jmap.common.DateTimePeriod;
 import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import java.time.Instant;
+import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
 @Type
-public record Alert(Trigger trigger, @Nullable Instant acknowledged) {
+public record Alert(
+        Trigger trigger,
+        @Nullable Instant acknowledged,
+        Map<String, CalendarRelation> relatedTo,
+        @Default("\"display\"") String action) {
     @Type("OffsetTrigger")
     public sealed interface Trigger {}
 
     @Type
     public record OffsetTrigger(
             DateTimePeriod offset, @Default("\"start\"") RelativeTo relativeTo) implements Trigger {
-        enum RelativeTo {
+        public enum RelativeTo {
             @SerializedName("start")
             START,
             @SerializedName("end")

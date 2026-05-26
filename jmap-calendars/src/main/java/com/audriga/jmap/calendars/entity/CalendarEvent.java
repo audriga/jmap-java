@@ -9,12 +9,13 @@ import com.audriga.jmap.common.entity.Identifiable;
 import java.net.URI;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Map;
 import java.util.Set;
 import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 
-@Builder
+@Builder(toBuilder = true)
 @Type("Event")
 public record CalendarEvent(
         // JMAP Additions
@@ -49,7 +50,7 @@ public record CalendarEvent(
         @Nullable String color,
         // Recurrence
         @Nullable LocalDateTime recurrenceId,
-        @Nullable String recurrenceIdTimeZone,
+        @Nullable ZoneId recurrenceIdTimeZone,
         @Nullable RecurrenceRule recurrenceRule,
         @Nullable Map<LocalDateTime, Map<String, Object>> recurrenceOverrides,
         // Sharing and Scheduling
@@ -61,10 +62,10 @@ public record CalendarEvent(
         // Alerts
         @Nullable Map<String, Alert> alerts,
         // Time Zone
-        @Nullable String timeZone,
+        @Nullable ZoneId timeZone,
         // Event
         LocalDateTime start,
         @Default("\"PT0S\"") DateTimePeriod duration,
-        @Nullable String endTimeZone,
+        @Nullable ZoneId endTimeZone,
         @Default("\"confirmed\"") String status)
         implements Identifiable {}
