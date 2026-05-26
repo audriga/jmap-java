@@ -6,13 +6,15 @@ import java.util.Map;
 import java.util.Set;
 import org.jspecify.annotations.Nullable;
 import rs.ltt.jmap.annotation.Default;
+import rs.ltt.jmap.annotation.Immutable;
+import rs.ltt.jmap.annotation.ServerSet;
 import rs.ltt.jmap.annotation.Type;
 import rs.ltt.jmap.common.entity.IdentifiableRecord;
 
 @Type("Card")
 public record ContactCard(
         // JMAP Additions
-        String id,
+        @Immutable @ServerSet String id,
         Set<String> addressBookIds,
         // Metadata
         String version,
