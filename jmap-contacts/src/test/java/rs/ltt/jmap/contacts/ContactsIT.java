@@ -2,13 +2,15 @@ package rs.ltt.jmap.contacts;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.Test;
 import rs.ltt.jmap.client.ConnectionConfig;
 import rs.ltt.jmap.client.JmapClient;
 import rs.ltt.jmap.client.http.BasicAuthHttpAuthentication;
-import rs.ltt.jmap.contacts.method.QueryContactCardCall;
-import rs.ltt.jmap.contacts.method.QueryContactCardResponse;
+import rs.ltt.jmap.contacts.entity.ContactCard;
+import rs.ltt.jmap.contacts.method.*;
 
 class ContactsIT {
     @Test
@@ -21,10 +23,41 @@ class ContactsIT {
                     InsecureX509TrustManager.INSTANCE))) {
                 var session = client.getSession().get();
                 var accountId = session.getPrimaryAccount(ContactsAccountCapability.class);
-                var res = client.call(new QueryContactCardCall(accountId, null, null, null, null, null, null, true))
-                        .get()
-                        .getMain(QueryContactCardResponse.class);
-                assertEquals(0, res.getTotal());
+                {
+                    var res = client.call(new QueryContactCardCall(accountId, null, null, null, null, null, null, true))
+                            .get()
+                            .getMain(QueryContactCardResponse.class);
+                    assertEquals(0, res.getTotal());
+                }
+                {
+                    var res = client.call(new SetContactCardCall(
+                                    accountId,
+                                    null,
+                                    Map.of(
+                                            "a",
+                                            new ContactCard(
+                                                    null, Set.of(), null, null, null, null, null, null, null, null,
+                                                    null, null, null, null, null, null, null, null, null, null, null,
+                                                    null, null, null, null, null, null, null, null, null, null, null)),
+                                    null,
+                                    null,
+                                    null))
+                            .get()
+                            .getMain(SetContactCardResponse.class);
+                    assertNull(res.getDestroyed());
+                    assertNull(res.getUpdated());
+                    assertNull(res.getNotCreated());
+                    assertNull(res.getNotDestroyed());
+                    assertNull(res.getNotUpdated());
+                    assertEquals(1, res.getCreated().size());
+                    var created = res.getCreated().entrySet().iterator().next();
+                    assertEquals(
+                            new ContactCard(
+                                    null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                                    null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                                    null, null, null, null),
+                            created.getValue());
+                }
             }
         }
     }
