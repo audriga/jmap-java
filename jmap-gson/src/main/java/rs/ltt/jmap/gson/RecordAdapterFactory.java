@@ -56,9 +56,13 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                     var defaultJson = Annotations.get(c, Default.class)
                             .map(a -> gson.fromJson(a.value(), JsonElement.class))
                             .orElse(null);
-                    var nullable = Annotations.getTypeUse(c, Nullable.class).isPresent();
+                    if (defaultJson != null && inline) {
+                        throw new IllegalArgumentException("record component " + raw + "." + c.getName()
+                                + " cannot be marked @Inline and have a @Default value at the same time");
+                    }
+                    var nullable = Annotations.get(c, Nullable.class).isPresent();
                     if (nullable && c.getType().isPrimitive()) {
-                        throw new IllegalStateException("record component " + raw.getName() + "." + c.getName()
+                        throw new IllegalArgumentException("record component " + raw.getName() + "." + c.getName()
                                 + " is marked nullable but has primitive type");
                     }
                     return new Component(name, c.getType(), adapter, accessor, inline, defaultJson, nullable);
@@ -66,7 +70,7 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                 .toList();
         var componentNames = components.stream().map(Component::name).collect(Collectors.toUnmodifiableSet());
         if (componentNames.size() != components.size()) {
-            throw new IllegalStateException(
+            throw new IllegalArgumentException(
                     "record " + raw.getName() + " has components with duplicate serialized name");
         }
         var nameToIndex = indexMap(components, Component::name);
@@ -81,46 +85,33 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
         try {
             ctor = LOOKUP.findConstructor(raw, ctorType);
         } catch (IllegalAccessException | NoSuchMethodException e) {
-            throw new IllegalStateException("failed to find primary record constructor for " + raw.getName(), e);
+            throw new IllegalArgumentException("failed to find primary record constructor for " + raw.getName(), e);
         }
 
         var jsonElementAdapter = gson.getAdapter(JsonElement.class);
-
-        class NameWriter {
-            private final JsonWriter out;
-            private final Set<String> names;
-
-            NameWriter(JsonWriter out, Set<String> names) {
-                this.out = out;
-                this.names = new HashSet<>(names);
-            }
-
-            void name(String name) throws IOException {
-                if (!names.add(name)) {
-                    throw new IllegalStateException("encountered duplicate name " + name);
-                }
-                out.name(name);
-            }
-        }
 
         return new TypeAdapter<T>() {
             @Override
             public void write(JsonWriter out, T value) throws IOException {
                 out.beginObject();
-                var nameWriter = new NameWriter(out, componentNames);
+                var names = new HashSet<>(componentNames);
                 for (var component : components) {
                     if (component.inline) {
                         var tree = component
                                 .adapter
-                                .toJsonTree(GsonUtils.invoke(component.accessor))
+                                .toJsonTree(GsonUtils.invoke(component.accessor, value))
                                 .getAsJsonObject();
                         for (var entry : tree.entrySet()) {
-                            nameWriter.name(entry.getKey());
+                            var name = entry.getKey();
+                            if (!names.add(name)) {
+                                throw new IllegalArgumentException("encountered duplicate name " + name);
+                            }
+                            out.name(name);
                             jsonElementAdapter.write(out, entry.getValue());
                         }
                     } else {
-                        nameWriter.name(component.name);
-                        component.adapter.write(out, GsonUtils.invoke(component.accessor));
+                        out.name(component.name);
+                        component.adapter.write(out, GsonUtils.invoke(component.accessor, value));
                     }
                 }
                 out.endObject();
@@ -132,9 +123,7 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                 Arrays.fill(fields, EMPTY_SLOT);
                 if (needsFlatten) {
                     var tree = jsonElementAdapter.read(in).getAsJsonObject();
-                    var it = tree.entrySet().iterator();
-                    while (it.hasNext()) {
-                        var entry = it.next();
+                    for (var entry : tree.entrySet()) {
                         var index = nameToIndex.get(entry.getKey());
                         if (index == null) continue;
                         var comp = components.get(index);
@@ -143,8 +132,6 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                             throw new JsonParseException("encountered duplicate name '" + entry.getKey() + "'");
                         }
                         fields[index] = comp.adapter.fromJsonTree(entry.getValue());
-                        // processed, remove from tree
-                        it.remove();
                     }
                     for (int i = 0; i < fields.length; ++i) {
                         var comp = components.get(i);
@@ -156,7 +143,10 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                     while (in.peek() != JsonToken.END_OBJECT) {
                         var name = in.nextName();
                         var index = nameToIndex.get(name);
-                        if (index == null) continue;
+                        if (index == null) {
+                            in.skipValue();
+                            continue;
+                        }
                         if (fields[index] != EMPTY_SLOT) {
                             throw new JsonParseException("encountered duplicate name '" + name + "'");
                         }

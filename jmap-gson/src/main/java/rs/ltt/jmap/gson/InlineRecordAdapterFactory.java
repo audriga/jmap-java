@@ -21,9 +21,9 @@ public class InlineRecordAdapterFactory implements TypeAdapterFactory {
         if (!raw.isAnnotationPresent(Inline.class)) return null;
         var components = raw.getRecordComponents();
         if (components == null) {
-            throw new IllegalStateException("@Inline is only permitted on record classes, got " + raw.getName());
+            throw new IllegalArgumentException("@Inline is only permitted on record classes, got " + raw.getName());
         } else if (components.length != 1) {
-            throw new IllegalStateException(
+            throw new IllegalArgumentException(
                     "cannot inline record class " + raw.getName() + " because it doesn't have exactly one component");
         }
         var component = components[0];
@@ -31,16 +31,16 @@ public class InlineRecordAdapterFactory implements TypeAdapterFactory {
         try {
             ctor = LOOKUP.findConstructor(raw, MethodType.methodType(void.class, component.getType()));
         } catch (IllegalAccessException | NoSuchMethodException e) {
-            throw new IllegalStateException("failed to find primary record constructor for " + raw.getName(), e);
+            throw new IllegalArgumentException("failed to find primary record constructor for " + raw.getName(), e);
         }
         MethodHandle accessor;
         try {
             accessor = LOOKUP.unreflect(component.getAccessor());
         } catch (IllegalAccessException e) {
-            throw new IllegalStateException("failed to unreflect record accessor for " + raw.getName(), e);
+            throw new IllegalArgumentException("failed to unreflect record accessor for " + raw.getName(), e);
         }
         if (component.getType() == raw) {
-            throw new IllegalStateException("cannot inline recursive record " + raw);
+            throw new IllegalArgumentException("cannot inline recursive record " + raw);
         }
         @SuppressWarnings("unchecked")
         var adapter = (TypeAdapter<Object>) gson.getAdapter(TypeToken.get(component.getGenericType()));
