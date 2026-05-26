@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
@@ -181,14 +182,11 @@ public final class SumTypeAdapter<T> extends TypeAdapter<T> {
             return value;
         } else if (tagRepr instanceof TagRepr.Internal internal) {
             var object = jsonElementAdapter.read(in).getAsJsonObject();
-            String tag;
-            if (object.has(internal.property())) {
-                tag = object.remove(internal.property()).getAsString();
-            } else if (internal.defaultTag() != null) {
-                tag = internal.defaultTag();
-            } else {
-                throw new JsonParseException("missing tag property '" + internal.property() + "' for " + object);
-            }
+            String tag = Optional.ofNullable(object.get(internal.property()))
+                    .map(JsonElement::getAsString)
+                    .or(() -> Optional.ofNullable(internal.defaultTag()))
+                    .orElseThrow(() ->
+                            new JsonParseException("missing tag property '" + internal.property() + "' for " + object));
             return source.adapterFor(tag).fromJsonTree(object);
         } else throw new AssertionError();
     }

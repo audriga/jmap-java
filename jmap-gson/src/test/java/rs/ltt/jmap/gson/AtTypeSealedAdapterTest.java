@@ -47,6 +47,7 @@ final class AtTypeSealedAdapterTest extends AbstractGsonTest {
         JsonElement json = parseFromResource("sealed/at-type-default.json", JsonElement.class);
         var objects = List.of(new WithDefault.A(3), new WithDefault.B(4), new WithDefault.B(5));
         assertEquals(objects, gson.fromJson(json, listType));
+        json.getAsJsonArray().get(2).getAsJsonObject().addProperty("@type", "B");
         assertEquals(json, gson.toJsonTree(objects, listType.getType()));
     }
 
