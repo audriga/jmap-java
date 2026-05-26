@@ -17,6 +17,11 @@
 package rs.ltt.jmap.common.entity;
 
 public interface Identifiable {
+    default String id() {
+        return getId();
+    }
 
-    String getId();
+    default String getId() {
+        return id();
+    }
 }
