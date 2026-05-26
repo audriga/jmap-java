@@ -81,12 +81,14 @@ public class Request {
         }
 
         public static class ResultReference {
-
             private final String id;
             private final Class<? extends MethodCall> clazz;
             private final String path;
 
-            private ResultReference(String id, Class<? extends MethodCall> clazz, String path) {
+            /**
+             * Internal constructor, only exposed for use by jmap-gson when deserializing.
+             */
+            public ResultReference(String id, Class<? extends MethodCall> clazz, String path) {
                 this.id = id;
                 this.clazz = clazz;
                 this.path = path;

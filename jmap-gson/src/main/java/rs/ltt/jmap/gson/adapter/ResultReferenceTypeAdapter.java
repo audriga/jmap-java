@@ -21,8 +21,6 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import rs.ltt.jmap.common.Request;
 import rs.ltt.jmap.common.util.Mapper;
 
@@ -66,19 +64,6 @@ public class ResultReferenceTypeAdapter extends TypeAdapter<Request.Invocation.R
             }
         }
         jsonReader.endObject();
-        try {
-
-            Constructor<Request.Invocation.ResultReference> constructor =
-                    Request.Invocation.ResultReference.class.getDeclaredConstructor(
-                            String.class, Class.class, String.class);
-            constructor.setAccessible(true);
-            return constructor.newInstance(id, Mapper.METHOD_CALLS.get(name), path);
-        } catch (NoSuchMethodException
-                | InstantiationException
-                | IllegalAccessException
-                | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return new Request.Invocation.ResultReference(id, Mapper.METHOD_CALLS.get(name), path);
     }
 }
