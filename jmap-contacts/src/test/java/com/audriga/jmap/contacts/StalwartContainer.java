@@ -33,7 +33,7 @@ public final class StalwartContainer extends GenericContainer<StalwartContainer>
         database =
                 new PostgreSQLContainer("postgres:18").withNetwork(getNetwork()).withNetworkAliases("postgres");
         dependsOn(database);
-        waitingFor(Wait.forHttps("/.well-known/jmap").allowInsecure());
+        waitingFor(Wait.forHttps("/.well-known/jmap").forPort(443).allowInsecure());
     }
 
     public static StalwartContainer forTag(String tag) {
