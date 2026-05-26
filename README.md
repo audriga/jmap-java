@@ -1,16 +1,17 @@
 # Java JMAP library
 
-[![Apache 2.0 License](https://img.shields.io/github/license/inputmice/jmap?color=informational)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
+[![Apache 2.0 License](https://img.shields.io/github/license/audriga/jmap-java?color=informational)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 [![status-badge](https://ci.codeberg.org/api/badges/12402/status.svg)](https://ci.codeberg.org/repos/12402)
 [![Maven Central](https://img.shields.io/maven-central/v/com.audriga.jmap/jmap.svg?label=Maven%20Central&color=informational)](https://search.maven.org/search?q=g:%22com.audriga.jmap%22%20AND%20a:%22jmap%22)
-[![Liberapay patrons](https://img.shields.io/liberapay/patrons/inputmice?logo=liberapay&style=flat&color=informational)](https://liberapay.com/iNPUTmice)
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/inputmice?label=GitHub%20Sponsors)](https://github.com/sponsors/iNPUTmice/)
+
+> [!NOTE]
+> This is a fork of the [original project](https://codeberg.org/iNPUTmice/jmap) by [Daniel Gultsch](https://gultsch.de/).
 
 A library to synchronize data between a client and a server using the JSON Meta Application Protocol.
 The current focus is on acting as a client library to retrieve emails from a server however it is easily extensible to also synchronize contacts and calendars.
 It might even be extended to act as a server library.
 
-The library is written in Java 8 to provide full compatibility with Android.
+The library requires a minimum Java version of 17, which provides compatibility with Android 14+.
 It uses [GSON](https://github.com/google/gson) for JSON serialization and deserialization and makes heavy use of [Guava](https://github.com/google/guava) including its Futures.
 
 Entities (Mailbox, Email, EmailSubmission, …) and method calls are annotated with Project Lombok’s `@Getter` and `@Builder` to make them immutable.
@@ -24,7 +25,7 @@ Adding a new method is as simple as looking at the spec and creating a POJO that
 ## Modules
 
 The library is divided into separate modules.
-*Most people will probably want to use the [jmap-client](https://github.com/iNPUTmice/jmap/blob/master/README.md#jmap-client) module.*
+*Most people will probably want to use the [jmap-client](#jmap-client) module.*
 
 ### jmap-annotation
 
@@ -168,9 +169,3 @@ Maven:
   <version>0.8.18</version>
 </dependency>
 ```
-
-#### Users
-
-jmap-mua serves as the backend for:
-*  [Ltt.rs for Unix](https://github.com/inputmice/lttrs-cli)
-*  [Ltt.rs for Android](https://codeberg.org/inputmice/lttrs-android).
