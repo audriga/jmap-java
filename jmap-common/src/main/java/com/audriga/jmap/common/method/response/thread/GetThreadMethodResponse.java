@@ -19,12 +19,11 @@ package com.audriga.jmap.common.method.response.thread;
 import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.entity.Thread;
 import com.audriga.jmap.common.method.response.standard.GetMethodResponse;
-import lombok.Builder;
 
 @JmapMethod("Thread/get")
 public class GetThreadMethodResponse extends GetMethodResponse<Thread> {
 
-    @Builder
+    @lombok.Builder
     public GetThreadMethodResponse(String accountId, String state, String[] notFound, Thread[] list) {
         super(accountId, state, notFound, list);
     }

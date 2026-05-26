@@ -18,7 +18,6 @@ package com.audriga.jmap.common.websocket;
 
 import com.audriga.jmap.common.Response;
 import com.google.common.base.MoreObjects;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -27,7 +26,7 @@ public class ResponseWebSocketMessage extends AbstractApiWebSocketMessage {
     private Response response;
     private String requestId;
 
-    @Builder
+    @lombok.Builder
     public ResponseWebSocketMessage(final String requestId, Response response) {
         this.requestId = requestId;
         this.response = response;

@@ -21,12 +21,11 @@ import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.entity.Email;
 import com.audriga.jmap.common.method.call.standard.SetMethodCall;
 import java.util.Map;
-import lombok.Builder;
 
 @JmapMethod("Email/set")
 public class SetEmailMethodCall extends SetMethodCall<Email> {
 
-    @Builder
+    @lombok.Builder
     public SetEmailMethodCall(
             String accountId,
             String ifInState,

@@ -19,14 +19,13 @@ package com.audriga.jmap.common.method.response.mailbox;
 import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.entity.Mailbox;
 import com.audriga.jmap.common.method.response.standard.ChangesMethodResponse;
-import lombok.Builder;
 
 @JmapMethod("Mailbox/changes")
 public class ChangesMailboxMethodResponse extends ChangesMethodResponse<Mailbox> {
 
     private String[] updatedProperties;
 
-    @Builder
+    @lombok.Builder
     public ChangesMailboxMethodResponse(
             String accountId,
             String oldState,

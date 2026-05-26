@@ -18,11 +18,10 @@ package com.audriga.jmap.common.websocket;
 
 import com.audriga.jmap.annotation.Type;
 import java.util.List;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
 
-@Builder
+@lombok.Builder
 @Getter
 @Type("WebSocketPushEnable")
 public class PushEnableWebSocketMessage implements WebSocketMessage {

@@ -18,12 +18,11 @@ package com.audriga.jmap.common.entity;
 
 import com.audriga.jmap.annotation.Type;
 import com.google.common.base.MoreObjects;
-import lombok.Builder;
 import lombok.Getter;
 
 @Type
 @Getter
-@Builder
+@lombok.Builder
 public class PushVerification implements PushMessage {
 
     private String pushSubscriptionId;

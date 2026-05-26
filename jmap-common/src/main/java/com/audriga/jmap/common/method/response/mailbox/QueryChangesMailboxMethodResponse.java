@@ -21,12 +21,11 @@ import com.audriga.jmap.common.entity.AddedItem;
 import com.audriga.jmap.common.entity.Mailbox;
 import com.audriga.jmap.common.method.response.standard.QueryChangesMethodResponse;
 import java.util.List;
-import lombok.Builder;
 
 @JmapMethod("Mailbox/queryChanges")
 public class QueryChangesMailboxMethodResponse extends QueryChangesMethodResponse<Mailbox> {
 
-    @Builder
+    @lombok.Builder
     public QueryChangesMailboxMethodResponse(
             String accountId,
             String oldQueryState,

@@ -1,8 +1,6 @@
 package com.audriga.jmap.calendars.entity;
 
-import lombok.Builder;
-
-@Builder(toBuilder = true)
+@lombok.Builder(toBuilder = true)
 public record CalendarRights(
         boolean mayReadFreeBusy,
         boolean mayReadItems,

@@ -20,12 +20,11 @@ import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.entity.Thread;
 import com.audriga.jmap.common.method.call.standard.GetMethodCall;
-import lombok.Builder;
 
 @JmapMethod("Thread/get")
 public class GetThreadMethodCall extends GetMethodCall<Thread> {
 
-    @Builder
+    @lombok.Builder
     public GetThreadMethodCall(
             String accountId, String[] ids, String[] properties, Request.Invocation.ResultReference idsReference) {
         super(accountId, ids, properties, idsReference);

@@ -17,8 +17,7 @@
 package com.audriga.jmap.common.websocket;
 
 import com.audriga.jmap.annotation.Type;
-import lombok.Builder;
 
-@Builder
+@lombok.Builder
 @Type("WebSocketPushDisable")
 public class PushDisableWebSocketMessage implements WebSocketMessage {}

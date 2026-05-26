@@ -18,11 +18,10 @@ package com.audriga.jmap.common.entity;
 
 import com.audriga.jmap.annotation.JmapEntity;
 import java.time.Instant;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder(toBuilder = true)
+@lombok.Builder(toBuilder = true)
 @JmapEntity
 public class VacationResponse extends AbstractIdentifiableEntity {
 

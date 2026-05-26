@@ -17,11 +17,10 @@
 package com.audriga.jmap.common.entity;
 
 import java.util.List;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
 
-@Builder
+@lombok.Builder
 @Getter
 public class Envelope {
 

@@ -18,7 +18,6 @@ package com.audriga.jmap.common.method.response.core;
 
 import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.method.MethodResponse;
-import lombok.Builder;
 import lombok.Getter;
 
 @JmapMethod("Core/echo")
@@ -27,7 +26,7 @@ public final class EchoMethodResponse implements MethodResponse {
 
     private String libraryName;
 
-    @Builder
+    @lombok.Builder
     public EchoMethodResponse(final String libraryName) {
         this.libraryName = libraryName;
     }

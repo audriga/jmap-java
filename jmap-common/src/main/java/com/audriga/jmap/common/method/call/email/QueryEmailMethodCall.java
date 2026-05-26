@@ -22,7 +22,6 @@ import com.audriga.jmap.common.entity.Email;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.entity.query.EmailQuery;
 import com.audriga.jmap.common.method.call.standard.QueryMethodCall;
-import lombok.Builder;
 import lombok.Getter;
 
 @JmapMethod("Email/query")
@@ -31,7 +30,7 @@ public class QueryEmailMethodCall extends QueryMethodCall<Email> {
 
     private Boolean collapseThreads;
 
-    @Builder
+    @lombok.Builder
     public QueryEmailMethodCall(
             String accountId,
             Filter<Email> filter,
@@ -46,8 +45,8 @@ public class QueryEmailMethodCall extends QueryMethodCall<Email> {
         this.collapseThreads = collapseThreads;
     }
 
-    public static class QueryEmailMethodCallBuilder {
-        public QueryEmailMethodCallBuilder query(EmailQuery query) {
+    public static class Builder {
+        public Builder query(EmailQuery query) {
             filter(query.filter);
             sort(query.sort);
             collapseThreads(query.collapseThreads);

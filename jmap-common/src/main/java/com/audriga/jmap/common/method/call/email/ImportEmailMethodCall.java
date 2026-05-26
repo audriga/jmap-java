@@ -20,12 +20,11 @@ import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.entity.EmailImport;
 import com.audriga.jmap.common.method.MethodCall;
 import java.util.Map;
-import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
 
 @JmapMethod("Email/import")
-@Builder
+@lombok.Builder
 public class ImportEmailMethodCall implements MethodCall {
 
     @NonNull

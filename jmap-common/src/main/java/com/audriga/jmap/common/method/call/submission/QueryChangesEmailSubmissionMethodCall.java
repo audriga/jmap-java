@@ -22,12 +22,11 @@ import com.audriga.jmap.common.entity.EmailSubmission;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.entity.query.EmailSubmissionQuery;
 import com.audriga.jmap.common.method.call.standard.QueryChangesMethodCall;
-import lombok.Builder;
 
 @JmapMethod("EmailSubmission/queryChanges")
 public class QueryChangesEmailSubmissionMethodCall extends QueryChangesMethodCall<EmailSubmission> {
 
-    @Builder
+    @lombok.Builder
     public QueryChangesEmailSubmissionMethodCall(
             String accountId,
             Filter<EmailSubmission> filter,
@@ -39,8 +38,8 @@ public class QueryChangesEmailSubmissionMethodCall extends QueryChangesMethodCal
         super(accountId, filter, sort, sinceQueryState, maxChanges, upToId, calculateTotal);
     }
 
-    public static class QueryChangesEmailSubmissionMethodCallBuilder {
-        public QueryChangesEmailSubmissionMethodCallBuilder query(EmailSubmissionQuery query) {
+    public static class Builder {
+        public Builder query(EmailSubmissionQuery query) {
             filter(query.filter);
             sort(query.sort);
             return this;

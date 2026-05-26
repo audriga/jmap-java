@@ -5,12 +5,11 @@ import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.method.call.standard.SetMethodCall;
 import com.audriga.jmap.contacts.entity.ContactCard;
 import java.util.Map;
-import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 
 @JmapMethod("ContactCard/set")
 public class SetContactCardCall extends SetMethodCall<ContactCard> {
-    @Builder
+    @lombok.Builder
     public SetContactCardCall(
             String accountId,
             @Nullable String ifInState,

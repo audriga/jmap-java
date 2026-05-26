@@ -20,12 +20,11 @@ import com.audriga.jmap.Namespace;
 import com.audriga.jmap.annotation.JmapCapability;
 import com.audriga.jmap.common.entity.Capability;
 import com.audriga.jmap.common.util.Property;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
 @JmapCapability(namespace = Namespace.CORE)
-@Builder
+@lombok.Builder
 @Getter
 @ToString
 public class CoreCapability implements Capability {

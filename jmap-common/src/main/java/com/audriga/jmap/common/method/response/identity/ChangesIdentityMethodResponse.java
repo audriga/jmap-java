@@ -19,12 +19,11 @@ package com.audriga.jmap.common.method.response.identity;
 import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.entity.Identity;
 import com.audriga.jmap.common.method.response.standard.ChangesMethodResponse;
-import lombok.Builder;
 
 @JmapMethod("Identity/changes")
 public class ChangesIdentityMethodResponse extends ChangesMethodResponse<Identity> {
 
-    @Builder
+    @lombok.Builder
     public ChangesIdentityMethodResponse(
             String accountId,
             String oldState,

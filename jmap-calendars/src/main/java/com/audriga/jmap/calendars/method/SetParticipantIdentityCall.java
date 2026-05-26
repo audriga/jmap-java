@@ -5,7 +5,6 @@ import com.audriga.jmap.calendars.entity.ParticipantIdentity;
 import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.method.call.standard.SetMethodCall;
 import java.util.Map;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -15,7 +14,7 @@ import org.jspecify.annotations.Nullable;
 public class SetParticipantIdentityCall extends SetMethodCall<ParticipantIdentity> {
     private @Nullable String onSuccessSetIsDefault;
 
-    @Builder
+    @lombok.Builder
     public SetParticipantIdentityCall(
             @NonNull String accountId,
             String ifInState,

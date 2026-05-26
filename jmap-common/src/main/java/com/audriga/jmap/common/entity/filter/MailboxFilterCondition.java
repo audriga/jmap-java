@@ -21,12 +21,11 @@ import com.audriga.jmap.common.entity.Role;
 import com.audriga.jmap.common.util.QueryStringUtils;
 import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
-import lombok.Builder;
 import lombok.Getter;
 import org.jspecify.annotations.NonNull;
 
 @Getter
-@Builder
+@lombok.Builder
 public class MailboxFilterCondition implements FilterCondition<Mailbox> {
 
     private String parentId;

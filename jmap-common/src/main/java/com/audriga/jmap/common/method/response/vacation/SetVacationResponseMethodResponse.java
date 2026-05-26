@@ -21,12 +21,11 @@ import com.audriga.jmap.common.entity.SetError;
 import com.audriga.jmap.common.entity.VacationResponse;
 import com.audriga.jmap.common.method.response.standard.SetMethodResponse;
 import java.util.Map;
-import lombok.Builder;
 
 @JmapMethod("VacationResponse/set")
 public class SetVacationResponseMethodResponse extends SetMethodResponse<VacationResponse> {
 
-    @Builder
+    @lombok.Builder
     public SetVacationResponseMethodResponse(
             String accountId,
             String oldState,

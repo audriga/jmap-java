@@ -17,11 +17,10 @@
 package com.audriga.jmap.common.entity;
 
 import com.google.common.base.MoreObjects;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
+@lombok.Builder
 public class EmailBodyValue {
 
     private String value;

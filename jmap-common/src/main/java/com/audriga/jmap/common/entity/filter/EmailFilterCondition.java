@@ -23,12 +23,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
 import java.time.Instant;
-import lombok.Builder;
 import lombok.Getter;
 import org.jspecify.annotations.NonNull;
 
 @Getter
-@Builder
+@lombok.Builder
 public class EmailFilterCondition implements FilterCondition<Email> {
 
     private String inMailbox;
@@ -162,9 +161,9 @@ public class EmailFilterCondition implements FilterCondition<Email> {
                 .toString();
     }
 
-    public static class EmailFilterConditionBuilder {
+    public static class Builder {
 
-        public EmailFilterConditionBuilder header(final String[] header) {
+        public Builder header(final String[] header) {
             Preconditions.checkArgument(
                     header != null && (header.length == 1 || header.length == 2),
                     "The header array MUST contain either one or two elements.");

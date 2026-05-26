@@ -21,12 +21,11 @@ import com.audriga.jmap.common.entity.UndoStatus;
 import com.audriga.jmap.common.util.QueryStringUtils;
 import com.google.common.collect.ComparisonChain;
 import java.time.Instant;
-import lombok.Builder;
 import lombok.Getter;
 import org.jspecify.annotations.NonNull;
 
 @Getter
-@Builder
+@lombok.Builder
 public class EmailSubmissionFilterCondition implements FilterCondition<EmailSubmission> {
 
     private String[] identityIds;

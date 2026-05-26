@@ -4,10 +4,9 @@ import com.audriga.jmap.annotation.Default;
 import com.audriga.jmap.annotation.Type;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 
-@Builder(toBuilder = true)
+@lombok.Builder(toBuilder = true)
 @Type
 public record RecurrenceRule(
         Frequency frequency,

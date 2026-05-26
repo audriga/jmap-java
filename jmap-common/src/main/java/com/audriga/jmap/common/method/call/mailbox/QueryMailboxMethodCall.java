@@ -22,7 +22,6 @@ import com.audriga.jmap.common.entity.Mailbox;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.entity.query.MailboxQuery;
 import com.audriga.jmap.common.method.call.standard.QueryMethodCall;
-import lombok.Builder;
 import lombok.NonNull;
 
 @JmapMethod("Mailbox/query")
@@ -31,7 +30,7 @@ public class QueryMailboxMethodCall extends QueryMethodCall<Mailbox> {
     private Boolean sortAsTree;
     private Boolean filterAsTree;
 
-    @Builder
+    @lombok.Builder
     public QueryMailboxMethodCall(
             @NonNull String accountId,
             Filter<Mailbox> filter,
@@ -48,8 +47,8 @@ public class QueryMailboxMethodCall extends QueryMethodCall<Mailbox> {
         this.filterAsTree = filterAsTree;
     }
 
-    public static class QueryMailboxMethodCallBuilder {
-        public QueryMailboxMethodCallBuilder query(MailboxQuery query) {
+    public static class Builder {
+        public Builder query(MailboxQuery query) {
             filter(query.filter);
             sort(query.sort);
             sortAsTree(query.sortAsTree);

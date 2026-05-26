@@ -20,12 +20,11 @@ import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.entity.EmailSubmission;
 import com.audriga.jmap.common.method.call.standard.GetMethodCall;
-import lombok.Builder;
 
 @JmapMethod("EmailSubmission/get")
 public class GetEmailSubmissionMethodCall extends GetMethodCall<EmailSubmission> {
 
-    @Builder
+    @lombok.Builder
     public GetEmailSubmissionMethodCall(
             String accountId, String[] ids, String[] properties, Request.Invocation.ResultReference idsReference) {
         super(accountId, ids, properties, idsReference);

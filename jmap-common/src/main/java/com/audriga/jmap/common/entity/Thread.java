@@ -18,7 +18,6 @@ package com.audriga.jmap.common.entity;
 
 import com.audriga.jmap.annotation.JmapEntity;
 import java.util.List;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
 
@@ -28,7 +27,7 @@ public class Thread extends AbstractIdentifiableEntity {
 
     private List<String> emailIds;
 
-    @Builder
+    @lombok.Builder
     public Thread(final String id, @Singular final List<String> emailIds) {
         this.id = id;
         this.emailIds = emailIds;

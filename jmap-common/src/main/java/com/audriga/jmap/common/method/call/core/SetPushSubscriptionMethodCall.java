@@ -20,11 +20,10 @@ import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.entity.PushSubscription;
 import com.audriga.jmap.common.method.MethodCall;
 import java.util.Map;
-import lombok.Builder;
 import lombok.Getter;
 
 @JmapMethod("PushSubscription/set")
-@Builder
+@lombok.Builder
 @Getter
 public class SetPushSubscriptionMethodCall implements MethodCall {
 

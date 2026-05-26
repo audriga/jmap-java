@@ -19,12 +19,11 @@ package com.audriga.jmap.common.method.call.email;
 import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.entity.Email;
 import com.audriga.jmap.common.method.call.standard.ChangesMethodCall;
-import lombok.Builder;
 
 @JmapMethod("Email/changes")
 public class ChangesEmailMethodCall extends ChangesMethodCall<Email> {
 
-    @Builder
+    @lombok.Builder
     public ChangesEmailMethodCall(String accountId, String sinceState, Long maxChanges) {
         super(accountId, sinceState, maxChanges);
     }

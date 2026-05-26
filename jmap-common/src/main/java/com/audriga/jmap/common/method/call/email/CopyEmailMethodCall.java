@@ -20,12 +20,11 @@ import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.entity.Email;
 import com.audriga.jmap.common.method.call.standard.CopyMethodCall;
 import java.util.Map;
-import lombok.Builder;
 
 @JmapMethod("Email/copy")
 public class CopyEmailMethodCall extends CopyMethodCall<Email> {
 
-    @Builder
+    @lombok.Builder
     public CopyEmailMethodCall(
             String fromAccountId,
             String ifFromInState,

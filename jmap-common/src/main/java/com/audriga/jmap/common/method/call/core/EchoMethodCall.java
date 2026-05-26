@@ -18,7 +18,6 @@ package com.audriga.jmap.common.method.call.core;
 
 import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.method.MethodCall;
-import lombok.Builder;
 import lombok.Getter;
 
 @JmapMethod("Core/echo")
@@ -27,7 +26,7 @@ public final class EchoMethodCall implements MethodCall {
 
     private String libraryName;
 
-    @Builder
+    @lombok.Builder
     public EchoMethodCall(final String libraryName) {
         this.libraryName = libraryName;
     }

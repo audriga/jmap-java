@@ -19,7 +19,6 @@ package com.audriga.jmap.common.entity;
 import com.audriga.jmap.annotation.JmapEntity;
 import com.audriga.jmap.common.entity.filter.MailboxFilterCondition;
 import com.google.common.base.MoreObjects;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -46,7 +45,7 @@ public class Mailbox extends AbstractIdentifiableEntity implements IdentifiableM
 
     private Boolean isSubscribed;
 
-    @Builder
+    @lombok.Builder
     public Mailbox(
             String id,
             String name,

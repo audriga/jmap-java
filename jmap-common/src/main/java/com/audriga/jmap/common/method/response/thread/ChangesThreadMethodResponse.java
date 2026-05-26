@@ -19,12 +19,11 @@ package com.audriga.jmap.common.method.response.thread;
 import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.entity.Thread;
 import com.audriga.jmap.common.method.response.standard.ChangesMethodResponse;
-import lombok.Builder;
 
 @JmapMethod("Thread/changes")
 public class ChangesThreadMethodResponse extends ChangesMethodResponse<Thread> {
 
-    @Builder
+    @lombok.Builder
     public ChangesThreadMethodResponse(
             String accountId,
             String oldState,

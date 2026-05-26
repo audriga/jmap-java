@@ -19,8 +19,7 @@ package com.audriga.jmap.common.entity.capability;
 import com.audriga.jmap.Namespace;
 import com.audriga.jmap.annotation.JmapCapability;
 import com.audriga.jmap.common.entity.Capability;
-import lombok.Builder;
 
 @JmapCapability(namespace = Namespace.MAIL)
-@Builder
+@lombok.Builder
 public class MailCapability implements Capability {}

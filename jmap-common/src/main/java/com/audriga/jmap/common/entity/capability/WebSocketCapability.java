@@ -19,12 +19,11 @@ package com.audriga.jmap.common.entity.capability;
 import com.audriga.jmap.Namespace;
 import com.audriga.jmap.annotation.JmapCapability;
 import com.audriga.jmap.common.entity.Capability;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
 @JmapCapability(namespace = Namespace.WEB_SOCKET)
-@Builder
+@lombok.Builder
 @Getter
 @ToString
 public class WebSocketCapability implements Capability {

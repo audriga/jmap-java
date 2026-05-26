@@ -100,7 +100,7 @@ public class EmailService extends AbstractMuaService {
                     mailbox.getRole() != null && mailbox.getRole() == role,
                     "Mailbox role must match the supplied role");
         }
-        final Email.EmailBuilder emailBuilder = email.toBuilder();
+        final var emailBuilder = email.toBuilder();
         final ListenableFuture<MethodResponses> mailboxCreateFuture;
         if (mailbox == null) {
             mailboxCreateFuture = getService(MailboxService.class).createMailbox(role, null, multiCall);

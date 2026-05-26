@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Map;
 import lombok.*;
 
-@Builder
+@lombok.Builder
 @Getter
 @ToString
 public class SessionResource {
@@ -58,8 +58,8 @@ public class SessionResource {
         return primaryAccounts.get(clazz);
     }
 
-    public static class SessionResourceBuilder {
-        public SessionResourceBuilder capabilities(Map<Class<? extends Capability>, Capability> capabilities) {
+    public static class Builder {
+        public Builder capabilities(Map<Class<? extends Capability>, Capability> capabilities) {
             for (Map.Entry<Class<? extends Capability>, Capability> entry : capabilities.entrySet()) {
                 final Class<? extends Capability> key = entry.getKey();
                 final Capability value = entry.getValue();

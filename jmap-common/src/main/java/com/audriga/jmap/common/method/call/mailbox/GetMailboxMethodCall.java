@@ -22,7 +22,6 @@ import com.audriga.jmap.common.entity.Mailbox;
 import com.audriga.jmap.common.method.call.standard.GetMethodCall;
 import com.google.common.base.Preconditions;
 import com.google.gson.annotations.SerializedName;
-import lombok.Builder;
 
 @JmapMethod("Mailbox/get")
 public class GetMailboxMethodCall extends GetMethodCall<Mailbox> {
@@ -30,7 +29,7 @@ public class GetMailboxMethodCall extends GetMethodCall<Mailbox> {
     @SerializedName("#properties")
     private Request.Invocation.ResultReference propertiesReference;
 
-    @Builder
+    @lombok.Builder
     public GetMailboxMethodCall(
             String accountId,
             String[] ids,

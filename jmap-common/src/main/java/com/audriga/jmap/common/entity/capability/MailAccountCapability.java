@@ -20,13 +20,12 @@ import com.audriga.jmap.Namespace;
 import com.audriga.jmap.annotation.JmapAccountCapability;
 import com.audriga.jmap.common.entity.AccountCapability;
 import com.audriga.jmap.common.util.Property;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
 @JmapAccountCapability(namespace = Namespace.MAIL)
 @Getter
-@Builder
+@lombok.Builder
 @ToString
 public class MailAccountCapability implements AccountCapability {
     private Long maxMailboxesPerEmail;

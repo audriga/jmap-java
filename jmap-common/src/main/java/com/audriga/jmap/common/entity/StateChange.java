@@ -19,7 +19,6 @@ package com.audriga.jmap.common.entity;
 import com.audriga.jmap.annotation.Type;
 import com.google.common.base.MoreObjects;
 import java.util.Map;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
 
@@ -29,7 +28,7 @@ public class StateChange implements PushMessage {
 
     protected Map<String, Map<Class<? extends Identifiable>, String>> changed;
 
-    @Builder
+    @lombok.Builder
     public StateChange(@Singular("changed") Map<String, Map<Class<? extends Identifiable>, String>> changed) {
         this.changed = changed;
     }

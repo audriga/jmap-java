@@ -21,13 +21,12 @@ import com.audriga.jmap.common.entity.PushSubscription;
 import com.audriga.jmap.common.entity.SetError;
 import com.audriga.jmap.common.method.MethodResponse;
 import java.util.Map;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
 
 @JmapMethod("PushSubscription/set")
 @Getter
-@Builder
+@lombok.Builder
 public class SetPushSubscriptionMethodResponse implements MethodResponse {
 
     private String oldState;

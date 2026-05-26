@@ -18,7 +18,6 @@ package com.audriga.jmap.common.websocket;
 
 import com.audriga.jmap.common.Request;
 import com.google.common.base.MoreObjects;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -27,7 +26,7 @@ public class RequestWebSocketMessage extends AbstractApiWebSocketMessage {
     private Request request;
     private String id;
 
-    @Builder
+    @lombok.Builder
     public RequestWebSocketMessage(final String id, final Request request) {
         this.id = id;
         this.request = request;

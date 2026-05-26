@@ -21,11 +21,10 @@ import com.audriga.jmap.common.entity.filter.EmailSubmissionFilterCondition;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
 
-@Builder
+@lombok.Builder
 @Getter
 @JmapEntity(filterCondition = EmailSubmissionFilterCondition.class)
 public class EmailSubmission extends AbstractIdentifiableEntity {

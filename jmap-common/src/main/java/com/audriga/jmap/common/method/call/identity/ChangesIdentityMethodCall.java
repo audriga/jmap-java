@@ -19,12 +19,11 @@ package com.audriga.jmap.common.method.call.identity;
 import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.entity.Identity;
 import com.audriga.jmap.common.method.call.standard.ChangesMethodCall;
-import lombok.Builder;
 
 @JmapMethod("Identity/changes")
 public class ChangesIdentityMethodCall extends ChangesMethodCall<Identity> {
 
-    @Builder
+    @lombok.Builder
     public ChangesIdentityMethodCall(String accountId, String sinceState, Long maxChanges) {
         super(accountId, sinceState, maxChanges);
     }

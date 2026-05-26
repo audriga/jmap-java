@@ -20,12 +20,11 @@ import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.entity.VacationResponse;
 import com.audriga.jmap.common.method.call.standard.GetMethodCall;
-import lombok.Builder;
 
 @JmapMethod("VacationResponse/get")
 public class GetVacationResponseMethodCall extends GetMethodCall<VacationResponse> {
 
-    @Builder
+    @lombok.Builder
     public GetVacationResponseMethodCall(
             String accountId, String[] ids, String[] properties, Request.Invocation.ResultReference idsReference) {
         super(accountId, ids, properties, idsReference);

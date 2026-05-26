@@ -22,14 +22,13 @@ import com.audriga.jmap.common.entity.Email;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.entity.query.EmailQuery;
 import com.audriga.jmap.common.method.call.standard.QueryChangesMethodCall;
-import lombok.Builder;
 
 @JmapMethod("Email/queryChanges")
 public class QueryChangesEmailMethodCall extends QueryChangesMethodCall<Email> {
 
     private Boolean collapseThreads;
 
-    @Builder
+    @lombok.Builder
     public QueryChangesEmailMethodCall(
             String accountId,
             Filter<Email> filter,
@@ -43,8 +42,8 @@ public class QueryChangesEmailMethodCall extends QueryChangesMethodCall<Email> {
         this.collapseThreads = collapseThreads;
     }
 
-    public static class QueryChangesEmailMethodCallBuilder {
-        public QueryChangesEmailMethodCallBuilder query(EmailQuery query) {
+    public static class Builder {
+        public Builder query(EmailQuery query) {
             filter(query.filter);
             sort(query.sort);
             collapseThreads(query.collapseThreads);

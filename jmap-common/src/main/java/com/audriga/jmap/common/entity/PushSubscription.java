@@ -19,7 +19,6 @@ package com.audriga.jmap.common.entity;
 import com.google.common.base.MoreObjects;
 import java.time.Instant;
 import java.util.List;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -37,7 +36,7 @@ public class PushSubscription extends AbstractIdentifiableEntity {
 
     private List<String> types;
 
-    @Builder(toBuilder = true)
+    @lombok.Builder(toBuilder = true)
     public PushSubscription(
             String id,
             String deviceClientId,

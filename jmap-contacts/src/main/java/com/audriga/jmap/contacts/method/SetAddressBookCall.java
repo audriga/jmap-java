@@ -5,12 +5,11 @@ import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.method.call.standard.SetMethodCall;
 import com.audriga.jmap.contacts.entity.AddressBook;
 import java.util.Map;
-import lombok.Builder;
 import lombok.NonNull;
 
 @JmapMethod("AddressBook/set")
 public class SetAddressBookCall extends SetMethodCall<AddressBook> {
-    @Builder
+    @lombok.Builder
     public SetAddressBookCall(
             @NonNull String accountId,
             String ifInState,

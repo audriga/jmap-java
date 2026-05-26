@@ -18,10 +18,9 @@ package com.audriga.jmap.common.entity;
 
 import java.time.Instant;
 import java.util.Map;
-import lombok.Builder;
 import lombok.NonNull;
 
-@Builder
+@lombok.Builder
 public class EmailImport {
 
     @NonNull

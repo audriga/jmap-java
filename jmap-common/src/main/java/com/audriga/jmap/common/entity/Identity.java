@@ -19,7 +19,6 @@ package com.audriga.jmap.common.entity;
 import com.audriga.jmap.annotation.JmapEntity;
 import com.google.common.base.MoreObjects;
 import java.util.List;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -39,7 +38,7 @@ public class Identity extends AbstractIdentifiableEntity implements Identifiable
 
     private Boolean mayDelete;
 
-    @Builder
+    @lombok.Builder
     public Identity(
             final String id,
             String name,

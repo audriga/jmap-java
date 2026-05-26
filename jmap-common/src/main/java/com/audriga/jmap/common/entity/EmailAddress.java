@@ -18,10 +18,9 @@ package com.audriga.jmap.common.entity;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import lombok.Builder;
 import lombok.Getter;
 
-@Builder
+@lombok.Builder
 @Getter
 public class EmailAddress {
     private String name;

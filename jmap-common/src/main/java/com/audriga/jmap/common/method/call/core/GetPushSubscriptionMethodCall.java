@@ -21,7 +21,6 @@ import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.method.MethodCall;
 import com.google.common.base.Preconditions;
 import com.google.gson.annotations.SerializedName;
-import lombok.Builder;
 
 @JmapMethod("PushSubscription/get")
 public class GetPushSubscriptionMethodCall implements MethodCall {
@@ -33,7 +32,7 @@ public class GetPushSubscriptionMethodCall implements MethodCall {
     @SerializedName("#ids")
     private Request.Invocation.ResultReference idsReference;
 
-    @Builder
+    @lombok.Builder
     public GetPushSubscriptionMethodCall(
             String[] ids, String[] properties, Request.Invocation.ResultReference idsReference) {
         Preconditions.checkArgument(ids == null || idsReference == null, "Can't set both 'ids' and 'idsReference'");

@@ -31,7 +31,7 @@ import lombok.*;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-@Builder
+@lombok.Builder
 @Getter
 @ToString
 @EqualsAndHashCode
@@ -95,7 +95,7 @@ public class MailToUri {
             final String inReplyTo = parameters.get(IN_REPLY_TO);
             final String subject = parameters.get(SUBJECT);
             final String body = parameters.get(BODY);
-            final MailToUriBuilder mailToUriBuilder = MailToUri.builder();
+            final var mailToUriBuilder = MailToUri.builder();
             if (Strings.isNullOrEmpty(to)) {
                 final String toParameter = parameters.get(TO);
                 if (toParameter != null) {

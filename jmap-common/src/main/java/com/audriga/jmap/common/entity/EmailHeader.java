@@ -16,10 +16,9 @@
 
 package com.audriga.jmap.common.entity;
 
-import lombok.Builder;
 import lombok.Getter;
 
-@Builder
+@lombok.Builder
 @Getter
 public class EmailHeader {
 

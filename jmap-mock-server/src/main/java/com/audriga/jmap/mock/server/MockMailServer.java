@@ -171,8 +171,7 @@ public class MockMailServer extends StubMailServer {
     @Override
     protected MethodResponse[] execute(
             SetPushSubscriptionMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
-        final SetPushSubscriptionMethodResponse.SetPushSubscriptionMethodResponseBuilder responseBuilder =
-                SetPushSubscriptionMethodResponse.builder();
+        final var responseBuilder = SetPushSubscriptionMethodResponse.builder();
         final Map<String, PushSubscription> create = methodCall.getCreate();
         final Map<String, Map<String, Object>> update = methodCall.getUpdate();
         final String[] destroy = methodCall.getDestroy();
@@ -189,8 +188,7 @@ public class MockMailServer extends StubMailServer {
     }
 
     private void processUpdatePushSubscription(
-            Map<String, Map<String, Object>> update,
-            SetPushSubscriptionMethodResponse.SetPushSubscriptionMethodResponseBuilder responseBuilder) {
+            Map<String, Map<String, Object>> update, SetPushSubscriptionMethodResponse.Builder responseBuilder) {
         for (final Map.Entry<String, Map<String, Object>> entry : update.entrySet()) {
             final String id = entry.getKey();
             Map<String, Object> patch = entry.getValue();
@@ -227,8 +225,7 @@ public class MockMailServer extends StubMailServer {
     }
 
     private void processCreatePushSubscription(
-            Map<String, PushSubscription> create,
-            SetPushSubscriptionMethodResponse.SetPushSubscriptionMethodResponseBuilder responseBuilder) {
+            Map<String, PushSubscription> create, SetPushSubscriptionMethodResponse.Builder responseBuilder) {
         for (final Map.Entry<String, PushSubscription> entry : create.entrySet()) {
             final String createId = entry.getKey();
             final String id = UUID.randomUUID().toString();
@@ -434,7 +431,7 @@ public class MockMailServer extends StubMailServer {
         if (destroy != null && destroy.length > 0) {
             throw new IllegalStateException("MockMailServer does not know how to destroy");
         }
-        final SetEmailMethodResponse.SetEmailMethodResponseBuilder responseBuilder = SetEmailMethodResponse.builder();
+        final var responseBuilder = SetEmailMethodResponse.builder();
         final String oldState = getState();
         if (ifInState != null) {
             if (!ifInState.equals(oldState)) {
@@ -468,7 +465,7 @@ public class MockMailServer extends StubMailServer {
 
     private void processCreateEmail(
             Map<String, Email> create,
-            SetEmailMethodResponse.SetEmailMethodResponseBuilder responseBuilder,
+            SetEmailMethodResponse.Builder responseBuilder,
             ListMultimap<String, Response.Invocation> previousResponses) {
         for (final Map.Entry<String, Email> entry : create.entrySet()) {
             final String createId = entry.getKey();
@@ -476,7 +473,7 @@ public class MockMailServer extends StubMailServer {
             final String threadId = UUID.randomUUID().toString();
             final Email userSuppliedEmail = entry.getValue();
             final Map<String, Boolean> mailboxMap = userSuppliedEmail.getMailboxIds();
-            final Email.EmailBuilder emailBuilder =
+            final var emailBuilder =
                     userSuppliedEmail.toBuilder().id(id).threadId(threadId).receivedAt(Instant.now());
             emailBuilder.clearMailboxIds();
             for (Map.Entry<String, Boolean> mailboxEntry : mailboxMap.entrySet()) {
@@ -625,8 +622,7 @@ public class MockMailServer extends StubMailServer {
     protected MethodResponse[] execute(
             final SetMailboxMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
         final String ifInState = methodCall.getIfInState();
-        final SetMailboxMethodResponse.SetMailboxMethodResponseBuilder responseBuilder =
-                SetMailboxMethodResponse.builder();
+        final var responseBuilder = SetMailboxMethodResponse.builder();
         final Map<String, Mailbox> create = methodCall.getCreate();
         final Map<String, Map<String, Object>> update = methodCall.getUpdate();
         final String oldState = getState();
@@ -649,8 +645,7 @@ public class MockMailServer extends StubMailServer {
     }
 
     private void processCreateMailbox(
-            final Map<String, Mailbox> create,
-            final SetMailboxMethodResponse.SetMailboxMethodResponseBuilder responseBuilder) {
+            final Map<String, Mailbox> create, final SetMailboxMethodResponse.Builder responseBuilder) {
         for (Map.Entry<String, Mailbox> entry : create.entrySet()) {
             final String createId = entry.getKey();
             final Mailbox mailbox = entry.getValue();
@@ -673,7 +668,7 @@ public class MockMailServer extends StubMailServer {
 
     private void processUpdateMailbox(
             Map<String, Map<String, Object>> update,
-            SetMailboxMethodResponse.SetMailboxMethodResponseBuilder responseBuilder,
+            SetMailboxMethodResponse.Builder responseBuilder,
             ListMultimap<String, Response.Invocation> previousResponses) {
         for (final Map.Entry<String, Map<String, Object>> entry : update.entrySet()) {
             final String id = entry.getKey();
@@ -774,7 +769,7 @@ public class MockMailServer extends StubMailServer {
             final String id,
             final Map<String, Object> patches,
             ListMultimap<String, Response.Invocation> previousResponses) {
-        final Email.EmailBuilder emailBuilder = emails.get(id).toBuilder();
+        final var emailBuilder = emails.get(id).toBuilder();
         for (final Map.Entry<String, Object> patch : patches.entrySet()) {
             final String fullPath = patch.getKey();
             final Object modification = patch.getValue();

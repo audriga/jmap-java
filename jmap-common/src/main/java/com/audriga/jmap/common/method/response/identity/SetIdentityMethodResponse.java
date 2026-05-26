@@ -21,12 +21,11 @@ import com.audriga.jmap.common.entity.Identity;
 import com.audriga.jmap.common.entity.SetError;
 import com.audriga.jmap.common.method.response.standard.SetMethodResponse;
 import java.util.Map;
-import lombok.Builder;
 
 @JmapMethod("Identity/set")
 public class SetIdentityMethodResponse extends SetMethodResponse<Identity> {
 
-    @Builder
+    @lombok.Builder
     public SetIdentityMethodResponse(
             String accountId,
             String oldState,

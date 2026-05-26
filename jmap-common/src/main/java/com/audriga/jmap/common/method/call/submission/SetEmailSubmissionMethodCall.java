@@ -24,7 +24,6 @@ import com.audriga.jmap.common.entity.EmailSubmission;
 import com.audriga.jmap.common.method.call.standard.SetMethodCall;
 import java.util.List;
 import java.util.Map;
-import lombok.Builder;
 import lombok.Getter;
 
 @JmapMethod("EmailSubmission/set")
@@ -36,7 +35,7 @@ public class SetEmailSubmissionMethodCall extends SetMethodCall<EmailSubmission>
 
     private List<String> onSuccessDestroyEmail;
 
-    @Builder
+    @lombok.Builder
     public SetEmailSubmissionMethodCall(
             String accountId,
             String ifInState,

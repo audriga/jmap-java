@@ -19,12 +19,11 @@ package com.audriga.jmap.common.method.response.identity;
 import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.entity.Identity;
 import com.audriga.jmap.common.method.response.standard.GetMethodResponse;
-import lombok.Builder;
 
 @JmapMethod("Identity/get")
 public class GetIdentityMethodResponse extends GetMethodResponse<Identity> {
 
-    @Builder
+    @lombok.Builder
     public GetIdentityMethodResponse(String accountId, String state, String[] notFound, Identity[] list) {
         super(accountId, state, notFound, list);
     }

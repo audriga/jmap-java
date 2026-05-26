@@ -18,11 +18,10 @@ package com.audriga.jmap.common.method.call.email;
 
 import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.method.MethodCall;
-import lombok.Builder;
 import lombok.NonNull;
 
 @JmapMethod("Email/parse")
-@Builder
+@lombok.Builder
 public class ParseEmailMethodCall implements MethodCall {
 
     @NonNull

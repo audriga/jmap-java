@@ -19,12 +19,11 @@ package com.audriga.jmap.common.method.response.mailbox;
 import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.entity.Mailbox;
 import com.audriga.jmap.common.method.response.standard.GetMethodResponse;
-import lombok.Builder;
 
 @JmapMethod("Mailbox/get")
 public class GetMailboxMethodResponse extends GetMethodResponse<Mailbox> {
 
-    @Builder
+    @lombok.Builder
     public GetMailboxMethodResponse(String accountId, String state, String[] notFound, Mailbox[] list) {
         super(accountId, state, notFound, list);
     }

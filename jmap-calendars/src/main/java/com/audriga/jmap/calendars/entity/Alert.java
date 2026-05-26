@@ -8,10 +8,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import java.time.Instant;
 import java.util.Map;
-import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 
-@Builder(toBuilder = true)
+@lombok.Builder(toBuilder = true)
 @Type
 public record Alert(
         Trigger trigger,
@@ -21,7 +20,7 @@ public record Alert(
     @Type("OffsetTrigger")
     public sealed interface Trigger {}
 
-    @Builder(toBuilder = true)
+    @lombok.Builder(toBuilder = true)
     @Type
     public record OffsetTrigger(
             DateTimePeriod offset, @Default("\"start\"") RelativeTo relativeTo) implements Trigger {

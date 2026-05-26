@@ -19,12 +19,11 @@ package com.audriga.jmap.common.method.call.thread;
 import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.entity.Thread;
 import com.audriga.jmap.common.method.call.standard.ChangesMethodCall;
-import lombok.Builder;
 
 @JmapMethod("Thread/changes")
 public class ChangesThreadMethodCall extends ChangesMethodCall<Thread> {
 
-    @Builder
+    @lombok.Builder
     public ChangesThreadMethodCall(String accountId, String sinceState, Long maxChanges) {
         super(accountId, sinceState, maxChanges);
     }

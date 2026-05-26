@@ -22,12 +22,11 @@ import com.google.common.net.MediaType;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Locale;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
 
 @Getter
-@Builder
+@lombok.Builder
 public class EmailBodyPart implements Attachment {
 
     private String partId;
@@ -69,8 +68,8 @@ public class EmailBodyPart implements Attachment {
                 .toString();
     }
 
-    public static class EmailBodyPartBuilder {
-        public EmailBodyPartBuilder mediaType(MediaType mediaType) {
+    public static class Builder {
+        public Builder mediaType(MediaType mediaType) {
             this.type(mediaType.withoutParameters().toString());
             final Optional<Charset> optionalCharset = mediaType.charset();
             if (optionalCharset.isPresent()) {

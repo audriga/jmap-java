@@ -21,12 +21,11 @@ import com.audriga.jmap.common.entity.EmailSubmission;
 import com.audriga.jmap.common.entity.SetError;
 import com.audriga.jmap.common.method.response.standard.SetMethodResponse;
 import java.util.Map;
-import lombok.Builder;
 
 @JmapMethod("EmailSubmission/set")
 public class SetEmailSubmissionMethodResponse extends SetMethodResponse<EmailSubmission> {
 
-    @Builder
+    @lombok.Builder
     public SetEmailSubmissionMethodResponse(
             String accountId,
             String oldState,

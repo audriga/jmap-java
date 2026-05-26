@@ -26,7 +26,6 @@ import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
 
@@ -108,7 +107,7 @@ public class Email extends AbstractIdentifiableEntity
 
     private String preview;
 
-    @Builder(toBuilder = true)
+    @lombok.Builder(toBuilder = true)
     public Email(
             String id,
             String blobId,

@@ -4,12 +4,11 @@ import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.calendars.entity.ParticipantIdentity;
 import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.method.call.standard.GetMethodCall;
-import lombok.Builder;
 import lombok.NonNull;
 
 @JmapMethod("ParticipantIdentity/get")
 public class GetParticipantIdentityCall extends GetMethodCall<ParticipantIdentity> {
-    @Builder
+    @lombok.Builder
     public GetParticipantIdentityCall(
             @NonNull String accountId,
             String[] ids,

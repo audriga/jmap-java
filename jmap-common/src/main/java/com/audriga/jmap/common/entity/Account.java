@@ -21,10 +21,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 
-@Builder
+@lombok.Builder
 @Getter
 public class Account {
     private String name;
@@ -55,8 +54,8 @@ public class Account {
         return accountCapabilities != null && accountCapabilities.containsKey(clazz);
     }
 
-    public static class AccountBuilder {
-        public AccountBuilder accountCapabilities(
+    public static class Builder {
+        public Builder accountCapabilities(
                 Map<Class<? extends AccountCapability>, AccountCapability> accountCapabilities) {
             for (final Map.Entry<Class<? extends AccountCapability>, AccountCapability> entry :
                     accountCapabilities.entrySet()) {

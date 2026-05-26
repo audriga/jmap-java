@@ -5,10 +5,9 @@ import com.audriga.jmap.annotation.Type;
 import java.net.URI;
 import java.time.ZoneId;
 import java.util.List;
-import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 
-@Builder(toBuilder = true)
+@lombok.Builder(toBuilder = true)
 @Type
 public record Address(
         @Nullable List<AddressComponent> components,

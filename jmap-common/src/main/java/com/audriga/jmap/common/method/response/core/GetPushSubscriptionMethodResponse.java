@@ -19,10 +19,9 @@ package com.audriga.jmap.common.method.response.core;
 import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.entity.PushSubscription;
 import com.audriga.jmap.common.method.MethodResponse;
-import lombok.Builder;
 
 @JmapMethod("PushSubscription/get")
-@Builder
+@lombok.Builder
 public class GetPushSubscriptionMethodResponse implements MethodResponse {
 
     protected String state;

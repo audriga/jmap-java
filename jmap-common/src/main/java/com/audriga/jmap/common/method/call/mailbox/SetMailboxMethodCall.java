@@ -21,14 +21,13 @@ import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.entity.Mailbox;
 import com.audriga.jmap.common.method.call.standard.SetMethodCall;
 import java.util.Map;
-import lombok.Builder;
 
 @JmapMethod("Mailbox/set")
 public class SetMailboxMethodCall extends SetMethodCall<Mailbox> {
 
     private Boolean onDestroyRemoveEmails;
 
-    @Builder
+    @lombok.Builder
     public SetMailboxMethodCall(
             String accountId,
             String ifInState,

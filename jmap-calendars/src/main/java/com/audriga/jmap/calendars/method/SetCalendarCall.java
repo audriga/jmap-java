@@ -5,7 +5,6 @@ import com.audriga.jmap.calendars.entity.Calendar;
 import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.method.call.standard.SetMethodCall;
 import java.util.Map;
-import lombok.Builder;
 import lombok.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -14,7 +13,7 @@ public class SetCalendarCall extends SetMethodCall<Calendar> {
     private boolean onDestroyRemoveEvents;
     private @Nullable String onSuccessSetIsDefault;
 
-    @Builder
+    @lombok.Builder
     public SetCalendarCall(
             @NonNull String accountId,
             String ifInState,

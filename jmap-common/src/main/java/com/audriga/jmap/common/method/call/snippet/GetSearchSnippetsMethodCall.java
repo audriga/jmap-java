@@ -23,7 +23,6 @@ import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.method.MethodCall;
 import com.google.common.base.Preconditions;
 import com.google.gson.annotations.SerializedName;
-import lombok.Builder;
 import lombok.NonNull;
 
 @JmapMethod("SearchSnippet/get")
@@ -38,7 +37,7 @@ public class GetSearchSnippetsMethodCall implements MethodCall {
     @SerializedName("#emailIds")
     private Request.Invocation.ResultReference emailIdsReference;
 
-    @Builder
+    @lombok.Builder
     public GetSearchSnippetsMethodCall(
             @NonNull String accountId,
             String[] emailIds,

@@ -12,10 +12,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Map;
 import java.util.Set;
-import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 
-@Builder(toBuilder = true)
+@lombok.Builder(toBuilder = true)
 @Type("Event")
 public record CalendarEvent(
         // JMAP Additions

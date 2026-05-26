@@ -12,11 +12,10 @@ import com.google.gson.JsonObject;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
-import lombok.Builder;
 import lombok.Singular;
 import org.jspecify.annotations.Nullable;
 
-@Builder(toBuilder = true)
+@lombok.Builder(toBuilder = true)
 @Type("Card")
 public record ContactCard(
         // JMAP Additions

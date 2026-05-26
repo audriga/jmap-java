@@ -21,13 +21,12 @@ import com.audriga.jmap.annotation.JmapAccountCapability;
 import com.audriga.jmap.common.entity.AccountCapability;
 import com.audriga.jmap.common.util.Property;
 import java.util.Map;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
 @JmapAccountCapability(namespace = Namespace.SUBMISSION)
 @Getter
-@Builder
+@lombok.Builder
 @ToString
 public class SubmissionAccountCapability implements AccountCapability {
     private Long maxDelayedSend;

@@ -19,12 +19,11 @@ package com.audriga.jmap.common.method.response.vacation;
 import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.entity.VacationResponse;
 import com.audriga.jmap.common.method.response.standard.GetMethodResponse;
-import lombok.Builder;
 
 @JmapMethod("VacationResponse/get")
 public class GetVacationResponseMethodResponse extends GetMethodResponse<VacationResponse> {
 
-    @Builder
+    @lombok.Builder
     public GetVacationResponseMethodResponse(
             String accountId, String state, String[] notFound, VacationResponse[] list) {
         super(accountId, state, notFound, list);

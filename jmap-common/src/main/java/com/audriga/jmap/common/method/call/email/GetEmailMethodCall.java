@@ -20,7 +20,6 @@ import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.entity.Email;
 import com.audriga.jmap.common.method.call.standard.GetMethodCall;
-import lombok.Builder;
 import lombok.Getter;
 
 @JmapMethod("Email/get")
@@ -33,7 +32,7 @@ public class GetEmailMethodCall extends GetMethodCall<Email> {
     private Boolean fetchAllBodyValues;
     private Long maxBodyValueBytes;
 
-    @Builder
+    @lombok.Builder
     public GetEmailMethodCall(
             String accountId,
             String[] ids,

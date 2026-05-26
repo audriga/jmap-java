@@ -17,14 +17,13 @@
 package com.audriga.jmap.common.websocket;
 
 import com.audriga.jmap.common.ErrorResponse;
-import lombok.Builder;
 
 public class ErrorResponseWebSocketMessage extends AbstractApiWebSocketMessage {
 
     private ErrorResponse response;
     private String requestId;
 
-    @Builder
+    @lombok.Builder
     public ErrorResponseWebSocketMessage(String requestId, final ErrorResponse response) {
         this.requestId = requestId;
         this.response = response;

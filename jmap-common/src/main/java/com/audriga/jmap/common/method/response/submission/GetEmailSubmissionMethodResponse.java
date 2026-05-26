@@ -19,12 +19,11 @@ package com.audriga.jmap.common.method.response.submission;
 import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.entity.EmailSubmission;
 import com.audriga.jmap.common.method.response.standard.GetMethodResponse;
-import lombok.Builder;
 
 @JmapMethod("EmailSubmission/get")
 public class GetEmailSubmissionMethodResponse extends GetMethodResponse<EmailSubmission> {
 
-    @Builder
+    @lombok.Builder
     public GetEmailSubmissionMethodResponse(String accountId, String state, String[] notFound, EmailSubmission[] list) {
         super(accountId, state, notFound, list);
     }

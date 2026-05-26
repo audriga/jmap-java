@@ -17,10 +17,9 @@
 package com.audriga.jmap.common.entity;
 
 import com.google.common.base.MoreObjects;
-import lombok.Builder;
 import lombok.Getter;
 
-@Builder
+@lombok.Builder
 @Getter
 public class Upload implements BinaryData {
 
