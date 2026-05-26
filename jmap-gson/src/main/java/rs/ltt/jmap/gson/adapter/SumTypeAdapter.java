@@ -2,6 +2,7 @@ package rs.ltt.jmap.gson.adapter;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -49,13 +50,17 @@ public final class SumTypeAdapter<T> extends TypeAdapter<T> {
             variant.adapter().write(out, value);
         } else if (tagRepr instanceof TagRepr.Internal internal) {
             var object = variant.adapter().toJsonTree(value).getAsJsonObject();
-            if (object.has(internal.property())) {
-                throw new JsonParseException("cannot serialize "
-                        + value
-                        + " as sum type because its serialized form "
-                        + object
-                        + " already contains the property " + internal.property());
+            var existing = object.remove(internal.property());
+            // accept already present tag if it matches ours, fail otherwise
+            if (existing != null
+                    && !(existing instanceof JsonPrimitive primitive
+                            && primitive.isString()
+                            && primitive.getAsString().equals(variant.tag()))) {
+                throw new JsonParseException("cannot serialize " + value + " as sum type because its serialized form "
+                        + object + " contains conflicting tag property " + internal.property() + " with value "
+                        + existing);
             }
+            // write tag manually to make sure it comes first
             out.name(internal.property());
             out.value(variant.tag());
             for (var entry : object.entrySet()) {
