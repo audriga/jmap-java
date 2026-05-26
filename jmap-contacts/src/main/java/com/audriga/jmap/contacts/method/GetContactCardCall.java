@@ -4,10 +4,12 @@ import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.method.call.standard.GetMethodCall;
 import com.audriga.jmap.contacts.entity.ContactCard;
+import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 
 @JmapMethod("ContactCard/get")
 public class GetContactCardCall extends GetMethodCall<ContactCard> {
+    @Builder
     public GetContactCardCall(
             String accountId,
             @Nullable String[] ids,

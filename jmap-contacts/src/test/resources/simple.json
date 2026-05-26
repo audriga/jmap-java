@@ -1,0 +1,13 @@
+[
+  {
+    "name": "ContactCard/query",
+    "args": {
+      "limit": 1,
+      "calculateTotal": true
+    },
+    "res": {
+      "ids": [],
+      "total": 0
+    }
+  }
+]

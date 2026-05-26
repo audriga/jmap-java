@@ -6,8 +6,10 @@ import com.audriga.jmap.common.util.QueryStringUtils;
 import com.audriga.jmap.contacts.entity.ContactCard;
 import com.google.gson.annotations.SerializedName;
 import java.time.Instant;
+import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 
+@Builder(toBuilder = true)
 public record ContactCardFilterCondition(
         @Nullable String inAddressBook,
         @Nullable String uid,

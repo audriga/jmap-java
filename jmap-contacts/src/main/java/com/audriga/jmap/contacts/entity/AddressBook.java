@@ -8,7 +8,7 @@ import java.util.Map;
 import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 
-@Builder
+@Builder(toBuilder = true)
 public record AddressBook(
         @Immutable @ServerSet String id,
         String name,
