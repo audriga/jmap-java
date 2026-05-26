@@ -29,7 +29,8 @@ public final class JmapAdapters {
         builder.registerTypeAdapterFactory(new RecordAdapterFactory())
                 .registerTypeAdapterFactory(new InlineRecordAdapterFactory())
                 .registerTypeAdapterFactory(new TypeInjectionAdapterFactory())
-                .registerTypeAdapterFactory(new AtTypeSealedAdapterFactory());
+                .registerTypeAdapterFactory(new AtTypeSealedAdapterFactory())
+                .registerTypeAdapterFactory(new SetAsObjectAdapterFactory());
 
         ApiWebSocketMessageTypeAdapter.register(builder);
         InstantTypeAdapter.register(builder);
