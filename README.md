@@ -1,7 +1,7 @@
 # Java JMAP library
 
 [![Apache 2.0 License](https://img.shields.io/github/license/audriga/jmap-java?color=informational)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
-[![status-badge](https://ci.codeberg.org/api/badges/12402/status.svg)](https://ci.codeberg.org/repos/12402)
+[![status-badge](https://github.com/audriga/jmap-java/actions/workflows/ci.yml/badge.svg)](https://github.com/audriga/jmap-java/actions/workflows/ci.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.audriga.jmap/jmap.svg?label=Maven%20Central&color=informational)](https://search.maven.org/search?q=g:%22com.audriga.jmap%22%20AND%20a:%22jmap%22)
 
 > [!NOTE]
