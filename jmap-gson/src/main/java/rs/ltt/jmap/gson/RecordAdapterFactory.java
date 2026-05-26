@@ -165,8 +165,8 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                     in.endObject();
                 }
                 for (int i = 0; i < fields.length; ++i) {
+                    var comp = components.get(i);
                     if (fields[i] == EMPTY_SLOT) {
-                        var comp = components.get(i);
                         if (comp.defaultJson != null) {
                             fields[i] = comp.adapter.fromJsonTree(comp.defaultJson);
                         } else if (comp.nullable) {
@@ -175,10 +175,10 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                         } else {
                             throw new JsonParseException("missing required field " + comp.name);
                         }
-                        if (fields[i] == null && !comp.nullable) {
-                            throw new JsonParseException("found null value for non-nullable property '" + comp.name()
-                                    + "' while parsing " + raw.getName());
-                        }
+                    }
+                    if (fields[i] == null && !comp.nullable) {
+                        throw new JsonParseException("found null value for non-nullable property '" + comp.name()
+                                + "' while parsing " + raw.getName());
                     }
                 }
                 @SuppressWarnings("unchecked")
