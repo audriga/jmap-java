@@ -18,12 +18,12 @@ package rs.ltt.jmap.common.method.response.standard;
 
 import java.util.Map;
 import lombok.Getter;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.entity.SetError;
 import rs.ltt.jmap.common.method.MethodResponse;
 
 @Getter
-public abstract class CopyMethodResponse<T extends AbstractIdentifiableEntity> implements MethodResponse {
+public abstract class CopyMethodResponse<T extends Identifiable> implements MethodResponse {
 
     private String fromAccountId;
 

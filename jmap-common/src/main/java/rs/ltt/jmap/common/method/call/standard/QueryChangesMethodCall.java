@@ -19,14 +19,14 @@ package rs.ltt.jmap.common.method.call.standard;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
 import rs.ltt.jmap.common.entity.Comparator;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.entity.filter.Filter;
 import rs.ltt.jmap.common.method.MethodCall;
 
 @AllArgsConstructor
 @Getter
-public abstract class QueryChangesMethodCall<T extends AbstractIdentifiableEntity> implements MethodCall {
+public abstract class QueryChangesMethodCall<T extends Identifiable> implements MethodCall {
 
     @NonNull
     private String accountId;

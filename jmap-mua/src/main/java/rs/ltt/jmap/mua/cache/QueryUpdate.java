@@ -18,12 +18,12 @@ package rs.ltt.jmap.mua.cache;
 
 import com.google.common.base.MoreObjects;
 import java.util.List;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
 import rs.ltt.jmap.common.entity.AddedItem;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.entity.TypedState;
 import rs.ltt.jmap.common.method.response.standard.QueryChangesMethodResponse;
 
-public class QueryUpdate<T extends AbstractIdentifiableEntity, U> extends AbstractUpdate<T> {
+public class QueryUpdate<T extends Identifiable, U> extends AbstractUpdate<T> {
 
     private final String[] removed;
 
@@ -43,7 +43,7 @@ public class QueryUpdate<T extends AbstractIdentifiableEntity, U> extends Abstra
         this.total = total;
     }
 
-    public static <T extends AbstractIdentifiableEntity, U> QueryUpdate<T, U> of(
+    public static <T extends Identifiable, U> QueryUpdate<T, U> of(
             QueryChangesMethodResponse<T> queryChangesMethodResponse, List<AddedItem<U>> added) {
         return new QueryUpdate<>(
                 queryChangesMethodResponse.getOldTypedQueryState(),

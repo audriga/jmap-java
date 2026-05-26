@@ -19,11 +19,11 @@ package rs.ltt.jmap.common.method.call.standard;
 import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.method.MethodCall;
 
 @AllArgsConstructor
-public abstract class CopyMethodCall<T extends AbstractIdentifiableEntity> implements MethodCall {
+public abstract class CopyMethodCall<T extends Identifiable> implements MethodCall {
 
     @NonNull
     private String fromAccountId;

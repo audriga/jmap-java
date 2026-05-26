@@ -18,7 +18,7 @@ package rs.ltt.jmap.common.entity;
 
 import com.google.common.base.Objects;
 
-public class TypedState<T extends AbstractIdentifiableEntity> {
+public class TypedState<T extends Identifiable> {
 
     private final String state;
 
@@ -30,7 +30,7 @@ public class TypedState<T extends AbstractIdentifiableEntity> {
         return this.state;
     }
 
-    public static <T extends AbstractIdentifiableEntity> TypedState<T> of(String state) {
+    public static <T extends Identifiable> TypedState<T> of(String state) {
         return new TypedState<>(state);
     }
 

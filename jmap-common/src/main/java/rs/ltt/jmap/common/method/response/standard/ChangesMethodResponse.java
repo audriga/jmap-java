@@ -18,12 +18,12 @@ package rs.ltt.jmap.common.method.response.standard;
 
 import com.google.common.base.MoreObjects;
 import lombok.Getter;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.entity.TypedState;
 import rs.ltt.jmap.common.method.MethodResponse;
 
 @Getter
-public abstract class ChangesMethodResponse<T extends AbstractIdentifiableEntity> implements MethodResponse {
+public abstract class ChangesMethodResponse<T extends Identifiable> implements MethodResponse {
 
     protected String accountId;
     protected String oldState;

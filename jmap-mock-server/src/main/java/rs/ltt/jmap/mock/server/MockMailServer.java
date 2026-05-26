@@ -139,8 +139,7 @@ public class MockMailServer extends StubMailServer {
 
     private void pushUpdate(final String oldVersion, final Update update) {
         this.updates.put(oldVersion, update);
-        final ImmutableMap.Builder<Class<? extends AbstractIdentifiableEntity>, String> changedBuilder =
-                ImmutableMap.builder();
+        final ImmutableMap.Builder<Class<? extends Identifiable>, String> changedBuilder = ImmutableMap.builder();
         changedBuilder.put(Thread.class, update.getNewVersion());
         changedBuilder.put(Email.class, update.getNewVersion());
         changedBuilder.put(Mailbox.class, update.getNewVersion());

@@ -16,12 +16,12 @@
 
 package rs.ltt.jmap.common.entity.query;
 
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
 import rs.ltt.jmap.common.entity.Comparator;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.entity.filter.Filter;
 import rs.ltt.jmap.common.entity.filter.QueryString;
 
-public abstract class Query<T extends AbstractIdentifiableEntity> implements QueryString {
+public abstract class Query<T extends Identifiable> implements QueryString {
 
     public final Filter<T> filter;
 

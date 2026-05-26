@@ -19,10 +19,10 @@ package rs.ltt.jmap.common.entity.filter;
 import com.google.common.base.MoreObjects;
 import java.util.Arrays;
 import org.jspecify.annotations.NonNull;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.util.QueryStringUtils;
 
-public class FilterOperator<T extends AbstractIdentifiableEntity> implements Filter<T> {
+public class FilterOperator<T extends Identifiable> implements Filter<T> {
 
     private Operator operator;
 
@@ -35,17 +35,17 @@ public class FilterOperator<T extends AbstractIdentifiableEntity> implements Fil
     }
 
     @SafeVarargs
-    public static <T extends AbstractIdentifiableEntity> FilterOperator<T> and(Filter<T>... filters) {
+    public static <T extends Identifiable> FilterOperator<T> and(Filter<T>... filters) {
         return new FilterOperator<>(filters, Operator.AND);
     }
 
     @SafeVarargs
-    public static <T extends AbstractIdentifiableEntity> FilterOperator<T> or(Filter<T>... filters) {
+    public static <T extends Identifiable> FilterOperator<T> or(Filter<T>... filters) {
         return new FilterOperator<>(filters, Operator.OR);
     }
 
     @SafeVarargs
-    public static <T extends AbstractIdentifiableEntity> FilterOperator<T> not(Filter<T>... filters) {
+    public static <T extends Identifiable> FilterOperator<T> not(Filter<T>... filters) {
         return new FilterOperator<>(filters, Operator.NOT);
     }
 

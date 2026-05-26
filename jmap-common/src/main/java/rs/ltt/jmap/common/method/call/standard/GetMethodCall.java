@@ -21,11 +21,11 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.NonNull;
 import rs.ltt.jmap.common.Request;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.method.MethodCall;
 
 @Getter
-public abstract class GetMethodCall<T extends AbstractIdentifiableEntity> implements MethodCall {
+public abstract class GetMethodCall<T extends Identifiable> implements MethodCall {
 
     private String accountId;
 

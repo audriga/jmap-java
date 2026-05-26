@@ -34,7 +34,7 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import rs.ltt.jmap.annotation.JmapEntity;
 import rs.ltt.jmap.common.Utils;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.entity.filter.FilterCondition;
 
 @SupportedAnnotationTypes("rs.ltt.jmap.annotation.JmapEntity")
@@ -42,7 +42,7 @@ import rs.ltt.jmap.common.entity.filter.FilterCondition;
 @AutoService(Processor.class)
 public class JmapEntityProcessor extends AbstractProcessor {
 
-    private static final Class<AbstractIdentifiableEntity> INTERFACE = AbstractIdentifiableEntity.class;
+    private static final Class<Identifiable> INTERFACE = Identifiable.class;
 
     private Filer filer;
     private TypeMirror abstractIdMirror;
@@ -87,8 +87,8 @@ public class JmapEntityProcessor extends AbstractProcessor {
     }
 
     private void writeEntities(final List<TypeElement> classes) throws IOException {
-        final FileObject resourceFile = filer.createResource(
-                StandardLocation.CLASS_OUTPUT, "", Utils.getFilenameFor(AbstractIdentifiableEntity.class));
+        final FileObject resourceFile =
+                filer.createResource(StandardLocation.CLASS_OUTPUT, "", Utils.getFilenameFor(Identifiable.class));
         final PrintWriter printWriter = new PrintWriter(resourceFile.openOutputStream());
         for (final TypeElement typeElement : classes) {
             final JmapEntity annotation = typeElement.getAnnotation(JmapEntity.class);
@@ -126,8 +126,7 @@ public class JmapEntityProcessor extends AbstractProcessor {
     private static TypeMirror getFilterCondition(final TypeElement typeElement) {
         final JmapEntity annotation = typeElement.getAnnotation(JmapEntity.class);
         try {
-            final Class<? extends FilterCondition<? extends AbstractIdentifiableEntity>> fc =
-                    annotation.filterCondition();
+            final Class<? extends FilterCondition<?>> fc = annotation.filterCondition();
             System.err.format("FilterCondition %s is not throwing as expected", fc.getSimpleName());
             throw new IllegalStateException("Getting Filter condition from annotation did not throw");
         } catch (MirroredTypeException e) {

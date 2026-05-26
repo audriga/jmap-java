@@ -19,12 +19,12 @@ package rs.ltt.jmap.gson.deserializer;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.entity.filter.Filter;
 import rs.ltt.jmap.common.entity.filter.FilterOperator;
 import rs.ltt.jmap.common.util.Mapper;
 
-public class FilterDeserializer implements JsonDeserializer<Filter<? extends AbstractIdentifiableEntity>> {
+public class FilterDeserializer implements JsonDeserializer<Filter<? extends Identifiable>> {
 
     public static void register(final GsonBuilder builder) {
         for (final Type type : Mapper.TYPE_TO_ENTITY_CLASS.keySet()) {
@@ -33,11 +33,11 @@ public class FilterDeserializer implements JsonDeserializer<Filter<? extends Abs
     }
 
     @Override
-    public Filter<? extends AbstractIdentifiableEntity> deserialize(
+    public Filter<? extends Identifiable> deserialize(
             JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
         final JsonObject jsonObject = jsonElement.getAsJsonObject();
         final boolean isOperator = jsonObject.has("operator") && jsonObject.has("conditions");
-        final Class<? extends AbstractIdentifiableEntity> entityClass = Mapper.TYPE_TO_ENTITY_CLASS.get(type);
+        final Class<? extends Identifiable> entityClass = Mapper.TYPE_TO_ENTITY_CLASS.get(type);
         if (isOperator) {
             return context.deserialize(
                     jsonElement,

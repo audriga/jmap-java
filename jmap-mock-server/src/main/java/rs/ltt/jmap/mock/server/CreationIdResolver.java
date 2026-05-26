@@ -19,7 +19,7 @@ package rs.ltt.jmap.mock.server;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ListMultimap;
 import rs.ltt.jmap.common.Response;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.method.MethodResponse;
 import rs.ltt.jmap.common.method.response.standard.SetMethodResponse;
 
@@ -38,7 +38,7 @@ public class CreationIdResolver {
         for (final Response.Invocation invocation : previousResponses.values()) {
             final MethodResponse methodResponse = invocation.getMethodResponse();
             if (methodResponse instanceof SetMethodResponse) {
-                final AbstractIdentifiableEntity entity =
+                final Identifiable entity =
                         ((SetMethodResponse<?>) methodResponse).getCreated().get(strippedId);
                 if (entity != null) {
                     return entity.getId();

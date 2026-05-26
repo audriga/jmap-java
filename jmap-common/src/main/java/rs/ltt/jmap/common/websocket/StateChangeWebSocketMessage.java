@@ -20,7 +20,7 @@ import com.google.common.base.MoreObjects;
 import java.util.Map;
 import lombok.Getter;
 import rs.ltt.jmap.annotation.Type;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.entity.StateChange;
 
 @Getter
@@ -30,7 +30,7 @@ public class StateChangeWebSocketMessage extends StateChange implements WebSocke
     private String pushState;
 
     public StateChangeWebSocketMessage(
-            Map<String, Map<Class<? extends AbstractIdentifiableEntity>, String>> changed, String pushState) {
+            Map<String, Map<Class<? extends Identifiable>, String>> changed, String pushState) {
         super(changed);
         this.pushState = pushState;
     }

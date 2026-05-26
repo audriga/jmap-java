@@ -22,11 +22,11 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.NonNull;
 import rs.ltt.jmap.common.Request;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.method.MethodCall;
 
 @Getter
-public abstract class SetMethodCall<T extends AbstractIdentifiableEntity> implements MethodCall {
+public abstract class SetMethodCall<T extends Identifiable> implements MethodCall {
 
     @NonNull
     private String accountId;

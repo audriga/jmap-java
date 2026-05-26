@@ -75,7 +75,7 @@ public class Session {
     }
 
     public HttpUrl getEventSourceUrl(
-            Collection<Class<? extends AbstractIdentifiableEntity>> types, CloseAfter closeAfter, Long ping) {
+            Collection<Class<? extends Identifiable>> types, CloseAfter closeAfter, Long ping) {
         final String eventSourceUrl = sessionResource.getEventSourceUrl();
         Preconditions.checkState(eventSourceUrl != null, "Session Resource did not contain an event source Url");
         final UriTemplate uriTemplate = UriTemplate.fromTemplate(eventSourceUrl)

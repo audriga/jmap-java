@@ -480,8 +480,8 @@ public class InMemoryCache implements Cache {
         }
     }
 
-    private static <T extends AbstractIdentifiableEntity> void copyProperty(
-            T target, T source, String property, Class<T> clazz) throws NoSuchFieldException, IllegalAccessException {
+    private static <T extends Identifiable> void copyProperty(T target, T source, String property, Class<T> clazz)
+            throws NoSuchFieldException, IllegalAccessException {
         Field field = clazz.getDeclaredField(property);
         field.setAccessible(true);
         field.set(target, field.get(source));

@@ -26,23 +26,22 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.util.Mapper;
 
-public class TypeStateMapAdapter extends TypeAdapter<Map<Class<? extends AbstractIdentifiableEntity>, String>> {
+public class TypeStateMapAdapter extends TypeAdapter<Map<Class<? extends Identifiable>, String>> {
 
     public static void register(final GsonBuilder builder) {
-        final Type type = new TypeToken<Map<Class<? extends AbstractIdentifiableEntity>, String>>() {}.getType();
+        final Type type = new TypeToken<Map<Class<? extends Identifiable>, String>>() {}.getType();
         builder.registerTypeAdapter(type, new TypeStateMapAdapter());
     }
 
     @Override
-    public void write(
-            final JsonWriter jsonWriter, final Map<Class<? extends AbstractIdentifiableEntity>, String> typeStateMap)
+    public void write(final JsonWriter jsonWriter, final Map<Class<? extends Identifiable>, String> typeStateMap)
             throws IOException {
         jsonWriter.beginObject();
-        for (final Map.Entry<Class<? extends AbstractIdentifiableEntity>, String> entry : typeStateMap.entrySet()) {
-            final Class<? extends AbstractIdentifiableEntity> entityClazz = entry.getKey();
+        for (final Map.Entry<Class<? extends Identifiable>, String> entry : typeStateMap.entrySet()) {
+            final Class<? extends Identifiable> entityClazz = entry.getKey();
             final String entityType = Mapper.ENTITIES.inverse().get(entityClazz);
             if (entityType == null) {
                 throw new JsonIOException(
@@ -56,15 +55,13 @@ public class TypeStateMapAdapter extends TypeAdapter<Map<Class<? extends Abstrac
     }
 
     @Override
-    public Map<Class<? extends AbstractIdentifiableEntity>, String> read(final JsonReader jsonReader)
-            throws IOException {
-        final ImmutableMap.Builder<Class<? extends AbstractIdentifiableEntity>, String> mapBuilder =
-                new ImmutableMap.Builder<>();
+    public Map<Class<? extends Identifiable>, String> read(final JsonReader jsonReader) throws IOException {
+        final ImmutableMap.Builder<Class<? extends Identifiable>, String> mapBuilder = new ImmutableMap.Builder<>();
         jsonReader.beginObject();
         while (jsonReader.hasNext()) {
             final String entityType = jsonReader.nextName();
             final String state = jsonReader.nextString();
-            final Class<? extends AbstractIdentifiableEntity> entityClazz = Mapper.ENTITIES.get(entityType);
+            final Class<? extends Identifiable> entityClazz = Mapper.ENTITIES.get(entityType);
             if (entityClazz == null) {
                 // TODO do we want to log this?
                 continue;

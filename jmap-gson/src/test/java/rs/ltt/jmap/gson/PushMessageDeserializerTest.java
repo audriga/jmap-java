@@ -22,7 +22,7 @@ import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.entity.PushMessage;
 import rs.ltt.jmap.common.entity.PushVerification;
 import rs.ltt.jmap.common.entity.StateChange;
@@ -34,7 +34,7 @@ public class PushMessageDeserializerTest extends AbstractGsonTest {
         final PushMessage pushMessage = parseFromResource("push/state-change.json", PushMessage.class);
         MatcherAssert.assertThat(pushMessage, CoreMatchers.instanceOf(StateChange.class));
         final StateChange stateChange = (StateChange) pushMessage;
-        final Map<Class<? extends AbstractIdentifiableEntity>, String> max =
+        final Map<Class<? extends Identifiable>, String> max =
                 stateChange.getChanged().get("max@example.com");
         Assertions.assertEquals(2, max.size());
     }

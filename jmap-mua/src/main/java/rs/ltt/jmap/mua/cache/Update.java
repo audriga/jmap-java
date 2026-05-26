@@ -23,13 +23,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.entity.TypedState;
 import rs.ltt.jmap.common.method.response.standard.ChangesMethodResponse;
 import rs.ltt.jmap.common.method.response.standard.GetMethodResponse;
 
 // TODO: together with AbstractUpdate and QueryUpdate this can probably be moved to jmap-client
-public class Update<T extends AbstractIdentifiableEntity> extends AbstractUpdate<T> {
+public class Update<T extends Identifiable> extends AbstractUpdate<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Update.class);
 
@@ -50,14 +50,14 @@ public class Update<T extends AbstractIdentifiableEntity> extends AbstractUpdate
         this.destroyed = destroyed;
     }
 
-    public static <T extends AbstractIdentifiableEntity> Update<T> of(
+    public static <T extends Identifiable> Update<T> of(
             ChangesMethodResponse<T> changesMethodResponse,
             GetMethodResponse<T> createdMethodResponse,
             GetMethodResponse<T> updatedMethodResponse) {
         checkEquals(
                 changesMethodResponse.getCreated(),
                 Arrays.stream(createdMethodResponse.getList())
-                        .map(AbstractIdentifiableEntity::getId)
+                        .map(Identifiable::getId)
                         .collect(Collectors.toSet()),
                 String.format(
                         "IDs returned by %s.created does not match ids found in Get call",
@@ -65,7 +65,7 @@ public class Update<T extends AbstractIdentifiableEntity> extends AbstractUpdate
         checkEquals(
                 changesMethodResponse.getUpdated(),
                 Arrays.stream(updatedMethodResponse.getList())
-                        .map(AbstractIdentifiableEntity::getId)
+                        .map(Identifiable::getId)
                         .collect(Collectors.toSet()),
                 String.format(
                         "IDs returned by %s.updated does not match ids found in Get call",

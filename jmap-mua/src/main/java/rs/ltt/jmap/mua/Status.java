@@ -17,7 +17,7 @@
 package rs.ltt.jmap.mua;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.mua.cache.AbstractUpdate;
 
 public enum Status {
@@ -25,7 +25,7 @@ public enum Status {
     UPDATED,
     UNCHANGED;
 
-    public static <T extends AbstractIdentifiableEntity> Status of(AbstractUpdate<T> update) {
+    public static <T extends Identifiable> Status of(AbstractUpdate<T> update) {
         return update.isHasMore() ? HAS_MORE : of(update.hasChanges());
     }
 

@@ -31,12 +31,12 @@ public class StateChangeTest extends AbstractGsonTest {
     @Test
     public void deserialize() throws IOException {
         final StateChange stateChange = parseFromResource("push/state-change.json", StateChange.class);
-        final Map<Class<? extends AbstractIdentifiableEntity>, String> max =
+        final Map<Class<? extends Identifiable>, String> max =
                 stateChange.getChanged().get("max@example.com");
         Assertions.assertEquals(2, max.size());
         Assertions.assertEquals("d35ecb040aab", max.get(Email.class));
         Assertions.assertEquals("428d565f2440", max.get(Thread.class));
-        final Map<Class<? extends AbstractIdentifiableEntity>, String> sam =
+        final Map<Class<? extends Identifiable>, String> sam =
                 stateChange.getChanged().get("sam@example.com");
         Assertions.assertEquals(4, sam.size());
     }

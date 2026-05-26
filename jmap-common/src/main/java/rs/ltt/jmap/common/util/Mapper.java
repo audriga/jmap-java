@@ -33,9 +33,9 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import rs.ltt.jmap.common.Utils;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
 import rs.ltt.jmap.common.entity.AccountCapability;
 import rs.ltt.jmap.common.entity.Capability;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.entity.filter.Filter;
 import rs.ltt.jmap.common.entity.filter.FilterCondition;
 import rs.ltt.jmap.common.entity.filter.MailboxFilterCondition;
@@ -54,18 +54,14 @@ public final class Mapper {
     public static final ImmutableBiMap<String, Class<? extends Capability>> CAPABILITIES = Mapper.get(Capability.class);
     public static final ImmutableBiMap<String, Class<? extends AccountCapability>> ACCOUNT_CAPABILITIES =
             Mapper.get(AccountCapability.class);
-    public static final ImmutableBiMap<String, Class<? extends AbstractIdentifiableEntity>> ENTITIES =
-            Mapper.get(AbstractIdentifiableEntity.class);
-    public static final ImmutableMap<
-                    Class<? extends AbstractIdentifiableEntity>,
-                    Class<FilterCondition<? extends AbstractIdentifiableEntity>>>
+    public static final ImmutableBiMap<String, Class<? extends Identifiable>> ENTITIES = Mapper.get(Identifiable.class);
+    public static final ImmutableMap<Class<? extends Identifiable>, Class<FilterCondition<? extends Identifiable>>>
             ENTITY_TO_FILTER_CONDITION = getEntityToFilterConditionMap();
-    public static final ImmutableMap<Type, Class<? extends AbstractIdentifiableEntity>> TYPE_TO_ENTITY_CLASS;
+    public static final ImmutableMap<Type, Class<? extends Identifiable>> TYPE_TO_ENTITY_CLASS;
 
     static {
-        final ImmutableMap.Builder<Type, Class<? extends AbstractIdentifiableEntity>> typeMapBuilder =
-                new ImmutableMap.Builder<>();
-        for (final Class<? extends AbstractIdentifiableEntity> clazz : ENTITY_TO_FILTER_CONDITION.keySet()) {
+        final ImmutableMap.Builder<Type, Class<? extends Identifiable>> typeMapBuilder = new ImmutableMap.Builder<>();
+        for (final Class<? extends Identifiable> clazz : ENTITY_TO_FILTER_CONDITION.keySet()) {
             typeMapBuilder.put(TypeToken.getParameterized(Filter.class, clazz).getType(), clazz);
         }
         TYPE_TO_ENTITY_CLASS = typeMapBuilder.build();
@@ -141,13 +137,9 @@ public final class Mapper {
         }
     }
 
-    private static ImmutableBiMap<
-                    Class<? extends AbstractIdentifiableEntity>,
-                    Class<FilterCondition<? extends AbstractIdentifiableEntity>>>
+    private static ImmutableBiMap<Class<? extends Identifiable>, Class<FilterCondition<? extends Identifiable>>>
             getEntityToFilterConditionMap() {
-        final ImmutableBiMap.Builder<
-                        Class<? extends AbstractIdentifiableEntity>,
-                        Class<FilterCondition<? extends AbstractIdentifiableEntity>>>
+        final ImmutableBiMap.Builder<Class<? extends Identifiable>, Class<FilterCondition<? extends Identifiable>>>
                 builder = new ImmutableBiMap.Builder<>();
         for (final BufferedReader bufferedReader : getSystemResources(FilterCondition.class)) {
             if (bufferedReader == null) {
@@ -158,10 +150,10 @@ public final class Mapper {
                     final String[] parts = line.split(" ", 2);
                     if (parts.length == 2) {
                         try {
-                            final Class<? extends AbstractIdentifiableEntity> entityClass =
-                                    Class.forName(parts[0]).asSubclass(AbstractIdentifiableEntity.class);
-                            final Class<FilterCondition<? extends AbstractIdentifiableEntity>> filterConditionClass =
-                                    (Class<FilterCondition<? extends AbstractIdentifiableEntity>>)
+                            final Class<? extends Identifiable> entityClass =
+                                    Class.forName(parts[0]).asSubclass(Identifiable.class);
+                            final Class<FilterCondition<? extends Identifiable>> filterConditionClass =
+                                    (Class<FilterCondition<? extends Identifiable>>)
                                             Class.forName(parts[1]).asSubclass(FilterCondition.class);
                             builder.put(entityClass, filterConditionClass);
                         } catch (ClassNotFoundException | ClassCastException e) {
@@ -176,14 +168,12 @@ public final class Mapper {
                 LOGGER.warn("Unable to read system resource", e);
             }
         }
-        final ImmutableBiMap<
-                        Class<? extends AbstractIdentifiableEntity>,
-                        Class<FilterCondition<? extends AbstractIdentifiableEntity>>>
-                map = builder.build();
+        final ImmutableBiMap<Class<? extends Identifiable>, Class<FilterCondition<? extends Identifiable>>> map =
+                builder.build();
         if (LOGGER.isWarnEnabled() && !map.containsValue(MailboxFilterCondition.class)) {
             LOGGER.warn(
                     "Some well known mappings are missing. Have you enabled resource merging for" + " {}?",
-                    Utils.getFilenameFor(AbstractIdentifiableEntity.class));
+                    Utils.getFilenameFor(Identifiable.class));
         }
         return builder.build();
     }

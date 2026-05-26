@@ -23,19 +23,19 @@ import com.google.common.collect.Maps;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
 import rs.ltt.jmap.common.entity.Email;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.entity.Mailbox;
 import rs.ltt.jmap.common.entity.Thread;
 import rs.ltt.jmap.common.method.response.mailbox.SetMailboxMethodResponse;
 
 public class Update {
 
-    private final Map<Class<? extends AbstractIdentifiableEntity>, Changes> changes;
+    private final Map<Class<? extends Identifiable>, Changes> changes;
 
     private final String newVersion;
 
-    private Update(Map<Class<? extends AbstractIdentifiableEntity>, Changes> changes, String newVersion) {
+    private Update(Map<Class<? extends Identifiable>, Changes> changes, String newVersion) {
         this.changes = changes;
         this.newVersion = newVersion;
     }
@@ -55,31 +55,28 @@ public class Update {
     }
 
     public static Update merge(final Collection<Update> updates) {
-        final ImmutableMultimap.Builder<Class<? extends AbstractIdentifiableEntity>, Changes> changesBuilder =
+        final ImmutableMultimap.Builder<Class<? extends Identifiable>, Changes> changesBuilder =
                 ImmutableMultimap.builder();
         String newVersion = null;
         for (final Update update : updates) {
-            for (Map.Entry<Class<? extends AbstractIdentifiableEntity>, Changes> entityChanges :
-                    update.changes.entrySet()) {
+            for (Map.Entry<Class<? extends Identifiable>, Changes> entityChanges : update.changes.entrySet()) {
                 changesBuilder.put(entityChanges.getKey(), entityChanges.getValue());
             }
             newVersion = update.newVersion;
         }
-        ImmutableMap<Class<? extends AbstractIdentifiableEntity>, Collection<Changes>> multiMap =
+        ImmutableMap<Class<? extends Identifiable>, Collection<Changes>> multiMap =
                 changesBuilder.build().asMap();
-        Map<Class<? extends AbstractIdentifiableEntity>, Changes> changes =
-                Maps.transformValues(multiMap, Changes::merge);
+        Map<Class<? extends Identifiable>, Changes> changes = Maps.transformValues(multiMap, Changes::merge);
 
         return new Update(changes, newVersion);
     }
 
-    private static <T extends AbstractIdentifiableEntity> Map<String, T> nullToEmpty(Map<String, T> value) {
+    private static <T extends Identifiable> Map<String, T> nullToEmpty(Map<String, T> value) {
         return value == null ? Collections.emptyMap() : value;
     }
 
     public static Update created(Email email, String newVersion) {
-        final ImmutableMap.Builder<Class<? extends AbstractIdentifiableEntity>, Changes> builder =
-                new ImmutableMap.Builder<>();
+        final ImmutableMap.Builder<Class<? extends Identifiable>, Changes> builder = new ImmutableMap.Builder<>();
         builder.put(Email.class, new Changes(new String[0], new String[] {email.getId()}));
         builder.put(Thread.class, new Changes(new String[0], new String[] {email.getThreadId()}));
         builder.put(Mailbox.class, new Changes(email.getMailboxIds().keySet().toArray(new String[0]), new String[0]));
@@ -88,15 +85,14 @@ public class Update {
 
     public static Update updated(
             final Collection<Email> emails, final Collection<String> mailboxes, String newVersion) {
-        final ImmutableMap.Builder<Class<? extends AbstractIdentifiableEntity>, Changes> builder =
-                new ImmutableMap.Builder<>();
+        final ImmutableMap.Builder<Class<? extends Identifiable>, Changes> builder = new ImmutableMap.Builder<>();
         builder.put(Email.class, new Changes(emails.stream().map(Email::getId).toArray(String[]::new), new String[0]));
         builder.put(Thread.class, new Changes(new String[0], new String[0]));
         builder.put(Mailbox.class, new Changes(mailboxes.toArray(new String[0]), new String[0]));
         return new Update(builder.build(), newVersion);
     }
 
-    public Changes getChangesFor(final Class<? extends AbstractIdentifiableEntity> clazz) {
+    public Changes getChangesFor(final Class<? extends Identifiable> clazz) {
         return changes.get(clazz);
     }
 

@@ -16,6 +16,6 @@
 
 package rs.ltt.jmap.common.entity.filter;
 
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
+import rs.ltt.jmap.common.entity.Identifiable;
 
-public interface FilterCondition<T extends AbstractIdentifiableEntity> extends Filter<T> {}
+public interface FilterCondition<T extends Identifiable> extends Filter<T> {}

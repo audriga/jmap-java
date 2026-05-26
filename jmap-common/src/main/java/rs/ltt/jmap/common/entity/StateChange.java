@@ -27,11 +27,10 @@ import rs.ltt.jmap.annotation.Type;
 @Type
 public class StateChange implements PushMessage {
 
-    protected Map<String, Map<Class<? extends AbstractIdentifiableEntity>, String>> changed;
+    protected Map<String, Map<Class<? extends Identifiable>, String>> changed;
 
     @Builder
-    public StateChange(
-            @Singular("changed") Map<String, Map<Class<? extends AbstractIdentifiableEntity>, String>> changed) {
+    public StateChange(@Singular("changed") Map<String, Map<Class<? extends Identifiable>, String>> changed) {
         this.changed = changed;
     }
 

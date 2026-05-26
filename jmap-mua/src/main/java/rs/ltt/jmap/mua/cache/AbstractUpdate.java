@@ -16,10 +16,10 @@
 
 package rs.ltt.jmap.mua.cache;
 
-import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
+import rs.ltt.jmap.common.entity.Identifiable;
 import rs.ltt.jmap.common.entity.TypedState;
 
-public abstract class AbstractUpdate<T extends AbstractIdentifiableEntity> {
+public abstract class AbstractUpdate<T extends Identifiable> {
 
     private final TypedState<T> oldState;
     private final TypedState<T> newState;
