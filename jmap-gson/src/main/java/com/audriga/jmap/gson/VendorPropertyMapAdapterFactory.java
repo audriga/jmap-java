@@ -1,6 +1,6 @@
 package com.audriga.jmap.gson;
 
-import com.audriga.jmap.common.entity.VendorProperty;
+import com.audriga.jmap.common.entity.VendorExtension;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapter;
@@ -21,14 +21,14 @@ public final class VendorPropertyMapAdapterFactory implements TypeAdapterFactory
         if (!Map.class.equals(type.getRawType())) return null;
         if (!(type.getType() instanceof ParameterizedType pType)) return null;
         var args = pType.getActualTypeArguments();
-        if (!VendorProperty.class.equals(args[0])) return null;
+        if (!VendorExtension.class.equals(args[0])) return null;
         @SuppressWarnings("unchecked")
         var valueAdapter = (TypeAdapter<Object>) gson.getAdapter(TypeToken.get(args[1]));
         return new TypeAdapter<T>() {
             @Override
             public void write(JsonWriter out, T value) throws IOException {
                 @SuppressWarnings("unchecked")
-                var map = (Map<VendorProperty, Object>) value;
+                var map = (Map<VendorExtension, Object>) value;
                 out.beginObject();
                 for (var entry : map.entrySet()) {
                     out.name(entry.getKey().toString());
@@ -39,10 +39,10 @@ public final class VendorPropertyMapAdapterFactory implements TypeAdapterFactory
 
             @Override
             public T read(JsonReader in) throws IOException {
-                var map = new LinkedHashMap<VendorProperty, Object>();
+                var map = new LinkedHashMap<VendorExtension, Object>();
                 in.beginObject();
                 while (in.peek() != JsonToken.END_OBJECT) {
-                    var prop = VendorProperty.parse(in.nextName());
+                    var prop = VendorExtension.parse(in.nextName());
                     if (prop == null) {
                         in.skipValue();
                         continue;

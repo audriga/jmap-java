@@ -4,8 +4,8 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import org.jspecify.annotations.Nullable;
 
-public record VendorProperty(String prefix, String name) {
-    public VendorProperty {
+public record VendorExtension(String prefix, String name) {
+    public VendorExtension {
         Objects.requireNonNull(prefix);
         Objects.requireNonNull(name);
     }
@@ -20,10 +20,10 @@ public record VendorProperty(String prefix, String name) {
     }
 
     @Nullable
-    public static VendorProperty parse(String property) {
+    public static VendorExtension parse(String property) {
         var matcher = PATTERN.matcher(property);
         if (!matcher.matches()) return null;
-        return new VendorProperty(matcher.group("prefix"), matcher.group("name"));
+        return new VendorExtension(matcher.group("prefix"), matcher.group("name"));
     }
 
     @Override

@@ -6,7 +6,7 @@ import com.audriga.jmap.annotation.Inline;
 import com.audriga.jmap.annotation.ServerSet;
 import com.audriga.jmap.annotation.Type;
 import com.audriga.jmap.common.entity.Identifiable;
-import com.audriga.jmap.common.entity.VendorProperty;
+import com.audriga.jmap.common.entity.VendorExtension;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.time.Instant;
@@ -59,5 +59,5 @@ public record ContactCard(
         @Nullable Set<String> keywords,
         @Nullable Map<String, Note> notes,
         @Nullable Map<String, PersonalInfo> personalInfo,
-        @Inline @Singular Map<VendorProperty, JsonElement> vendorProperties)
+        @Inline @Singular Map<VendorExtension, JsonElement> vendorProperties)
         implements Identifiable {}
