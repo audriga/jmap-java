@@ -8,8 +8,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
 import java.time.Instant;
 import java.util.Map;
+import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 
+@Builder(toBuilder = true)
 @Type
 public record Alert(
         Trigger trigger,

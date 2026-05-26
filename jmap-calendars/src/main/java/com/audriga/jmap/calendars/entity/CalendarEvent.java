@@ -43,7 +43,7 @@ public record CalendarEvent(
         @Nullable Map<String, Location> locations,
         @Nullable String mainLocationId,
         @Nullable Map<String, VirtualLocation> virtualLocations,
-        @Nullable Map<String, Link> links,
+        @Nullable Map<String, CalendarLink> links,
         @Nullable String locale,
         @Nullable Set<String> keywords,
         @Nullable Set<String> categories,
@@ -54,7 +54,7 @@ public record CalendarEvent(
         @Nullable RecurrenceRule recurrenceRule,
         @Nullable Map<LocalDateTime, Map<String, Object>> recurrenceOverrides,
         // Sharing and Scheduling
-        @Default("0") Integer priority,
+        @Default("0") Long priority,
         @Default("\"busy\"") String freeBusyStatus,
         @Default("\"public\"") String privacy,
         @Nullable URI organizerCalendarAddress,

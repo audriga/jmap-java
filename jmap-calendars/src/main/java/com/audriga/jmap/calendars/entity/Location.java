@@ -11,4 +11,4 @@ public record Location(
         @Nullable String name,
         @Nullable Set<String> locationTypes,
         @Nullable URI coordinates,
-        @Nullable Map<String, Link> links) {}
+        @Nullable Map<String, CalendarLink> links) {}

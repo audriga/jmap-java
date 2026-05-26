@@ -6,8 +6,10 @@ import com.audriga.jmap.annotation.ServerSet;
 import com.audriga.jmap.common.entity.Identifiable;
 import java.time.ZoneId;
 import java.util.Map;
+import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 
+@Builder(toBuilder = true)
 public record Calendar(
         @Immutable @ServerSet String id,
         String name,

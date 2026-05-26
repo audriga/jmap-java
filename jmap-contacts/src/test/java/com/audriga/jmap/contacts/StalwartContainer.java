@@ -93,6 +93,7 @@ public final class StalwartContainer extends GenericContainer<StalwartContainer>
                                                 new StalwartTracerStdout.Builder()
                                                         .ansi(true)
                                                         .buffered(false)
+                                                        .level(StalwartTracingLevel.TRACE)
                                                         .lossy(false)
                                                         .multiline(false)
                                                         .events(Map.of())

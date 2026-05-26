@@ -24,6 +24,6 @@ public record Participant(
         @Nullable Set<URI> delegatedTo,
         @Nullable Set<URI> delegatedFrom,
         @Nullable Set<URI> memberOf,
-        @Nullable Map<String, Link> links,
+        @Nullable Map<String, CalendarLink> links,
         @Nullable String progress,
         @Nullable Integer percentComplete) {}
