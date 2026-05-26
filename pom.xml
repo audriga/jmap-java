@@ -233,7 +233,7 @@
                     <java>
                         <palantirJavaFormat>
                             <version>2.93.0</version>
-                            <formatJavadoc>true</formatJavadoc>
+                            <formatJavadoc>false</formatJavadoc>
                         </palantirJavaFormat>
                     </java>
                     <pom>

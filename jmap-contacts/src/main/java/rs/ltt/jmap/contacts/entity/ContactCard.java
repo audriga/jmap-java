@@ -1,10 +1,9 @@
 package rs.ltt.jmap.contacts.entity;
 
+import com.google.gson.JsonObject;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.gson.JsonObject;
 import org.jspecify.annotations.Nullable;
 import rs.ltt.jmap.annotation.Default;
 import rs.ltt.jmap.annotation.Type;
