@@ -3,10 +3,12 @@ package rs.ltt.jmap.calendars.entity;
 import java.net.URI;
 import java.util.Map;
 import java.util.Set;
+import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 import rs.ltt.jmap.annotation.Default;
 import rs.ltt.jmap.annotation.Type;
 
+@Builder
 @Type
 public record Participant(
         @Nullable String name,
@@ -16,6 +18,7 @@ public record Participant(
         @Nullable URI calendarAddress,
         @Nullable String kind,
         @Nullable Set<String> roles,
+        @Default("\"needs-action\"") String participationStatus,
         @Default("false") Boolean expectReply,
         @Nullable String sentBy,
         @Nullable Set<URI> delegatedTo,

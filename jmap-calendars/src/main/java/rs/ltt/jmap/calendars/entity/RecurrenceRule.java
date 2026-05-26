@@ -13,19 +13,17 @@ public record RecurrenceRule(
         @Default("\"gregorian\"") String rscale,
         @Default("\"omit\"") String skip,
         @Default("\"mo\"") String firstDayOfWeek,
-        @Nullable List<NDay> byDay) {
+        @Nullable List<NDay> byDay,
+        @Nullable List<Integer> byMonthDay,
+        @Nullable List<String> byMonth,
+        @Nullable List<Integer> byYearDay,
+        @Nullable List<Integer> byWeekNo,
+        @Nullable List<Integer> byHour,
+        @Nullable List<Integer> byMinute,
+        @Nullable List<Integer> bySecond,
+        @Nullable List<Long> bySetPosition,
+        @Nullable Long count,
+        @Nullable LocalDateTime until) {
     @Type
-    public record NDay(
-            String day,
-            @Nullable Long nthOfPeriod,
-            @Nullable List<Integer> byMonthDay,
-            @Nullable List<String> byMonth,
-            @Nullable List<Integer> byYearDay,
-            @Nullable List<Integer> byWeekNo,
-            @Nullable List<Integer> byHour,
-            @Nullable List<Integer> byMinute,
-            @Nullable List<Integer> bySecond,
-            @Nullable List<Long> bySetPosition,
-            @Nullable Long count,
-            @Nullable LocalDateTime until) {}
+    public record NDay(String day, @Nullable Long nthOfPeriod) {}
 }

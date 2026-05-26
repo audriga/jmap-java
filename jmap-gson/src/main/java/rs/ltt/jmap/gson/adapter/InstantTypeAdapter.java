@@ -24,6 +24,7 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class InstantTypeAdapter extends TypeAdapter<Instant> {
 
@@ -47,6 +48,14 @@ public class InstantTypeAdapter extends TypeAdapter<Instant> {
             return null;
         }
         final String asString = jsonReader.nextString();
-        return Instant.parse(asString);
+        try {
+            return Instant.parse(asString);
+        } catch (DateTimeParseException e) {
+            try {
+                return Instant.parse('+' + asString);
+            } catch (DateTimeParseException ignored) {
+                throw e;
+            }
+        }
     }
 }

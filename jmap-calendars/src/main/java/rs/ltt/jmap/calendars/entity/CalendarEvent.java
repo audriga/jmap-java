@@ -1,17 +1,20 @@
 package rs.ltt.jmap.calendars.entity;
 
 import java.net.URI;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
+import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 import rs.ltt.jmap.annotation.Default;
 import rs.ltt.jmap.annotation.Immutable;
 import rs.ltt.jmap.annotation.ServerSet;
 import rs.ltt.jmap.annotation.Type;
+import rs.ltt.jmap.common.DateTimePeriod;
+import rs.ltt.jmap.common.entity.Identifiable;
 
+@Builder
 @Type("Event")
 public record CalendarEvent(
         // JMAP Additions
@@ -61,6 +64,7 @@ public record CalendarEvent(
         @Nullable String timeZone,
         // Event
         LocalDateTime start,
-        @Default("\"PT0S\"") Duration duration,
+        @Default("\"PT0S\"") DateTimePeriod duration,
         @Nullable String endTimeZone,
-        @Default("\"confirmed\"") String status) {}
+        @Default("\"confirmed\"") String status)
+        implements Identifiable {}
