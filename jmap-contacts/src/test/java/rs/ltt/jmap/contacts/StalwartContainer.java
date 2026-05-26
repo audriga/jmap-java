@@ -1,18 +1,15 @@
 package rs.ltt.jmap.contacts;
 
 import com.audriga.stalwart.*;
-import com.google.gson.JsonObject;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import okhttp3.HttpUrl;
 import org.testcontainers.containers.ContainerLaunchException;
-import org.testcontainers.containers.ContainerState;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.images.RemoteDockerImage;
-import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 import rs.ltt.jmap.client.JmapClient;
@@ -20,11 +17,11 @@ import rs.ltt.jmap.client.JmapClient;
 public final class StalwartContainer extends GenericContainer<StalwartContainer> {
     private static final DockerImageName REPOSITORY = DockerImageName.parse("stalwartlabs/stalwart");
     private static final String LATEST = "0.16.10";
-    private static final String CONFIG_PATH = "/etc/stalwart/config.json";
 
     private final PostgreSQLContainer database;
-    private final String configJson;
     private String publicUrl;
+    private String username;
+    private String password;
 
     public StalwartContainer(RemoteDockerImage image) {
         super(image);
@@ -32,18 +29,6 @@ public final class StalwartContainer extends GenericContainer<StalwartContainer>
         database =
                 new PostgreSQLContainer("postgres:18").withNetwork(getNetwork()).withNetworkAliases("postgres");
         dependsOn(database);
-
-        var config = new JsonObject();
-        config.addProperty("@type", "PostgreSql");
-        config.addProperty("host", "postgres");
-        config.addProperty("database", database.getDatabaseName());
-        config.addProperty("authUsername", database.getUsername());
-        var authSecret = new JsonObject();
-        authSecret.addProperty("@type", "Value");
-        authSecret.addProperty("secret", database.getPassword());
-        config.add("authSecret", authSecret);
-        configJson = config.toString();
-        withCopyToContainer(Transferable.of(configJson), CONFIG_PATH);
     }
 
     public static StalwartContainer forTag(String tag) {
@@ -110,7 +95,9 @@ public final class StalwartContainer extends GenericContainer<StalwartContainer>
             if (res.getNotUpdated() != null) {
                 throw new ContainerLaunchException("couldn't update stalwart x:Bootstrap: " + res.getNotUpdated());
             }
-            System.out.println(res.getUpdated());
+            var updated = res.getUpdated().get("singleton");
+            username = updated.username();
+            password = updated.secret();
         } catch (ExecutionException | InterruptedException e) {
             throw new ContainerLaunchException("Stalwart bootstrap failed", e);
         }
@@ -125,7 +112,8 @@ public final class StalwartContainer extends GenericContainer<StalwartContainer>
             throw new RuntimeException(e);
         }
         addFixedExposedPort(port, 443);
-        publicUrl = "https://%s:%s".formatted(urlHost(this), port);
+        publicUrl =
+                new HttpUrl.Builder().scheme("https").host(getHost()).port(port).toString();
         addEnv("STALWART_PUBLIC_URL", publicUrl);
         super.doStart();
     }
@@ -134,10 +122,12 @@ public final class StalwartContainer extends GenericContainer<StalwartContainer>
         return publicUrl;
     }
 
-    // enclose IPv6 addresses in square brackets
-    private static String urlHost(ContainerState container) {
-        var host = container.getHost();
-        return host.contains(":") ? '[' + host + ']' : host;
+    public String username() {
+        return username;
+    }
+
+    public String password() {
+        return password;
     }
 
     @Override
