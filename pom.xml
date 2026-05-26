@@ -269,7 +269,11 @@
                         <includes>
                             <include>**/*.md</include>
                         </includes>
-                        <flexmark/>
+                        <flexmark>
+                            <formatterOptions>
+                                <maxTrailingBlankLines>0</maxTrailingBlankLines>
+                            </formatterOptions>
+                        </flexmark>
                     </markdown>
                     <java>
                         <palantirJavaFormat>

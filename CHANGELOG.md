@@ -242,4 +242,3 @@
 * jmap-mua has support for reading and processing (changing mailboxes, changing
   keywords, etc) emails.
 * jmap-client, jmap-common, jmap-gson and jmap-mua have some unit test
-
