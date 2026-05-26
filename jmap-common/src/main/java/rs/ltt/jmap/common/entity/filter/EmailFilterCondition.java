@@ -100,8 +100,7 @@ public class EmailFilterCondition implements FilterCondition<Email> {
 
     @Override
     public int compareTo(@NonNull final Filter<Email> filter) {
-        if (filter instanceof EmailFilterCondition) {
-            final EmailFilterCondition other = (EmailFilterCondition) filter;
+        if (filter instanceof EmailFilterCondition other) {
             return ComparisonChain.start()
                     .compare(Strings.nullToEmpty(inMailbox), Strings.nullToEmpty(other.inMailbox))
                     .compare(inMailboxOtherThan, other.inMailboxOtherThan, QueryStringUtils.STRING_ARRAY_COMPARATOR)
