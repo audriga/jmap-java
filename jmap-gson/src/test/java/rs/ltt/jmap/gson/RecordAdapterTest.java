@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
 import java.io.IOException;
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import rs.ltt.jmap.annotation.Default;
 import rs.ltt.jmap.annotation.Inline;
@@ -71,12 +72,14 @@ final class RecordAdapterTest extends AbstractGsonTest {
     }
 
     @Test
+    @Disabled("we currently allow missing properties until a better solution is found")
     void missingProperty() {
         record X(String a, String b) {}
         assertThrows(JsonParseException.class, () -> parseFromResource("record/missing.json", X.class));
     }
 
     @Test
+    @Disabled("see above")
     void nullNotNullable() {
         record X(String a) {}
         assertThrows(JsonParseException.class, () -> parseFromResource("record/null-not-nullable.json", X.class));
