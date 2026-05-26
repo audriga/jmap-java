@@ -29,16 +29,23 @@ class ContactsIT {
                             .getMain(QueryContactCardResponse.class);
                     assertEquals(0, res.getTotal());
                 }
+                String addressBookId;
+                {
+                    var res = client.call(new GetAddressBookCall(accountId, null, null, null))
+                            .get()
+                            .getMain(GetAddressBookResponse.class);
+                    assertEquals(1, res.getList().length);
+                    addressBookId = res.getList()[0].id();
+                }
                 {
                     var res = client.call(new SetContactCardCall(
                                     accountId,
                                     null,
                                     Map.of(
                                             "a",
-                                            new ContactCard(
-                                                    null, Set.of(), null, null, null, null, null, null, null, null,
-                                                    null, null, null, null, null, null, null, null, null, null, null,
-                                                    null, null, null, null, null, null, null, null, null, null, null)),
+                                            ContactCard.builder()
+                                                    .addressBookIds(Set.of(addressBookId))
+                                                    .build()),
                                     null,
                                     null,
                                     null))
@@ -50,13 +57,13 @@ class ContactsIT {
                     assertNull(res.getNotDestroyed());
                     assertNull(res.getNotUpdated());
                     assertEquals(1, res.getCreated().size());
-                    var created = res.getCreated().entrySet().iterator().next();
+                    var created = res.getCreated().get("a");
                     assertEquals(
-                            new ContactCard(
-                                    null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                                    null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                                    null, null, null, null),
-                            created.getValue());
+                            ContactCard.builder()
+                                    .id(created.id())
+                                    .kind("individual")
+                                    .build(),
+                            created);
                 }
             }
         }
