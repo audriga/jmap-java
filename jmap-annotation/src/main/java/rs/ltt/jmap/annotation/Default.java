@@ -1,0 +1,17 @@
+package rs.ltt.jmap.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.RECORD_COMPONENT)
+public @interface Default {
+    /**
+     * Default JSON value for this property.
+     *
+     * @return the default value, as valid I-JSON
+     */
+    String value();
+}
