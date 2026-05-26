@@ -1,0 +1,5 @@
+[
+  {"@type": "gamma", "c": ["wrong case", "class name when @Type is different"]},
+  {"@type": "Beta", "b": 0, "bb": 0},
+  {"type": "Alpha", "a": "wrong type field"}
+]

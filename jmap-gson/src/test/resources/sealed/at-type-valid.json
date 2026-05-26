@@ -1,0 +1,5 @@
+[
+  {"@type": "Gamma", "c": ["a", "b", "c"]},
+  {"@type": "second", "b": 1, "bb": -1},
+  {"@type": "Alpha", "a": "fdsa"}
+]

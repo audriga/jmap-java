@@ -3,6 +3,7 @@ package rs.ltt.jmap.gson;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
@@ -19,7 +20,12 @@ abstract class AbstractGsonTest {
         return gsonBuilder.create();
     }
 
+    @SuppressWarnings("unchecked")
     static <T> T parseFromResource(String filename, Type type) throws IOException {
+        return (T) parseFromResource(filename, TypeToken.get(type));
+    }
+
+    static <T> T parseFromResource(String filename, TypeToken<T> type) throws IOException {
         final Gson gson = getGson();
         return gson.fromJson(
                 Resources.asCharSource(Resources.getResource(filename), StandardCharsets.UTF_8)
