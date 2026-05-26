@@ -17,7 +17,6 @@
 package rs.ltt.jmap.annotation.processor;
 
 import com.google.auto.service.AutoService;
-import com.google.common.base.Strings;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -93,7 +92,7 @@ public class JmapEntityProcessor extends AbstractProcessor {
         for (final TypeElement typeElement : classes) {
             final JmapEntity annotation = typeElement.getAnnotation(JmapEntity.class);
             final String name;
-            if (Strings.isNullOrEmpty(annotation.name())) {
+            if (annotation.name() == null || annotation.name().isEmpty()) {
                 name = typeElement.getSimpleName().toString();
             } else {
                 name = annotation.name();
