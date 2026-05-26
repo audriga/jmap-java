@@ -95,6 +95,11 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>com.audriga</groupId>
+                <artifactId>jmap-stalwart</artifactId>
+                <version>0.1.0-SNAPSHOT-schema0.16.10</version>
+            </dependency>
+            <dependency>
                 <groupId>com.damnhandy</groupId>
                 <artifactId>handy-uri-templates</artifactId>
                 <version>2.1.8</version>
@@ -118,6 +123,21 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>2.0.18</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-jdk14</artifactId>
+                <version>2.0.18</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers</artifactId>
+                <version>2.0.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers-postgresql</artifactId>
+                <version>2.0.5</version>
             </dependency>
             <dependency>
                 <groupId>com.google.auto.service</groupId>
@@ -182,6 +202,11 @@
                             </configuration>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>3.6.0-M1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

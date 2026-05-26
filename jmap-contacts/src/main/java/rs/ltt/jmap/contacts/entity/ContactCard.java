@@ -9,7 +9,7 @@ import rs.ltt.jmap.annotation.Default;
 import rs.ltt.jmap.annotation.Immutable;
 import rs.ltt.jmap.annotation.ServerSet;
 import rs.ltt.jmap.annotation.Type;
-import rs.ltt.jmap.common.entity.IdentifiableRecord;
+import rs.ltt.jmap.common.entity.Identifiable;
 
 @Type("Card")
 public record ContactCard(
@@ -55,4 +55,4 @@ public record ContactCard(
         @Nullable Set<String> keywords,
         @Nullable Map<String, Note> notes,
         @Nullable Map<String, PersonalInfo> personalInfo)
-        implements IdentifiableRecord {}
+        implements Identifiable {}
