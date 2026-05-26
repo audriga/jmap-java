@@ -16,10 +16,20 @@
 
 package rs.ltt.jmap.annotation;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
 public @interface Type {
+    /**
+     * The {@code @type} tag of this data type, or the default {@code @type} value if applied to a sealed class/interface.
+     * If the default value (the empty string) is found, the value will be deduced from the class name.
+     * For sealed classes/interface, the default value here indicates that there is no default type, and a missing {@code @type} property will error.
+     *
+     * @return the {@code @type} value, or the empty string for default behavior
+     */
     String value() default "";
 }

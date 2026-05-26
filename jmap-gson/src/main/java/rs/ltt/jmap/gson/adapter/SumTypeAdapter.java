@@ -4,10 +4,18 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import org.jspecify.annotations.Nullable;
 import rs.ltt.jmap.gson.AtTypeSealedAdapterFactory;
 import rs.ltt.jmap.gson.TagRepr;
 
@@ -28,6 +36,87 @@ public final class SumTypeAdapter<T> extends TypeAdapter<T> {
         Variant<T> variantOf(T value);
 
         TypeAdapter<T> adapterFor(String tag) throws JsonParseException;
+    }
+
+    public static final class SealedClassSource<T> implements VariantSource<T> {
+        private final Class<? super T> base;
+        private final Map<Class<?>, Variant<T>> variants;
+        private final Map<String, TypeAdapter<T>> adapters;
+
+        private SealedClassSource(
+                Class<? super T> base, Map<Class<?>, Variant<T>> variants, Map<String, TypeAdapter<T>> adapters) {
+            this.base = base;
+            this.variants = Map.copyOf(variants);
+            this.adapters = Map.copyOf(adapters);
+        }
+
+        /**
+         * Returns an immutable set of all the tags recognized by this source.
+         *
+         * @return an immutable set of valid tags
+         */
+        public Set<String> tags() {
+            return adapters.keySet();
+        }
+
+        @Override
+        public SumTypeAdapter.Variant<T> variantOf(T value) {
+            var res = variants.get(value.getClass());
+            if (res == null) {
+                throw new IllegalArgumentException("unexpected subtype " + value.getClass() + " of " + base.getName());
+            }
+            return res;
+        }
+
+        @Override
+        public TypeAdapter<T> adapterFor(String tag) throws JsonParseException {
+            var res = adapters.get(tag);
+            if (res == null) {
+                throw new JsonParseException("invalid type tag '" + tag + "' for sealed class " + base.getName());
+            }
+            return res;
+        }
+    }
+
+    /**
+     * Attempts to build a {@link SealedClassSource} from a base class and a variant-generating function.
+     * If {@code base} is not sealed, has no permitted subclasses or has at least one non-final subclass, {@code null} is returned.
+     * The intended use of this method is within a {@link TypeAdapterFactory}, where {@code null} should be passed on upwards to indicate a type not targeted by the respective factory.
+     *
+     * @param base        the base sealed class/interface; the generic variance is there to match {@link TypeToken#getRawType()}
+     * @param makeVariant a function which is called for every subclass to generate its variant; may throw {@link IllegalArgumentException} if the subclass is invalid
+     * @return a {@link SealedClassSource} for the given base type, or {@code null} if the type is not targeted
+     * @throws IllegalArgumentException if the base type is targeted, but invalid
+     */
+    public static <T> @Nullable SealedClassSource<T> sealedClassSource(
+            Class<? super T> base, Function<Class<?>, Variant<T>> makeVariant) {
+        var subclasses = base.getPermittedSubclasses();
+        // not a sealed class, invalid for this adapter
+        if (subclasses == null) return null;
+        // we want at least one subclass
+        if (subclasses.length == 0) return null;
+
+        for (var sub : subclasses) {
+            // open subclass, reject for now to avoid weirdness
+            if (!Modifier.isFinal(sub.getModifiers())) return null;
+        }
+
+        var variants = new HashMap<Class<?>, Variant<T>>();
+        var adapters = new HashMap<String, TypeAdapter<T>>();
+        for (var sub : subclasses) {
+            var variant = makeVariant.apply(sub);
+            if (adapters.put(variant.tag, variant.adapter) != null) {
+                var other = variants.entrySet().stream()
+                        .filter(e -> e.getValue().tag().equals(variant.tag))
+                        .findAny()
+                        .orElseThrow()
+                        .getKey();
+                throw new IllegalArgumentException(
+                        "duplicate tag '" + variant.tag + "' for classes " + other + " and " + sub);
+            }
+            variants.put(sub, variant);
+        }
+        return new SealedClassSource<>(base, variants, adapters);
     }
 
     private final VariantSource<T> source;

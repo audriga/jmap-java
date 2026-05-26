@@ -41,6 +41,16 @@ final class AtTypeSealedAdapterTest extends AbstractGsonTest {
         }
     }
 
+    @Test
+    void withDefault() throws IOException {
+        var listType = new TypeToken<List<WithDefault>>() {};
+        JsonElement json = parseFromResource("sealed/at-type-default.json", JsonElement.class);
+        var objects = List.of(new WithDefault.A(3), new WithDefault.B(4), new WithDefault.B(5));
+        assertEquals(objects, gson.fromJson(json, listType));
+        assertEquals(json, gson.toJsonTree(objects, listType.getType()));
+    }
+
+    @Type
     sealed interface Parent {
         @Type
         record Alpha(String a, @Default("\"-\"") String another) implements Parent {}
@@ -50,5 +60,14 @@ final class AtTypeSealedAdapterTest extends AbstractGsonTest {
 
         @Type
         record Gamma(List<String> c) implements Parent {}
+    }
+
+    @Type("B")
+    sealed interface WithDefault {
+        @Type
+        record A(int x) implements WithDefault {}
+
+        @Type
+        record B(int x) implements WithDefault {}
     }
 }

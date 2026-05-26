@@ -2,12 +2,11 @@ package rs.ltt.jmap.contacts.entity;
 
 import java.time.Instant;
 import org.jspecify.annotations.Nullable;
-import rs.ltt.jmap.annotation.DefaultType;
 import rs.ltt.jmap.annotation.Type;
 
 @Type
 public record Anniversary(String kind, Date date, @Nullable Address place) {
-    @DefaultType("PartialDate")
+    @Type("PartialDate")
     public sealed interface Date {}
 
     @Type
