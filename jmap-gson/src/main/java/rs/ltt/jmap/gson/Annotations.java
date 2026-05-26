@@ -8,23 +8,23 @@ import java.util.Optional;
 public final class Annotations {
     private Annotations() {}
 
-    static <A extends Annotation> Optional<A> get(AnnotatedElement element, Class<A> annotationClass) {
+    public static <A extends Annotation> Optional<A> get(AnnotatedElement element, Class<A> annotationClass) {
         return Optional.ofNullable(element.getAnnotation(annotationClass));
     }
 
-    static <A extends Annotation> Optional<A> get(RecordComponent element, Class<A> annotationClass) {
+    public static <A extends Annotation> Optional<A> get(RecordComponent element, Class<A> annotationClass) {
         return get((AnnotatedElement) element, annotationClass)
                 .or(() -> get(element.getAnnotatedType(), annotationClass))
                 .or(() -> get(element.getAccessor(), annotationClass));
     }
 
-    static <A extends Annotation> Optional<A> getRecursive(Class<?> element, Class<A> annotationClass) {
+    public static <A extends Annotation> Optional<A> getRecursive(Class<?> element, Class<A> annotationClass) {
         return get(element, annotationClass)
                 .or(() -> get(element.getPackage(), annotationClass))
                 .or(() -> get(element.getModule(), annotationClass));
     }
 
-    static <A extends Annotation> Optional<A> getRecursive(RecordComponent element, Class<A> annotationClass) {
+    public static <A extends Annotation> Optional<A> getRecursive(RecordComponent element, Class<A> annotationClass) {
         return get(element, annotationClass).or(() -> getRecursive(element.getDeclaringRecord(), annotationClass));
     }
 }
