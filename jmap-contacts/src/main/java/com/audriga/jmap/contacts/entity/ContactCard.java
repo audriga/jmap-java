@@ -2,14 +2,18 @@ package com.audriga.jmap.contacts.entity;
 
 import com.audriga.jmap.annotation.Default;
 import com.audriga.jmap.annotation.Immutable;
+import com.audriga.jmap.annotation.Inline;
 import com.audriga.jmap.annotation.ServerSet;
 import com.audriga.jmap.annotation.Type;
 import com.audriga.jmap.common.entity.Identifiable;
+import com.audriga.jmap.common.entity.VendorProperty;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 import lombok.Builder;
+import lombok.Singular;
 import org.jspecify.annotations.Nullable;
 
 @Builder(toBuilder = true)
@@ -50,11 +54,11 @@ public record ContactCard(
         @Nullable Map<String, Link> links,
         @Nullable Map<String, Media> media,
         // Multilingual
-        // TODO: PatchObject repr
         @Nullable Map<String, JsonObject> localizations,
         // Additional
         @Nullable Map<String, Anniversary> anniversaries,
         @Nullable Set<String> keywords,
         @Nullable Map<String, Note> notes,
-        @Nullable Map<String, PersonalInfo> personalInfo)
+        @Nullable Map<String, PersonalInfo> personalInfo,
+        @Inline @Singular Map<VendorProperty, JsonElement> vendorProperties)
         implements Identifiable {}

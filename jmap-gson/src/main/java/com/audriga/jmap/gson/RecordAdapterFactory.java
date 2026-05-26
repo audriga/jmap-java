@@ -115,11 +115,9 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                 var names = new HashSet<>(componentNames);
                 for (var component : components) {
                     if (component.inline) {
-                        var tree = component
-                                .adapter
-                                .toJsonTree(GsonUtils.invoke(component.accessor, value))
-                                .getAsJsonObject();
-                        for (var entry : tree.entrySet()) {
+                        var tree = component.adapter.toJsonTree(GsonUtils.invoke(component.accessor, value));
+                        if (tree.isJsonNull()) continue;
+                        for (var entry : tree.getAsJsonObject().entrySet()) {
                             var name = entry.getKey();
                             if (!names.add(name)) {
                                 throw new IllegalArgumentException("encountered duplicate name " + name);
