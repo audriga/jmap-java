@@ -46,6 +46,7 @@
         <module>coverage</module>
         <module>jmap-annotation</module>
         <module>jmap-annotation-processor</module>
+        <module>jmap-calendars</module>
         <module>jmap-client</module>
         <module>jmap-common</module>
         <module>jmap-common-interface</module>
