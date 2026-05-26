@@ -98,7 +98,7 @@
             <dependency>
                 <groupId>com.audriga</groupId>
                 <artifactId>jmap-stalwart</artifactId>
-                <version>0.1.0-SNAPSHOT-schema0.16.10</version>
+                <version>0.1.0-SNAPSHOT-schema0.16.12</version>
             </dependency>
             <dependency>
                 <groupId>com.damnhandy</groupId>
