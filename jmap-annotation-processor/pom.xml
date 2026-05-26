@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>com.google.auto.service</groupId>
-            <artifactId>auto-service</artifactId>
+            <artifactId>auto-service-annotations</artifactId>
         </dependency>
     </dependencies>
 
@@ -48,6 +48,14 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>com.google.auto.service</groupId>
+                            <artifactId>auto-service</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
             </plugin>
         </plugins>
     </build>

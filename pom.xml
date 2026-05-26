@@ -81,6 +81,7 @@
     </distributionManagement>
 
     <properties>
+        <auto-service.version>1.1.1</auto-service.version>
         <java.version>17</java.version>
         <maven-plugin-tools.version>3.15.2</maven-plugin-tools.version>
         <maven.version>3.9.16</maven.version>
@@ -112,6 +113,16 @@
                 <groupId>com.damnhandy</groupId>
                 <artifactId>handy-uri-templates</artifactId>
                 <version>2.1.8</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.auto.service</groupId>
+                <artifactId>auto-service</artifactId>
+                <version>${auto-service.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.auto.service</groupId>
+                <artifactId>auto-service-annotations</artifactId>
+                <version>${auto-service.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.code.gson</groupId>
@@ -152,12 +163,6 @@
                 <groupId>org.testcontainers</groupId>
                 <artifactId>testcontainers-postgresql</artifactId>
                 <version>2.0.5</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.auto.service</groupId>
-                <artifactId>auto-service</artifactId>
-                <version>1.1.1</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
