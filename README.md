@@ -1,33 +1,48 @@
 # Java JMAP library
+
 [![Apache 2.0 License](https://img.shields.io/github/license/inputmice/jmap?color=informational)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 [![status-badge](https://ci.codeberg.org/api/badges/12402/status.svg)](https://ci.codeberg.org/repos/12402)
 [![Maven Central](https://img.shields.io/maven-central/v/com.audriga.jmap/jmap.svg?label=Maven%20Central&color=informational)](https://search.maven.org/search?q=g:%22com.audriga.jmap%22%20AND%20a:%22jmap%22)
 [![Liberapay patrons](https://img.shields.io/liberapay/patrons/inputmice?logo=liberapay&style=flat&color=informational)](https://liberapay.com/iNPUTmice)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/inputmice?label=GitHub%20Sponsors)](https://github.com/sponsors/iNPUTmice/)
 
-A library to synchronize data between a client and a server using the JSON Meta Application Protocol. The current focus is on acting as a client library to retrieve emails from a server however it is easily extensible to also synchronize contacts and calendars. It might even be extended to act as a server library.
+A library to synchronize data between a client and a server using the JSON Meta Application Protocol.
+The current focus is on acting as a client library to retrieve emails from a server however it is easily extensible to also synchronize contacts and calendars.
+It might even be extended to act as a server library.
 
-The library is written in Java 8 to provide full compatibility with Android. It uses [GSON](https://github.com/google/gson) for JSON serialization and deserialization and makes heavy use of [Guava](https://github.com/google/guava) including its Futures. 
+The library is written in Java 8 to provide full compatibility with Android.
+It uses [GSON](https://github.com/google/gson) for JSON serialization and deserialization and makes heavy use of [Guava](https://github.com/google/guava) including its Futures.
 
 Entities (Mailbox, Email, EmailSubmission, …) and method calls are annotated with Project Lombok’s `@Getter` and `@Builder` to make them immutable.
 
-**This library is work in progress. Not *all* specified methods and entities have been implemented yet. They will be added on a *as needed* basis. If you want to use this library and need a specific method you can add it very easily. Adding a new method is as simple as looking at the spec and creating a POJO that represents the data structure.**
+**This library is work in progress.
+Not *all* specified methods and entities have been implemented yet.
+They will be added on an *as needed* basis.
+If you want to use this library and need a specific method you can add it very easily.
+Adding a new method is as simple as looking at the spec and creating a POJO that represents the data structure.**
 
 ## Modules
 
-The library is divided into separate modules. *Most people will probably want to use the [jmap-client](https://github.com/iNPUTmice/jmap/blob/master/README.md#jmap-client) module.*
+The library is divided into separate modules.
+*Most people will probably want to use the [jmap-client](https://github.com/iNPUTmice/jmap/blob/master/README.md#jmap-client) module.*
 
 ### jmap-annotation
 
-Each JMAP method call and response is a POJO annotated with `@JmapMethod`. An annotation processor collects a lists of all available JMAP Methods. This module only holds the annotations. When extending the library you need to include `jmap-annotation-processor` as well.
+Each JMAP method call and response is a POJO annotated with `@JmapMethod`.
+An annotation processor collects a lists of all available JMAP Methods.
+This module only holds the annotations.
+When extending the library you need to include `jmap-annotation-processor` as well.
 
 ### jmap-annotation-processor
 
-The annotation processors that compile lists of JMAP methods, JMAP errors and capabilities into resource files. This module is only required when extending the library.
+The annotation processors that compile lists of JMAP methods, JMAP errors and capabilities into resource files.
+This module is only required when extending the library.
 
 ### jmap-common
 
-A collection of POJOs that represent JMAP requests, responses and the entities exchanged with those. It currently holds POJOs for JMAP Core and JMAP Mail but might be extended to hold JMAP Calender and JMAP Contacts POJOs as well. Alternatively it might be split up into `jmap-common-mail`, `jmap-common-contacts` and so on.
+A collection of POJOs that represent JMAP requests, responses and the entities exchanged with those.
+It currently holds POJOs for JMAP Core and JMAP Mail but might be extended to hold JMAP Calender and JMAP Contacts POJOs as well.
+Alternatively it might be split up into `jmap-common-mail`, `jmap-common-contacts` and so on.
 
 ### jmap-common-interface
 
@@ -39,13 +54,18 @@ GSON serializer and deserializer to convert the POJOs from `jmap-common` into JM
 
 ### jmap-client
 
-A JMAP client library to make JMAP method calls and process the responses. It handles multiples calls in one request (including back references) and multiple method responses per call. Currently it only supports requests over HTTP but it has been designed with the possibility in mind to eventually support requests over WebSockets.
+A JMAP client library to make JMAP method calls and process the responses.
+It handles multiples calls in one request (including back references) and multiple method responses per call.
+Currently, it only supports requests over HTTP, but it has been designed with the possibility in mind to eventually support requests over WebSockets.
 
 Gradle:
+
 ```groovy
 implementation 'com.audriga.jmap:jmap-client:0.8.18'
 ```
+
 Maven:
+
 ```xml
 <dependency>
   <groupId>com.audriga.jmap</groupId>
@@ -111,7 +131,12 @@ for (Email email : getEmailMethodResponse.getList()) {
 
 #### Creating extensions
 
-Extending the Java JMAP library with new object types and methods is easy. For each JMAP method you need to create a request and a response. They will have to implement `MethodCall` and `MethodResponse` respectively. Alternatively, if you are implementing one of the standard methods from JMAP Core, you can extend for example `GetMethodResponse<T extends AbstractIdentifiableEntity>` and the corresponding response. Additionally the request and the response need to be annotated with `@JmapMethod`. Finally the package in which those new classes reside needs to be annotated with `@JmapNamepace`.
+Extending the Java JMAP library with new object types and methods is easy.
+For each JMAP method you need to create a request and a response.
+They will have to implement `MethodCall` and `MethodResponse` respectively.
+Alternatively, if you are implementing one of the standard methods from JMAP Core, you can extend for example `GetMethodResponse<T extends AbstractIdentifiableEntity>` and the corresponding response.
+Additionally the request and the response need to be annotated with `@JmapMethod`.
+Finally the package in which those new classes reside needs to be annotated with `@JmapNamepace`.
 
 You will have to include `jmap-annotation-processor` as an additional dependency in your project.
 
@@ -121,13 +146,21 @@ One more thing to look out for: **If you are building a fat jar (shaded jar) the
 
 ### jmap-mua
 
-A high level API to act as an email client. It handles everything an email client is supposed to handle minus storage backend and GUI. The storage (caching) backend is accessed via an interface that different email clients on different platforms can implement. It comes with a reference in-memory implementation of that interface. `jmap-mua` only ever *writes* to that storage backend. Accessing data in that storage backend and displaying it in a GUI is up to the specific email client.
+A high level API to act as an email client.
+It handles everything an email client is supposed to handle minus storage backend and GUI.
+The storage (caching) backend is accessed via an interface that different email clients on different platforms can implement.
+It comes with a reference in-memory implementation of that interface.
+`jmap-mua` only ever *writes* to that storage backend.
+Accessing data in that storage backend and displaying it in a GUI is up to the specific email client.
 
 Gradle:
+
 ```groovy
 implementation 'com.audriga.jmap:jmap-mua:0.8.18'
 ```
+
 Maven:
+
 ```xml
 <dependency>
   <groupId>com.audriga.jmap</groupId>

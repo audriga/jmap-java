@@ -65,7 +65,7 @@
 ### 0.8.3 (2021-12-20)
 
 * Give Plugins access to Mua services
-* Common interface `BinaryData` for Upload and Downloadable 
+* Common interface `BinaryData` for Upload and Downloadable
 
 ### 0.8.2 (2021-12-18)
 
@@ -108,7 +108,7 @@
 
 ### 0.6.5 (2021-06-27)
 
-* jmap-client: fix EventSourcPushService crashing on missing eventUrl 
+* jmap-client: fix EventSourcPushService crashing on missing eventUrl
 
 ### 0.6.4 (2021-06-22)
 
@@ -130,11 +130,9 @@
 
 * Introduce draft API to listen to events
 
-
 ### 0.5.8 (2021-04-05)
 
 * Introduce multi-account support to MockMailServer
-
 
 ### 0.5.7 (2021-03-31)
 
@@ -172,7 +170,7 @@
 * added server-side JSON (de)serializer
 * added mock-server for better unit tests
 * bumped OkHttp version
-* run JMAP response processing on OkHttp threads via callbacks 
+* run JMAP response processing on OkHttp threads via callbacks
 
 ### 0.4.0 (2020-07-16)
 
@@ -199,7 +197,7 @@
 
 ### 0.2.2 (2020-01-05)
 
-* Fixed FileSessionCache writing to wrong directory  
+* Fixed FileSessionCache writing to wrong directory
 
 ### 0.2.1 (2019-12-24)
 
@@ -244,3 +242,4 @@
 * jmap-mua has support for reading and processing (changing mailboxes, changing
   keywords, etc) emails.
 * jmap-client, jmap-common, jmap-gson and jmap-mua have some unit test
+
