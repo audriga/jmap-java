@@ -24,6 +24,7 @@ import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.method.MethodCall;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
+import com.google.gson.JsonParseException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -37,7 +38,7 @@ public class RequestInvocationTypeAdapter extends TypeAdapter<Request.Invocation
 
     @Override
     public void write(JsonWriter jsonWriter, Request.Invocation invocation) throws IOException {
-        final MethodCall methodCall = invocation.getMethodCall();
+        final MethodCall methodCall = invocation.methodCall();
         final Class<? extends MethodCall> clazz = methodCall.getClass();
         final String name = METHOD_CALLS.inverse().get(clazz);
         if (name == null) {
@@ -46,7 +47,7 @@ public class RequestInvocationTypeAdapter extends TypeAdapter<Request.Invocation
         jsonWriter.beginArray();
         jsonWriter.value(name);
         NULL_SERIALIZING_GSON.toJson(REGULAR_GSON.toJsonTree(methodCall), jsonWriter);
-        jsonWriter.value(invocation.getId());
+        jsonWriter.value(invocation.id());
         jsonWriter.endArray();
     }
 
@@ -55,6 +56,9 @@ public class RequestInvocationTypeAdapter extends TypeAdapter<Request.Invocation
         jsonReader.beginArray();
         final String name = jsonReader.nextString();
         final Class<? extends MethodCall> clazz = METHOD_CALLS.get(name);
+        if (clazz == null) {
+            throw new JsonParseException(name + " is not a registered @JmapMethod");
+        }
         final MethodCall methodCall = REGULAR_GSON.fromJson(jsonReader, clazz);
         final String id = jsonReader.nextString();
         jsonReader.endArray();

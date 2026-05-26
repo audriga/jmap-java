@@ -49,7 +49,7 @@ public class SetEmailSubmissionMethodCallTest extends AbstractGsonTest {
                                 .build()))
                 .onSuccessUpdateEmail(ImmutableMap.of("#es0", patchesBuilder.build()))
                 .build();
-        Request request = new Request.Builder().call(submissionCall).build();
+        Request request = Request.builder().call(submissionCall).build();
         Assertions.assertEquals(readResourceAsString("request/set-email-submission.json"), gson.toJson(request));
     }
 
@@ -71,7 +71,7 @@ public class SetEmailSubmissionMethodCallTest extends AbstractGsonTest {
                                 .identityId("I0")
                                 .build()))
                 .build();
-        final Request request = new Request.Builder().call(submissionCall).build();
+        final Request request = Request.builder().call(submissionCall).build();
         Assertions.assertEquals(
                 readResourceAsString("request/set-email-submission-no-implicit.json"), gson.toJson(request));
     }

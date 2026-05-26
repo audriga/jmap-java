@@ -352,20 +352,20 @@ public abstract class JmapDispatcher extends Dispatcher {
     }
 
     protected GenericResponse dispatch(final Request request) {
-        final Request.Invocation[] methodCalls = request.getMethodCalls();
-        final String[] using = request.getUsing();
+        final var methodCalls = request.methodCalls();
+        final var using = request.using();
         if (using == null || methodCalls == null) {
             return new ErrorResponse(ErrorType.NOT_REQUEST, 400);
         }
         final ArrayListMultimap<String, Response.Invocation> response = ArrayListMultimap.create();
         for (final Request.Invocation invocation : methodCalls) {
-            final String id = invocation.getId();
-            final MethodCall methodCall = invocation.getMethodCall();
+            final String id = invocation.id();
+            final MethodCall methodCall = invocation.methodCall();
             for (MethodResponse methodResponse : dispatch(methodCall, ImmutableListMultimap.copyOf(response))) {
                 response.put(id, new Response.Invocation(methodResponse, id));
             }
         }
-        return new Response(response.values().toArray(new Response.Invocation[0]), getSessionState());
+        return new Response(List.copyOf(response.values()), getSessionState());
     }
 
     protected abstract MethodResponse[] dispatch(

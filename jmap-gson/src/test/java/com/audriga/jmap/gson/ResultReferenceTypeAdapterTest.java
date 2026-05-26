@@ -21,8 +21,8 @@ public class ResultReferenceTypeAdapterTest {
         String json = gsonBuilder.create().toJson(resultReferenceOut);
         Request.Invocation.ResultReference resultReferenceIn =
                 gsonBuilder.create().fromJson(json, Request.Invocation.ResultReference.class);
-        Assertions.assertEquals(resultReferenceIn.getClazz(), resultReferenceOut.getClazz());
-        Assertions.assertEquals(resultReferenceIn.getId(), resultReferenceOut.getId());
-        Assertions.assertEquals(resultReferenceIn.getPath(), resultReferenceOut.getPath());
+        Assertions.assertEquals(resultReferenceIn.clazz(), resultReferenceOut.clazz());
+        Assertions.assertEquals(resultReferenceIn.id(), resultReferenceOut.id());
+        Assertions.assertEquals(resultReferenceIn.path(), resultReferenceOut.path());
     }
 }

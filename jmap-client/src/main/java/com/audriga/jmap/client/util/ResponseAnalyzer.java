@@ -38,14 +38,14 @@ public class ResponseAnalyzer {
 
     public static ResponseAnalyzer analyse(Response response) {
         final ListMultimap<String, MethodResponse> preMap = ArrayListMultimap.create();
-        for (Response.Invocation invocation : response.getMethodResponses()) {
-            preMap.put(invocation.getId(), invocation.getMethodResponse());
+        for (Response.Invocation invocation : response.methodResponses()) {
+            preMap.put(invocation.id(), invocation.methodResponse());
         }
         final Map<String, MethodResponses> actualMap = new HashMap<>();
         for (final String id : preMap.keySet()) {
             final List<MethodResponse> methodResponseList = preMap.get(id);
             final MethodResponses methodResponses;
-            if (methodResponseList.size() == 0) {
+            if (methodResponseList.isEmpty()) {
                 throw new AssertionError("Method response list can not be empty");
             } else if (methodResponseList.size() == 1) {
                 methodResponses = new MethodResponses(methodResponseList.get(0));
@@ -60,6 +60,6 @@ public class ResponseAnalyzer {
     }
 
     public MethodResponses find(Request.Invocation invocation) {
-        return methodResponsesMap.get(invocation.getId());
+        return methodResponsesMap.get(invocation.id());
     }
 }

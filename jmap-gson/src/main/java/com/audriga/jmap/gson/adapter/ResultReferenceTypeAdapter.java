@@ -38,9 +38,9 @@ public class ResultReferenceTypeAdapter extends TypeAdapter<Request.Invocation.R
             return;
         }
         jsonWriter.beginObject();
-        jsonWriter.name("resultOf").value(resultReference.getId());
-        jsonWriter.name("name").value(Mapper.METHOD_CALLS.inverse().get(resultReference.getClazz()));
-        jsonWriter.name("path").value(resultReference.getPath());
+        jsonWriter.name("resultOf").value(resultReference.id());
+        jsonWriter.name("name").value(Mapper.METHOD_CALLS.inverse().get(resultReference.clazz()));
+        jsonWriter.name("path").value(resultReference.path());
         jsonWriter.endObject();
     }
 

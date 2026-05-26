@@ -17,42 +17,8 @@
 package com.audriga.jmap.common;
 
 import com.audriga.jmap.common.method.MethodResponse;
+import java.util.List;
 
-public class Response implements GenericResponse {
-
-    private final Invocation[] methodResponses;
-    private final String sessionState;
-
-    public Response(final Invocation[] methodResponses, final String sessionState) {
-        this.methodResponses = methodResponses;
-        this.sessionState = sessionState;
-    }
-
-    public Invocation[] getMethodResponses() {
-        return methodResponses;
-    }
-
-    public String getSessionState() {
-        return sessionState;
-    }
-
-    public static class Invocation {
-        private MethodResponse methodResponse;
-        private String id;
-
-        public Invocation() {}
-
-        public Invocation(MethodResponse methodResponse, String id) {
-            this.methodResponse = methodResponse;
-            this.id = id;
-        }
-
-        public MethodResponse getMethodResponse() {
-            return methodResponse;
-        }
-
-        public String getId() {
-            return id;
-        }
-    }
+public record Response(List<Invocation> methodResponses, String sessionState) implements GenericResponse {
+    public record Invocation(MethodResponse methodResponse, String id) {}
 }

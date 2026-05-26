@@ -18,103 +18,36 @@ package com.audriga.jmap.common;
 
 import com.audriga.jmap.common.method.MethodCall;
 import com.audriga.jmap.common.util.Namespace;
-import com.google.common.base.MoreObjects;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class Request {
-
-    private static final Map<Class<? extends MethodCall>, String> NAMESPACE_CACHE = new HashMap<>();
-    private final String[] using;
-    private final Invocation[] methodCalls;
-
-    private Request(String[] using, Invocation[] methodCalls) {
-        this.using = using;
-        this.methodCalls = methodCalls;
-    }
+public record Request(List<String> using, List<Invocation> methodCalls) {
+    private static final Map<Class<? extends MethodCall>, String> NAMESPACE_CACHE = new ConcurrentHashMap<>();
 
     private static String getNamespaceFor(final Class<? extends MethodCall> clazz) {
-        synchronized (NAMESPACE_CACHE) {
-            final String cached = NAMESPACE_CACHE.get(clazz);
-            if (cached != null) {
-                return cached;
-            }
-            final String namespace = Namespace.get(clazz);
-            if (namespace == null) {
+        return NAMESPACE_CACHE.computeIfAbsent(clazz, c -> {
+            var ns = Namespace.get(c);
+            if (ns == null) {
                 throw new IllegalArgumentException(String.format(
                         "%s is missing a namespace. Annotate package with @JmapNamespace", clazz.getSimpleName()));
             }
-            NAMESPACE_CACHE.put(clazz, namespace);
-            return namespace;
-        }
+            return ns;
+        });
     }
 
-    public String[] getUsing() {
-        return using;
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public Invocation[] getMethodCalls() {
-        return methodCalls;
-    }
-
-    public static class Invocation {
-
-        private MethodCall methodCall;
-        private String id;
-
-        private Invocation() {}
-
-        public Invocation(MethodCall methodCall, String id) {
-            this.methodCall = methodCall;
-            this.id = id;
-        }
-
-        public MethodCall getMethodCall() {
-            return methodCall;
-        }
-
+    public record Invocation(MethodCall methodCall, String id) {
         public ResultReference createReference(String path) {
             return new ResultReference(id, methodCall.getClass(), path);
         }
 
-        public String getId() {
-            return id;
-        }
-
-        public static class ResultReference {
-            private final String id;
-            private final Class<? extends MethodCall> clazz;
-            private final String path;
-
-            /**
-             * Internal constructor, only exposed for use by jmap-gson when deserializing.
-             */
-            public ResultReference(String id, Class<? extends MethodCall> clazz, String path) {
-                this.id = id;
-                this.clazz = clazz;
-                this.path = path;
-            }
-
-            public String getId() {
-                return id;
-            }
-
-            public String getPath() {
-                return path;
-            }
-
-            public Class<? extends MethodCall> getClazz() {
-                return clazz;
-            }
-
-            @Override
-            public String toString() {
-                return MoreObjects.toStringHelper(this)
-                        .add("id", id)
-                        .add("clazz", clazz)
-                        .add("path", path)
-                        .toString();
-            }
-
+        /**
+         * Internal constructor, only exposed for use by jmap-gson when deserializing.
+         */
+        public record ResultReference(String id, Class<? extends MethodCall> clazz, String path) {
             public static final class Path {
                 public static final String IDS = "/ids";
                 public static final String ADDED_IDS = "/added/*/id";
@@ -128,16 +61,15 @@ public class Request {
         }
     }
 
-    public static class Builder {
-
-        private final List<Invocation> invocations = new ArrayList<>();
+    public static final class Builder {
         private final Set<String> using = new TreeSet<>();
+        private final List<Invocation> invocations = new ArrayList<>();
 
-        public Builder() {}
+        private Builder() {}
 
         public Builder call(MethodCall call) {
             final int id = invocations.size();
-            final Invocation invocation = new Invocation(call, String.valueOf(id));
+            final Invocation invocation = new Invocation(call, Integer.toString(id));
             return add(invocation);
         }
 
@@ -150,8 +82,13 @@ public class Request {
             return this;
         }
 
+        public Builder using(String namespace) {
+            this.using.add(namespace);
+            return this;
+        }
+
         public Request build() {
-            return new Request(using.toArray(new String[0]), invocations.toArray(new Invocation[0]));
+            return new Request(List.copyOf(using), List.copyOf(invocations));
         }
     }
 }

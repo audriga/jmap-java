@@ -32,8 +32,8 @@ public class ResponseInvocationSerializer implements JsonSerializer<Response.Inv
     @Override
     public JsonElement serialize(
             final Response.Invocation invocation, final Type type, final JsonSerializationContext context) {
-        final String id = invocation.getId();
-        final MethodResponse methodResponse = invocation.getMethodResponse();
+        final String id = invocation.id();
+        final MethodResponse methodResponse = invocation.methodResponse();
         final JsonArray jsonArray = new JsonArray();
         if (methodResponse instanceof MethodErrorResponse) {
             jsonArray.add("error");

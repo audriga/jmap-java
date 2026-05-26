@@ -37,7 +37,7 @@ public class WebSocketMessageTest extends AbstractGsonTest {
 
     @Test
     public void serializeRequest() throws IOException {
-        final Request request = new Request.Builder()
+        final Request request = Request.builder()
                 .call(SetEmailMethodCall.builder()
                         .accountId("accountId")
                         .ifInState("state")
@@ -53,9 +53,10 @@ public class WebSocketMessageTest extends AbstractGsonTest {
     @Test
     public void deserializeResponse() throws IOException {
         final WebSocketMessage webSocketMessage = parseFromResource("websocket/response.json", WebSocketMessage.class);
-        Assertions.assertTrue(webSocketMessage instanceof ResponseWebSocketMessage);
+        Assertions.assertInstanceOf(ResponseWebSocketMessage.class, webSocketMessage);
         final ResponseWebSocketMessage responseWebSocketMessage = (ResponseWebSocketMessage) webSocketMessage;
-        Assertions.assertEquals(2, responseWebSocketMessage.getResponse().getMethodResponses().length);
+        Assertions.assertEquals(
+                2, responseWebSocketMessage.getResponse().methodResponses().size());
     }
 
     @Test
@@ -64,7 +65,7 @@ public class WebSocketMessageTest extends AbstractGsonTest {
                 parseFromResource("websocket/unknown-capability.json", WebSocketMessage.class);
         MatcherAssert.assertThat(webSocketMessage, CoreMatchers.instanceOf(ErrorResponseWebSocketMessage.class));
         ErrorResponse errorResponse = ((ErrorResponseWebSocketMessage) webSocketMessage).getPayload();
-        Assertions.assertEquals(errorResponse.getType(), ErrorType.UNKNOWN_CAPABILITY);
+        Assertions.assertEquals(ErrorType.UNKNOWN_CAPABILITY, errorResponse.getType());
     }
 
     @Test

@@ -20,10 +20,10 @@ public class ResponseDeserializationTest extends AbstractGsonTest {
                 parseFromResource("response/mailbox-get-email-get.json", GenericResponse.class);
         MatcherAssert.assertThat(genericResponse, instanceOf(Response.class));
         final Response response = (Response) genericResponse;
-        Assertions.assertNotNull(response.getMethodResponses());
-        Assertions.assertEquals(response.getMethodResponses().length, 2);
+        Assertions.assertNotNull(response.methodResponses());
+        Assertions.assertEquals(2, response.methodResponses().size());
         MatcherAssert.assertThat(
-                response.getMethodResponses()[1].getMethodResponse(),
+                response.methodResponses().get(1).methodResponse(),
                 instanceOf(RequestTooLargeMethodErrorResponse.class));
     }
 

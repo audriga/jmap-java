@@ -30,7 +30,8 @@ public final class JmapAdapters {
                 .registerTypeAdapterFactory(new InlineRecordAdapterFactory())
                 .registerTypeAdapterFactory(new TypeInjectionAdapterFactory())
                 .registerTypeAdapterFactory(new AtTypeSealedAdapterFactory())
-                .registerTypeAdapterFactory(new SetAsObjectAdapterFactory());
+                .registerTypeAdapterFactory(new SetAsObjectAdapterFactory())
+                .registerTypeAdapterFactory(new OmitEmptyAdapterFactory());
 
         ApiWebSocketMessageTypeAdapter.register(builder);
         InstantTypeAdapter.register(builder);
@@ -56,8 +57,6 @@ public final class JmapAdapters {
         FilterSerializer.register(builder);
         AccountCapabilitiesSerializer.register(builder);
         PrimaryAccountsSerializer.register(builder);
-        ListSerializer.register(builder);
         ResponseInvocationSerializer.register(builder);
-        StringMapSerializer.register(builder);
     }
 }

@@ -39,8 +39,8 @@ public class ResultReferenceResolver {
             final Request.Invocation.ResultReference resultReference,
             final ListMultimap<String, Response.Invocation> previousResponses) {
         final MethodResponse methodResponse = find(resultReference, previousResponses);
-        final String path = resultReference.getPath();
-        switch (resultReference.getPath()) {
+        final String path = resultReference.path();
+        switch (resultReference.path()) {
             case Request.Invocation.ResultReference.Path.IDS:
                 if (methodResponse instanceof QueryMethodResponse) {
                     return ((QueryMethodResponse<?>) methodResponse).getIds();
@@ -87,18 +87,18 @@ public class ResultReferenceResolver {
     private static MethodResponse find(
             final Request.Invocation.ResultReference resultReference,
             final ListMultimap<String, Response.Invocation> previousResponses) {
-        final String id = resultReference.getId();
+        final String id = resultReference.id();
         final List<Response.Invocation> invocations = previousResponses.get(id);
-        if (invocations == null) {
+        if (invocations.isEmpty()) {
             throw new IllegalArgumentException("Unable to find any method response with id " + id);
         }
-        final String methodCallName = Mapper.METHOD_CALLS.inverse().get(resultReference.getClazz());
+        final String methodCallName = Mapper.METHOD_CALLS.inverse().get(resultReference.clazz());
         for (final Response.Invocation invocation : invocations) {
             final String responseCallName = Mapper.METHOD_RESPONSES
                     .inverse()
-                    .get(invocation.getMethodResponse().getClass());
+                    .get(invocation.methodResponse().getClass());
             if (methodCallName.equals(responseCallName)) {
-                return invocation.getMethodResponse();
+                return invocation.methodResponse();
             }
         }
         throw new IllegalArgumentException("Unable to find matching response for " + methodCallName);

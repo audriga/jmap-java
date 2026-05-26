@@ -35,7 +35,7 @@ public class JmapRequest {
     private final ArrayList<Future<?>> dependentFutures = new ArrayList<>();
 
     private JmapRequest(Map<Request.Invocation, SettableFuture<MethodResponses>> map) {
-        final Request.Builder requestBuilder = new Request.Builder();
+        final Request.Builder requestBuilder = Request.builder();
         for (Request.Invocation invocation : map.keySet()) {
             requestBuilder.add(invocation);
         }

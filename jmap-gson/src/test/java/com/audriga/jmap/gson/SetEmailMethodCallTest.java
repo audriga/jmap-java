@@ -17,7 +17,7 @@ public class SetEmailMethodCallTest extends AbstractGsonTest {
         GsonBuilder builder = new GsonBuilder();
         JmapAdapters.register(builder);
         Gson gson = builder.create();
-        Request request = new Request.Builder()
+        Request request = Request.builder()
                 .call(SetEmailMethodCall.builder()
                         .accountId("accountId")
                         .ifInState("state")

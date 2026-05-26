@@ -36,7 +36,7 @@ public class CreationIdResolver {
         Preconditions.checkArgument(creationId.charAt(0) == '#');
         final String strippedId = creationId.substring(1);
         for (final Response.Invocation invocation : previousResponses.values()) {
-            final MethodResponse methodResponse = invocation.getMethodResponse();
+            final MethodResponse methodResponse = invocation.methodResponse();
             if (methodResponse instanceof SetMethodResponse) {
                 final Identifiable entity =
                         ((SetMethodResponse<?>) methodResponse).getCreated().get(strippedId);
