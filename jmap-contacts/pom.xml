@@ -17,8 +17,22 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>jmap-calendars</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>jmap-common</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jmap-stalwart</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jspecify</groupId>
@@ -37,11 +51,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>jmap-client</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.audriga</groupId>
-            <artifactId>jmap-stalwart</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

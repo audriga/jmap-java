@@ -1,7 +1,7 @@
 package com.audriga.jmap.contacts;
 
 import com.audriga.jmap.client.JmapClient;
-import com.audriga.stalwart.*;
+import com.audriga.jmap.stalwart.*;
 import java.io.InputStream;
 import java.net.DatagramSocket;
 import java.net.SocketException;
