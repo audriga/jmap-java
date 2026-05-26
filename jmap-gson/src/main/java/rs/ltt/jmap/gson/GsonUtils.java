@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import java.lang.invoke.MethodHandle;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,6 +43,16 @@ public final class GsonUtils {
     public static void addAll(final JsonObject to, Set<Map.Entry<String, JsonElement>> entries) {
         for (final Map.Entry<String, JsonElement> entry : entries) {
             to.add(entry.getKey(), entry.getValue());
+        }
+    }
+
+    static Object invoke(MethodHandle handle, Object... args) {
+        try {
+            return handle.invokeWithArguments(args);
+        } catch (RuntimeException | Error e) {
+            throw e;
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
         }
     }
 }

@@ -81,7 +81,7 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
         try {
             ctor = LOOKUP.findConstructor(raw, ctorType);
         } catch (IllegalAccessException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException("failed to find primary record constructor for " + raw.getName(), e);
         }
 
         var jsonElementAdapter = gson.getAdapter(JsonElement.class);
@@ -112,7 +112,7 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                     if (component.inline) {
                         var tree = component
                                 .adapter
-                                .toJsonTree(invoke(component.accessor))
+                                .toJsonTree(GsonUtils.invoke(component.accessor))
                                 .getAsJsonObject();
                         for (var entry : tree.entrySet()) {
                             nameWriter.name(entry.getKey());
@@ -120,7 +120,7 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                         }
                     } else {
                         nameWriter.name(component.name);
-                        component.adapter.write(out, invoke(component.accessor));
+                        component.adapter.write(out, GsonUtils.invoke(component.accessor));
                     }
                 }
                 out.endObject();
@@ -182,7 +182,7 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                     }
                 }
                 @SuppressWarnings("unchecked")
-                T result = (T) invoke(ctor, fields);
+                T result = (T) GsonUtils.invoke(ctor, fields);
                 return result;
             }
         }.nullSafe();
@@ -196,15 +196,5 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
             ++i;
         }
         return Map.copyOf(res);
-    }
-
-    private static Object invoke(MethodHandle handle, Object... args) {
-        try {
-            return handle.invokeWithArguments(args);
-        } catch (RuntimeException | Error e) {
-            throw e;
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
-        }
     }
 }

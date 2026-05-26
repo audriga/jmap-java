@@ -28,6 +28,7 @@ public final class JmapAdapters {
     public static void register(GsonBuilder builder) {
         builder.registerTypeAdapterFactory(new TypeInjectionAdapterFactory())
                 .registerTypeAdapterFactory(new RecordAdapterFactory())
+                .registerTypeAdapterFactory(new InlineRecordAdapterFactory())
                 .registerTypeAdapterFactory(new AtTypeSealedAdapterFactory());
 
         ApiWebSocketMessageTypeAdapter.register(builder);
