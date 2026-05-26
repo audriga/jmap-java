@@ -24,7 +24,6 @@ final class RecordAdapterTest extends AbstractGsonTest {
 
     @Test
     void full() throws IOException {
-        System.out.println(Foo.class.getRecordComponents()[1].getAccessor().getAnnotation(SerializedName.class));
         JsonElement json = parseFromResource("record/full.json", JsonElement.class);
         var object = new Foo(-12345, "a string!", true, new Bar(9.8), new Baz(2, new Bar(42)), "");
         assertEquals(json, gson.toJsonTree(object));

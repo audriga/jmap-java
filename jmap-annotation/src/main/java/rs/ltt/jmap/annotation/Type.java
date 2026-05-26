@@ -33,9 +33,7 @@ public @interface Type {
      */
     String value() default "";
 
-    interface Dynamic<D> {
-        String type();
-
-        D data();
-    }
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    @interface Unknown {}
 }

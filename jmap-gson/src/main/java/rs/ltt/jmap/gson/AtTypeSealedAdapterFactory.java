@@ -1,13 +1,12 @@
 package rs.ltt.jmap.gson;
 
-import static java.lang.invoke.MethodType.methodType;
-
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Method;
 import java.util.Arrays;
+import lombok.SneakyThrows;
+import rs.ltt.jmap.annotation.Inline;
 import rs.ltt.jmap.annotation.Type;
 import rs.ltt.jmap.gson.adapter.SumTypeAdapter;
 
@@ -22,20 +21,20 @@ public final class AtTypeSealedAdapterFactory implements TypeAdapterFactory {
 
         var permitted = raw.getPermittedSubclasses();
         if (permitted == null) return null;
-        var dynamicClasses = Arrays.stream(permitted)
-                .filter(Type.Dynamic.class::isAssignableFrom)
+        var unknownClasses = Arrays.stream(permitted)
+                .filter(c -> c.isAnnotationPresent(Type.Unknown.class))
                 .toList();
-        if (dynamicClasses.size() > 1) {
-            throw new IllegalArgumentException("expected at most one dynamic variant class, found " + dynamicClasses);
+        if (unknownClasses.size() > 1) {
+            throw new IllegalArgumentException("expected at most one dynamic variant class, found " + unknownClasses);
         }
         @SuppressWarnings("unchecked")
-        var fallback = dynamicClasses.isEmpty()
+        var fallback = unknownClasses.isEmpty()
                 ? null
-                : (SumTypeAdapter.VariantSource<T>) dynamicSource(dynamicClasses.get(0), gson);
+                : (SumTypeAdapter.VariantSource<T>) unknownSource(unknownClasses.get(0), gson);
         var source = SumTypeAdapter.sealedClassSource(
                 raw,
                 sub -> {
-                    if (Type.Dynamic.class.isAssignableFrom(sub)) return null;
+                    if (sub.isAnnotationPresent(Type.Unknown.class)) return null;
                     var annotation = sub.getAnnotation(Type.class);
                     if (annotation == null) {
                         throw new IllegalArgumentException(
@@ -64,32 +63,41 @@ public final class AtTypeSealedAdapterFactory implements TypeAdapterFactory {
                 source, new TagRepr.Internal("@type", defaultTag), gson.getAdapter(JsonElement.class));
     }
 
-    private SumTypeAdapter.DynamicSource<Type.Dynamic<Object>, Object> dynamicSource(Class<?> clazz, Gson gson) {
-        Method dataMethod;
-        try {
-            dataMethod = clazz.getMethod("data");
-        } catch (NoSuchMethodException e) {
-            // clazz extends Type.Dynamic
-            throw new AssertionError(e);
+    private <T> SumTypeAdapter.VariantSource<T> unknownSource(Class<T> clazz, Gson gson) {
+        if (clazz.isAnnotationPresent(Type.class)) {
+            throw new IllegalArgumentException("found both @Type.Unknown and @Type annotation on " + clazz.getName());
         }
-        MethodHandle ctor;
-        try {
-            ctor = LOOKUP.findConstructor(clazz, methodType(void.class, String.class, dataMethod.getReturnType()));
-        } catch (NoSuchMethodException | IllegalAccessException e) {
-            throw new IllegalArgumentException("failed to get dynamic variant constructor", e);
+        if (!clazz.isAnnotationPresent(Inline.class)) {
+            throw new IllegalArgumentException("@Type.Unknown class " + clazz.getName() + " must be marked @Inline");
         }
-        @SuppressWarnings("unchecked")
-        var source = new SumTypeAdapter.DynamicSource<>(
-                (tag, data) -> {
-                    try {
-                        return (Type.Dynamic<Object>) ctor.invoke(tag, data);
-                    } catch (Throwable e) {
-                        throw new RuntimeException(e);
-                    }
-                },
-                Type.Dynamic::type,
-                Type.Dynamic::data,
-                (TypeAdapter<Object>) gson.getAdapter(TypeToken.get(dataMethod.getGenericReturnType())));
-        return source;
+        var components = clazz.getRecordComponents();
+        if (components == null) {
+            throw new IllegalArgumentException("@Type.Unknown class " + clazz.getName() + " is not a record");
+        }
+        if (components.length != 1 || components[0].getType() != JsonObject.class) {
+            throw new IllegalArgumentException("expected one component of type JsonObject on @Type.Unknown record "
+                    + clazz.getName() + ", found " + Arrays.toString(components));
+        }
+        MethodHandle accessor;
+        try {
+            accessor = LOOKUP.unreflect(components[0].getAccessor());
+        } catch (IllegalAccessException e) {
+            throw new IllegalArgumentException(
+                    "cannot access component " + components[0].getName() + " of record " + clazz.getName(), e);
+        }
+        var adapter = gson.getAdapter(clazz);
+        return new SumTypeAdapter.VariantSource<>() {
+            @Override
+            @SneakyThrows // avoid catching Throwable from accessor
+            public SumTypeAdapter.Variant<T> variantOf(T value) {
+                var data = (JsonObject) accessor.invoke(value);
+                return new SumTypeAdapter.Variant<>(data.get("@type").getAsString(), adapter);
+            }
+
+            @Override
+            public TypeAdapter<T> adapterFor(String tag) throws JsonParseException {
+                return adapter;
+            }
+        };
     }
 }

@@ -12,6 +12,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import rs.ltt.jmap.annotation.Default;
+import rs.ltt.jmap.annotation.Inline;
 import rs.ltt.jmap.annotation.Type;
 
 final class AtTypeSealedAdapterTest extends AbstractGsonTest {
@@ -49,8 +50,8 @@ final class AtTypeSealedAdapterTest extends AbstractGsonTest {
         var cData = new JsonObject();
         cData.addProperty("@type", "foo");
         cData.addProperty("y", "~!");
-        var objects = List.of(
-                new WithDefault.A(3), new WithDefault.B(4), new WithDefault.B(5), new WithDefault.C("foo", cData));
+        var objects =
+                List.of(new WithDefault.A(3), new WithDefault.B(4), new WithDefault.B(5), new WithDefault.C(cData));
         assertEquals(objects, gson.fromJson(json, listType));
         json.getAsJsonArray().get(2).getAsJsonObject().addProperty("@type", "B");
         assertEquals(json, gson.toJsonTree(objects, listType.getType()));
@@ -76,6 +77,8 @@ final class AtTypeSealedAdapterTest extends AbstractGsonTest {
         @Type
         record B(int x) implements WithDefault {}
 
-        record C(String type, JsonObject data) implements WithDefault, Type.Dynamic<JsonObject> {}
+        @Type.Unknown
+        @Inline
+        record C(JsonObject data) implements WithDefault {}
     }
 }

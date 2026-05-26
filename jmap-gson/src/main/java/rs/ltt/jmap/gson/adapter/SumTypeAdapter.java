@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import org.jspecify.annotations.Nullable;
 import rs.ltt.jmap.gson.AtTypeSealedAdapterFactory;
@@ -34,44 +33,6 @@ public final class SumTypeAdapter<T> extends TypeAdapter<T> {
         Variant<T> variantOf(T value);
 
         TypeAdapter<T> adapterFor(String tag) throws JsonParseException;
-    }
-
-    public static final class DynamicSource<T, D> implements VariantSource<T> {
-        private final BiFunction<String, D, T> constructor;
-        private final Function<T, String> tagFn;
-        private final Function<T, D> dataFn;
-        private final TypeAdapter<D> dataAdapter;
-
-        public DynamicSource(
-                BiFunction<String, D, T> constructor,
-                Function<T, String> tagFn,
-                Function<T, D> dataFn,
-                TypeAdapter<D> dataAdapter) {
-            this.constructor = constructor;
-            this.tagFn = tagFn;
-            this.dataFn = dataFn;
-            this.dataAdapter = dataAdapter;
-        }
-
-        @Override
-        public Variant<T> variantOf(T value) {
-            return new Variant<>(tagFn.apply(value), adapterFor(tagFn.apply(value)));
-        }
-
-        @Override
-        public TypeAdapter<T> adapterFor(String tag) throws JsonParseException {
-            return new TypeAdapter<>() {
-                @Override
-                public void write(JsonWriter out, T value) throws IOException {
-                    dataAdapter.write(out, dataFn.apply(value));
-                }
-
-                @Override
-                public T read(JsonReader in) throws IOException {
-                    return constructor.apply(tag, dataAdapter.read(in));
-                }
-            };
-        }
     }
 
     public static final class SealedClassSource<T> implements VariantSource<T> {

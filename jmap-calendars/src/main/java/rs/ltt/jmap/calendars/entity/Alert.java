@@ -6,6 +6,7 @@ import java.time.Duration;
 import java.time.Instant;
 import org.jspecify.annotations.Nullable;
 import rs.ltt.jmap.annotation.Default;
+import rs.ltt.jmap.annotation.Inline;
 import rs.ltt.jmap.annotation.Type;
 
 @Type
@@ -27,5 +28,7 @@ public record Alert(Trigger trigger, @Nullable Instant acknowledged) {
     @Type
     public record AbsoluteTrigger(Instant when) implements Trigger {}
 
-    public record UnknownTrigger(String type, JsonObject data) implements Trigger, Type.Dynamic<JsonObject> {}
+    @Type.Unknown
+    @Inline
+    public record UnknownTrigger(JsonObject data) implements Trigger {}
 }
