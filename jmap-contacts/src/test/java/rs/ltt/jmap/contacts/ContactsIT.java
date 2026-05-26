@@ -1,11 +1,14 @@
 package rs.ltt.jmap.contacts;
 
-import com.audriga.stalwart.StalwartAccount;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.Test;
 import rs.ltt.jmap.client.ConnectionConfig;
 import rs.ltt.jmap.client.JmapClient;
 import rs.ltt.jmap.client.http.BasicAuthHttpAuthentication;
+import rs.ltt.jmap.contacts.method.QueryContactCardCall;
+import rs.ltt.jmap.contacts.method.QueryContactCardResponse;
 
 class ContactsIT {
     @Test
@@ -16,10 +19,12 @@ class ContactsIT {
                     new BasicAuthHttpAuthentication(server.username(), server.password()),
                     server.publicUrl().resolve("/.well-known/jmap"),
                     InsecureX509TrustManager.INSTANCE))) {
-                var res = client.call(new StalwartAccount.Get("a", new String[] {"b"}, null, null))
+                var session = client.getSession().get();
+                var accountId = session.getPrimaryAccount(ContactsAccountCapability.class);
+                var res = client.call(new QueryContactCardCall(accountId, null, null, null, null, null, null, true))
                         .get()
-                        .getMain(StalwartAccount.Get.Response.class);
-                System.out.println(res);
+                        .getMain(QueryContactCardResponse.class);
+                assertEquals(0, res.getTotal());
             }
         }
     }
