@@ -1,6 +1,6 @@
 package rs.ltt.jmap.contacts;
 
-import com.audriga.stalwart.StalwartBootstrap;
+import com.audriga.stalwart.*;
 import com.google.gson.JsonObject;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -70,9 +70,46 @@ public final class StalwartContainer extends GenericContainer<StalwartContainer>
                             .port(bootstrap.getFirstMappedPort())
                             .encodedPath("/.well-known/jmap")
                             .build());
-            var res = client.call(new StalwartBootstrap.Set("", null, Map.of("serverHostname", bootstrap.getHost())))
+            var res = client.call(new StalwartBootstrap.Set(
+                            "",
+                            null,
+                            Map.of(
+                                    "serverHostname",
+                                    bootstrap.getHost(),
+                                    "defaultDomain",
+                                    "stalwart.test",
+                                    "requestTlsCertificate",
+                                    false,
+                                    "generateDkimKeys",
+                                    false,
+                                    "dataStore",
+                                    new StalwartDataStore.PostgreSql(
+                                            null,
+                                            new StalwartPostgreSqlStore.Builder()
+                                                    .allowInvalidCerts(false)
+                                                    .authUsername(database.getUsername())
+                                                    .authSecret(new StalwartSecretKeyOptional.Value(
+                                                            new StalwartSecretKeyValue(database.getPassword())))
+                                                    .database(database.getDatabaseName())
+                                                    .host("postgres")
+                                                    .useTls(false)
+                                                    .readReplicas(Map.of())
+                                                    .build()),
+                                    "tracer",
+                                    new StalwartTracer.Stdout(
+                                            null,
+                                            new StalwartTracerStdout.Builder()
+                                                    .ansi(true)
+                                                    .buffered(false)
+                                                    .lossy(false)
+                                                    .multiline(false)
+                                                    .events(Map.of())
+                                                    .build()))))
                     .get()
                     .getMain(StalwartBootstrap.Set.Response.class);
+            if (res.getNotUpdated() != null) {
+                throw new ContainerLaunchException("couldn't update stalwart x:Bootstrap: " + res.getNotUpdated());
+            }
             System.out.println(res.getUpdated());
         } catch (ExecutionException | InterruptedException e) {
             throw new ContainerLaunchException("Stalwart bootstrap failed", e);

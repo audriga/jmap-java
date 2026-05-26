@@ -21,6 +21,24 @@ import rs.ltt.jmap.annotation.Inline;
 public final class RecordAdapterFactory implements TypeAdapterFactory {
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
     private static final Object EMPTY_SLOT = new Object();
+    // `get` will return null for non-primitive types
+    private static final Map<Class<?>, Object> ZERO_VALUES = Map.of(
+            byte.class,
+            (byte) 0,
+            short.class,
+            (short) 0,
+            int.class,
+            0,
+            long.class,
+            0L,
+            float.class,
+            0f,
+            double.class,
+            0d,
+            char.class,
+            (char) 0,
+            boolean.class,
+            false);
 
     private record Component(
             String name,
@@ -163,13 +181,17 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                             // we disallow nullable on primitive types, so this is safe
                             fields[i] = null;
                         } else {
-                            throw new JsonParseException("missing required field " + comp.name);
+                            fields[i] = ZERO_VALUES.get(comp.type);
+                            // FIXME: in some contexts, all fields are considered nullable
+                            //  (e.g. created/updated in SetMethodResponse)
+                            // throw new JsonParseException("missing required field " + comp.name);
                         }
                     }
-                    if (fields[i] == null && !comp.nullable) {
-                        throw new JsonParseException("found null value for non-nullable property '" + comp.name()
-                                + "' while parsing " + raw.getName());
-                    }
+                    // FIXME: see above
+                    // if (fields[i] == null && !comp.nullable) {
+                    //    throw new JsonParseException("found null value for non-nullable property '" + comp.name()
+                    //            + "' while parsing " + raw.getName());
+                    // }
                 }
                 @SuppressWarnings("unchecked")
                 T result = (T) GsonUtils.invoke(ctor, fields);

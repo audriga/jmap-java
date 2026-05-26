@@ -26,13 +26,14 @@ public final class JmapAdapters {
     private JmapAdapters() {}
 
     public static void register(GsonBuilder builder) {
-        builder.registerTypeAdapterFactory(new TypeInjectionAdapterFactory())
-                .registerTypeAdapterFactory(new RecordAdapterFactory())
+        builder.registerTypeAdapterFactory(new RecordAdapterFactory())
                 .registerTypeAdapterFactory(new InlineRecordAdapterFactory())
+                .registerTypeAdapterFactory(new TypeInjectionAdapterFactory())
                 .registerTypeAdapterFactory(new AtTypeSealedAdapterFactory());
 
         ApiWebSocketMessageTypeAdapter.register(builder);
         InstantTypeAdapter.register(builder);
+        DurationAsMillisAdapter.register(builder);
         OffsetDateTimeTypeAdapter.register(builder);
         ResultReferenceTypeAdapter.register(builder);
         PatchObjectNullTypeAdapter.register(builder);

@@ -34,7 +34,7 @@ public class TypeInjectionAdapterFactory implements TypeAdapterFactory {
         }
         final String type = Strings.isNullOrEmpty(annotation.value()) ? clazz.getSimpleName() : annotation.value();
         final TypeAdapter<T> delegateAdapter = gson.getDelegateAdapter(this, typeToken);
-        return new TypeAdapter<T>() {
+        return new TypeAdapter<>() {
             @Override
             public void write(final JsonWriter jsonWriter, final T t) {
                 final JsonElement element = delegateAdapter.toJsonTree(t);
