@@ -24,12 +24,16 @@
 
     <name>Java JMAP library</name>
     <description>A Java library for the JSON Meta Application Protocol</description>
-    <url>https://codeberg.org/iNPUTmice/jmap</url>
+    <url>https://github.com/audriga/jmap-java</url>
+    <organization>
+        <name>audriga GmbH</name>
+        <url>https://audriga.com</url>
+    </organization>
 
     <licenses>
         <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
 
@@ -58,9 +62,9 @@
     </modules>
 
     <scm>
-        <connection>scm:git:https://codeberg.org/iNPUTmice/jmap.git</connection>
-        <developerConnection>scm:git:ssh://git@codeberg.org:iNPUTmice/jmap.git</developerConnection>
-        <url>https://codeberg.org/iNPUTmice/jmap</url>
+        <connection>scm:git:https://github.com/audriga/jmap-java.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:audriga/jmap-java.git</developerConnection>
+        <url>https://github.com/audriga/jmap-java</url>
     </scm>
 
     <distributionManagement>
@@ -236,6 +240,11 @@
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>2.7.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
                     <artifactId>templating-maven-plugin</artifactId>
                     <version>3.1.0</version>
                 </plugin>
@@ -360,6 +369,14 @@
                         <phase>process-resources</phase>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <licenseName>apache_v2</licenseName>
+                    <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
