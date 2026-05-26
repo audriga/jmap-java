@@ -34,7 +34,7 @@ public final class JmapAdapters {
 
         ApiWebSocketMessageTypeAdapter.register(builder);
         InstantTypeAdapter.register(builder);
-        DurationAsMillisAdapter.register(builder);
+        DurationTypeAdapter.register(builder);
         OffsetDateTimeTypeAdapter.register(builder);
         ResultReferenceTypeAdapter.register(builder);
         PatchObjectNullTypeAdapter.register(builder);

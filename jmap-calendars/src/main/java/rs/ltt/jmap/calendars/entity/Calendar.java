@@ -17,5 +17,9 @@ public record Calendar(
         @Default("true") boolean isVisible,
         @ServerSet Boolean isDefault,
         String includeInAvailability,
-        Map<String, Alert> defaultAlertsWithTime)
+        @Nullable Map<String, Alert> defaultAlertsWithTime,
+        @Nullable Map<String, Alert> defaultAlertsWithoutTime,
+        @Nullable String timeZone,
+        @Nullable Map<String, CalendarRights> shareWith,
+        @ServerSet CalendarRights myRights)
         implements Identifiable {}
