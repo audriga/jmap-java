@@ -59,6 +59,8 @@
         <module>jmap-mock-server</module>
         <module>jmap-mua</module>
         <module>jmap-mua-util</module>
+        <module>jmap-stalwart</module>
+        <module>jmap-stalwart-generator</module>
     </modules>
 
     <scm>
@@ -80,6 +82,8 @@
 
     <properties>
         <java.version>17</java.version>
+        <maven-plugin-tools.version>3.15.2</maven-plugin-tools.version>
+        <maven.version>3.9.16</maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -113,6 +117,11 @@
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
                 <version>2.14.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.palantir.javapoet</groupId>
+                <artifactId>javapoet</artifactId>
+                <version>0.19.0</version>
             </dependency>
             <dependency>
                 <groupId>org.hamcrest</groupId>
@@ -154,6 +163,24 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>33.7.1-jre</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-core</artifactId>
+                <version>${maven.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-plugin-api</artifactId>
+                <version>${maven.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven.plugin-tools</groupId>
+                <artifactId>maven-plugin-annotations</artifactId>
+                <version>${maven-plugin-tools.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -225,6 +252,16 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-plugin-plugin</artifactId>
+                    <version>${maven-plugin-tools.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-plugin-report-plugin</artifactId>
+                    <version>${maven-plugin-tools.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>3.4.0</version>
                 </plugin>
@@ -269,6 +306,10 @@
                         <includes>
                             <include>**/*.md</include>
                         </includes>
+                        <excludes>
+                            <exclude>target/**</exclude>
+                            <exclude>*/target/**</exclude>
+                        </excludes>
                         <flexmark>
                             <formatterOptions>
                                 <maxTrailingBlankLines>0</maxTrailingBlankLines>
