@@ -56,17 +56,18 @@ public class JmapMuaTest {
 
             final MyInMemoryCache myInMemoryCache = new MyInMemoryCache();
 
-            final Mua mua = Mua.builder()
+            try (Mua mua = Mua.builder()
                     .cache(myInMemoryCache)
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(emailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
                     .accountId(emailServer.getAccountId())
-                    .build();
-            mua.refreshMailboxes().get();
+                    .build()) {
+                mua.refreshMailboxes().get();
+            }
             final Mailbox mailbox = Iterables.getFirst(myInMemoryCache.getMailboxes(), null);
             Assertions.assertNotNull(mailbox);
-            Assertions.assertEquals(mailbox.getRole(), Role.INBOX);
+            Assertions.assertEquals(Role.INBOX, mailbox.getRole());
         }
     }
 
@@ -77,14 +78,16 @@ public class JmapMuaTest {
             server.setDispatcher(emailServer);
             server.start();
 
-            final Mua mua = Mua.builder()
+            final ExecutionException executionException;
+            try (Mua mua = Mua.builder()
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(emailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
                     .accountId(emailServer.getAccountId())
-                    .build();
-            final ExecutionException executionException = Assertions.assertThrows(
-                    ExecutionException.class, () -> mua.refreshIdentities().get());
+                    .build()) {
+                executionException = Assertions.assertThrows(
+                        ExecutionException.class, () -> mua.refreshIdentities().get());
+            }
             MatcherAssert.assertThat(
                     executionException.getCause(), CoreMatchers.instanceOf(MethodErrorResponseException.class));
         }
@@ -195,7 +198,6 @@ public class JmapMuaTest {
                         ExecutionException.class, () -> mua.refreshIdentities().get());
                 MatcherAssert.assertThat(
                         executionException.getCause(), CoreMatchers.instanceOf(InvalidSessionResourceException.class));
-                executionException.printStackTrace();
             }
         }
     }
