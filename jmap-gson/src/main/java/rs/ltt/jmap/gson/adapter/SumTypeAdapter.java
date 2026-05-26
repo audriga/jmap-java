@@ -5,6 +5,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import rs.ltt.jmap.gson.AtTypeSealedAdapterFactory;
@@ -41,6 +42,11 @@ public final class SumTypeAdapter<T> extends TypeAdapter<T> {
 
     @Override
     public void write(JsonWriter out, T value) throws IOException {
+        if (value == null) {
+            out.nullValue();
+            return;
+        }
+
         var variant = source.variantOf(value);
 
         out.beginObject();
@@ -73,6 +79,11 @@ public final class SumTypeAdapter<T> extends TypeAdapter<T> {
 
     @Override
     public T read(JsonReader in) throws IOException {
+        if (in.peek() == JsonToken.NULL) {
+            in.nextNull();
+            return null;
+        }
+
         if (tagRepr instanceof TagRepr.External) {
             in.beginObject();
             var tag = in.nextName();
