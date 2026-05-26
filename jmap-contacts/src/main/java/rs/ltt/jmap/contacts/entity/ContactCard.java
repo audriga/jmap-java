@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
+import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 import rs.ltt.jmap.annotation.Default;
 import rs.ltt.jmap.annotation.Immutable;
@@ -11,6 +12,7 @@ import rs.ltt.jmap.annotation.ServerSet;
 import rs.ltt.jmap.annotation.Type;
 import rs.ltt.jmap.common.entity.Identifiable;
 
+@Builder
 @Type("Card")
 public record ContactCard(
         // JMAP Additions
