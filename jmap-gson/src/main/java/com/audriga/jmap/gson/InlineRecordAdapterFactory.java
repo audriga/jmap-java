@@ -48,13 +48,18 @@ public class InlineRecordAdapterFactory implements TypeAdapterFactory {
         return new TypeAdapter<>() {
             @Override
             public void write(JsonWriter out, T value) throws IOException {
-                adapter.write(out, GsonUtils.invoke(accessor, value));
+                if (value == null) {
+                    out.nullValue();
+                } else {
+                    adapter.write(out, GsonUtils.invoke(accessor, value));
+                }
             }
 
             @Override
             @SuppressWarnings("unchecked")
             public T read(JsonReader in) throws IOException {
-                return (T) GsonUtils.invoke(ctor, adapter.read(in));
+                var read = adapter.read(in);
+                return read == null ? null : (T) GsonUtils.invoke(ctor, read);
             }
         };
     }
