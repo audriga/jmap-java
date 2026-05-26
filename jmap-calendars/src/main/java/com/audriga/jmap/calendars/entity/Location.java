@@ -4,8 +4,10 @@ import com.audriga.jmap.annotation.Type;
 import java.net.URI;
 import java.util.Map;
 import java.util.Set;
+import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 
+@Builder(toBuilder = true)
 @Type
 public record Location(
         @Nullable String name,

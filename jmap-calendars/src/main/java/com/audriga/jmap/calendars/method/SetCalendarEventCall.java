@@ -5,12 +5,14 @@ import com.audriga.jmap.calendars.entity.CalendarEvent;
 import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.method.call.standard.SetMethodCall;
 import java.util.Map;
+import lombok.Builder;
 import lombok.NonNull;
 
 @JmapMethod("CalendarEvent/set")
 public class SetCalendarEventCall extends SetMethodCall<CalendarEvent> {
     private Boolean sendSchedulingMessages;
 
+    @Builder
     public SetCalendarEventCall(
             @NonNull String accountId,
             String ifInState,

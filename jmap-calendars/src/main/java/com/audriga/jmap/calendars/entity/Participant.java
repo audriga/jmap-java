@@ -8,7 +8,7 @@ import java.util.Set;
 import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 
-@Builder
+@Builder(toBuilder = true)
 @Type
 public record Participant(
         @Nullable String name,

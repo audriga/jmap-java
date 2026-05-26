@@ -21,6 +21,7 @@ public record Alert(
     @Type("OffsetTrigger")
     public sealed interface Trigger {}
 
+    @Builder(toBuilder = true)
     @Type
     public record OffsetTrigger(
             DateTimePeriod offset, @Default("\"start\"") RelativeTo relativeTo) implements Trigger {
