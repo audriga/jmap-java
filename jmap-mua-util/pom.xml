@@ -28,12 +28,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>rs.ltt.jmap</groupId>
-            <artifactId>jmap-client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
@@ -41,7 +35,11 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>rs.ltt.jmap</groupId>
+            <artifactId>jmap-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
