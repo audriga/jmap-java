@@ -24,8 +24,7 @@ import java.util.Map;
 import rs.ltt.jmap.common.entity.AccountCapability;
 import rs.ltt.jmap.common.util.Mapper;
 
-public class PrimaryAccountsDeserializer
-        implements JsonDeserializer<Map<Class<? extends AccountCapability>, String>> {
+public class PrimaryAccountsDeserializer implements JsonDeserializer<Map<Class<? extends AccountCapability>, String>> {
 
     public static void register(final GsonBuilder builder) {
         Type type = new TypeToken<Map<Class<? extends AccountCapability>, String>>() {}.getType();
@@ -33,15 +32,12 @@ public class PrimaryAccountsDeserializer
     }
 
     public Map<Class<? extends AccountCapability>, String> deserialize(
-            JsonElement jsonElement, Type type, JsonDeserializationContext context)
-            throws JsonParseException {
+            JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
         final JsonObject jsonObject = jsonElement.getAsJsonObject();
-        ImmutableMap.Builder<Class<? extends AccountCapability>, String> builder =
-                new ImmutableMap.Builder<>();
+        ImmutableMap.Builder<Class<? extends AccountCapability>, String> builder = new ImmutableMap.Builder<>();
         for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
             final String namespace = entry.getKey();
-            final Class<? extends AccountCapability> clazz =
-                    Mapper.ACCOUNT_CAPABILITIES.get(namespace);
+            final Class<? extends AccountCapability> clazz = Mapper.ACCOUNT_CAPABILITIES.get(namespace);
             if (clazz == null) {
                 continue;
             }

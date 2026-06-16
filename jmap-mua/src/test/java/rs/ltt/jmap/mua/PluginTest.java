@@ -45,14 +45,13 @@ public class PluginTest {
         server.setDispatcher(mailServer);
         final CountEmailCreationPlugin plugin = new CountEmailCreationPlugin();
         final Identity identity = Identity.builder().name("Stub Identity").build();
-        try (final Mua mua =
-                Mua.builder()
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .username(mailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mailServer.getAccountId())
-                        .plugin(CountEmailCreationPlugin.class, plugin)
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .username(mailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mailServer.getAccountId())
+                .plugin(CountEmailCreationPlugin.class, plugin)
+                .build()) {
             mua.query(EmailQuery.unfiltered(true)).get();
             Assertions.assertEquals(3, plugin.cacheCounter.get());
             final Email email = Email.builder().subject("Stub Email").build();
@@ -60,10 +59,12 @@ public class PluginTest {
             mua.query(EmailQuery.unfiltered(true)).get();
             Assertions.assertEquals(1, plugin.buildCounter.get());
 
-            final Email anotherEmail = Email.builder().subject("Another Stub Email").build();
+            final Email anotherEmail =
+                    Email.builder().subject("Another Stub Email").build();
 
             Assertions.assertThrows(
-                    ExecutionException.class, () -> mua.send(anotherEmail, identity).get());
+                    ExecutionException.class,
+                    () -> mua.send(anotherEmail, identity).get());
             Assertions.assertEquals(2, plugin.buildCounter.get());
 
             mua.query(EmailQuery.unfiltered(true)).get();
@@ -77,14 +78,12 @@ public class PluginTest {
         private final AtomicInteger buildCounter = new AtomicInteger();
         private final AtomicInteger cacheCounter = new AtomicInteger();
 
-        private final EmailBuildStagePlugin emailBuildStagePlugin =
-                email -> {
-                    buildCounter.incrementAndGet();
-                    return Futures.immediateFuture(email);
-                };
+        private final EmailBuildStagePlugin emailBuildStagePlugin = email -> {
+            buildCounter.incrementAndGet();
+            return Futures.immediateFuture(email);
+        };
 
-        private final EmailCacheStagePlugin emailCacheStagePlugin =
-                email -> cacheCounter.incrementAndGet();
+        private final EmailCacheStagePlugin emailCacheStagePlugin = email -> cacheCounter.incrementAndGet();
 
         @Override
         protected Collection<EventCallback> install(final MuaSession muaSession) {

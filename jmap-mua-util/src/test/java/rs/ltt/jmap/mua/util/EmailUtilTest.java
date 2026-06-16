@@ -40,21 +40,24 @@ public class EmailUtilTest {
     public void secondResponseSubject() {
         Assertions.assertEquals(
                 "Re: Hello",
-                EmailUtil.getResponseSubject(Email.builder().subject("RE: Hello").build()));
+                EmailUtil.getResponseSubject(
+                        Email.builder().subject("RE: Hello").build()));
     }
 
     @Test
     public void secondResponseSubjectExcessWhitespace() {
         Assertions.assertEquals(
                 "Re: Hello",
-                EmailUtil.getResponseSubject(Email.builder().subject("RE:    Hello  ").build()));
+                EmailUtil.getResponseSubject(
+                        Email.builder().subject("RE:    Hello  ").build()));
     }
 
     @Test
     public void secondResponseSubjectGerman() {
         Assertions.assertEquals(
                 "Re: Hello",
-                EmailUtil.getResponseSubject(Email.builder().subject("Aw: Hello").build()));
+                EmailUtil.getResponseSubject(
+                        Email.builder().subject("Aw: Hello").build()));
     }
 
     @Test
@@ -77,9 +80,11 @@ public class EmailUtilTest {
 
     @Test
     public void replyAll() {
-        final EmailAddress alice = EmailAddress.builder().email("alice@example.com").build();
+        final EmailAddress alice =
+                EmailAddress.builder().email("alice@example.com").build();
         final EmailAddress bob = EmailAddress.builder().email("bob@example.com").build();
-        final EmailAddress chris = EmailAddress.builder().email("chris@example.com").build();
+        final EmailAddress chris =
+                EmailAddress.builder().email("chris@example.com").build();
         final Email email = Email.builder().from(alice).to(bob).cc(chris).build();
         final EmailUtil.ReplyAddresses replyAddresses = EmailUtil.replyAll(email);
         Assertions.assertEquals(ImmutableList.of(alice), replyAddresses.getTo());
@@ -88,7 +93,8 @@ public class EmailUtilTest {
 
     @Test
     public void replyAllMinusIdentities() {
-        final EmailAddress alice = EmailAddress.builder().email("alice@example.com").build();
+        final EmailAddress alice =
+                EmailAddress.builder().email("alice@example.com").build();
         final EmailAddress bob = EmailAddress.builder().email("bob@example.com").build();
         final Email email = Email.builder().from(alice).to(bob).build();
         final EmailUtil.ReplyAddresses replyAddresses =
@@ -99,7 +105,8 @@ public class EmailUtilTest {
 
     @Test
     public void reply() {
-        final EmailAddress alice = EmailAddress.builder().email("alice@example.com").build();
+        final EmailAddress alice =
+                EmailAddress.builder().email("alice@example.com").build();
         final EmailAddress bob = EmailAddress.builder().email("bob@example.com").build();
         final Email email = Email.builder().from(alice).to(bob).build();
         final EmailUtil.ReplyAddresses replyAddresses = EmailUtil.reply(email);

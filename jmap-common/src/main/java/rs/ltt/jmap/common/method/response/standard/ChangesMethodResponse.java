@@ -23,8 +23,7 @@ import rs.ltt.jmap.common.entity.TypedState;
 import rs.ltt.jmap.common.method.MethodResponse;
 
 @Getter
-public abstract class ChangesMethodResponse<T extends AbstractIdentifiableEntity>
-        implements MethodResponse {
+public abstract class ChangesMethodResponse<T extends AbstractIdentifiableEntity> implements MethodResponse {
 
     protected String accountId;
     protected String oldState;

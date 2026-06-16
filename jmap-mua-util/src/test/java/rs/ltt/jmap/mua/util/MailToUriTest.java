@@ -60,9 +60,7 @@ public class MailToUriTest {
                         .to(EmailAddress.builder().email(EXAMPLE_ADDRESS_ALPHA).build())
                         .subject(EXAMPLE_SUBJECT)
                         .build(),
-                MailToUri.get(
-                        String.format(
-                                "mailto:%s?subject=%s", EXAMPLE_ADDRESS_ALPHA, EXAMPLE_SUBJECT)));
+                MailToUri.get(String.format("mailto:%s?subject=%s", EXAMPLE_ADDRESS_ALPHA, EXAMPLE_SUBJECT)));
     }
 
     @Test
@@ -79,17 +77,18 @@ public class MailToUriTest {
                         .to(EmailAddress.builder().email(EXAMPLE_ADDRESS_ALPHA).build())
                         .cc(EmailAddress.builder().email(EXAMPLE_ADDRESS_BETA).build())
                         .cc(EmailAddress.builder().email(EXAMPLE_ADDRESS_GAMMA).build())
-                        .bcc((EmailAddress.builder().email(EXAMPLE_ADDRESS_DELTA).build()))
+                        .bcc((EmailAddress.builder()
+                                .email(EXAMPLE_ADDRESS_DELTA)
+                                .build()))
                         .subject(EXAMPLE_SUBJECT)
                         .build(),
-                MailToUri.get(
-                        String.format(
-                                "mailto:%s?cc=%s,%s&bcc=%s&subject=%s",
-                                EXAMPLE_ADDRESS_ALPHA,
-                                EXAMPLE_ADDRESS_BETA,
-                                EXAMPLE_ADDRESS_GAMMA,
-                                EXAMPLE_ADDRESS_DELTA,
-                                EXAMPLE_SUBJECT)));
+                MailToUri.get(String.format(
+                        "mailto:%s?cc=%s,%s&bcc=%s&subject=%s",
+                        EXAMPLE_ADDRESS_ALPHA,
+                        EXAMPLE_ADDRESS_BETA,
+                        EXAMPLE_ADDRESS_GAMMA,
+                        EXAMPLE_ADDRESS_DELTA,
+                        EXAMPLE_SUBJECT)));
     }
 
     @Test
@@ -99,8 +98,7 @@ public class MailToUriTest {
                         .to(EmailAddress.builder().email("list@example.com").build())
                         .inReplyTo("<3469A91.D10AF4C@example.com>")
                         .build(),
-                MailToUri.get(
-                        "mailto:list@example.com?In-Reply-To=%3C3469A91.D10AF4C@example.com%3E"));
+                MailToUri.get("mailto:list@example.com?In-Reply-To=%3C3469A91.D10AF4C@example.com%3E"));
     }
 
     @Test
@@ -114,8 +112,7 @@ public class MailToUriTest {
 
     @Test
     public void unknownScheme() {
-        Assertions.assertThrows(
-                IllegalArgumentException.class, () -> MailToUri.get("xmpp:test@example.com"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> MailToUri.get("xmpp:test@example.com"));
     }
 
     @Test
@@ -146,16 +143,13 @@ public class MailToUriTest {
     public void namedEmailAddressInMailto() throws UnsupportedEncodingException {
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () ->
-                        MailToUri.get(
-                                String.format(
-                                        "mailto:%s",
-                                        URLEncoder.encode(
-                                                EmailAddressUtil.toString(
-                                                        EmailAddress.builder()
-                                                                .name("Alpha")
-                                                                .email(EXAMPLE_ADDRESS_ALPHA)
-                                                                .build()),
-                                                "UTF-8"))));
+                () -> MailToUri.get(String.format(
+                        "mailto:%s",
+                        URLEncoder.encode(
+                                EmailAddressUtil.toString(EmailAddress.builder()
+                                        .name("Alpha")
+                                        .email(EXAMPLE_ADDRESS_ALPHA)
+                                        .build()),
+                                "UTF-8"))));
     }
 }

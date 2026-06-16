@@ -36,7 +36,8 @@ import rs.ltt.jmap.client.http.BasicAuthHttpAuthentication;
 
 public class BinaryDataClientTest {
 
-    @TempDir Path tempDir;
+    @TempDir
+    Path tempDir;
 
     @Test
     public void invalidUploadResponse() throws IOException {
@@ -48,21 +49,15 @@ public class BinaryDataClientTest {
         server.enqueue(new MockResponse().setBody("{}"));
         server.start();
 
-        final var connectionConfig =
-                new ConnectionConfig(new BasicAuthHttpAuthentication("foo", "bar"), null, null);
+        final var connectionConfig = new ConnectionConfig(new BasicAuthHttpAuthentication("foo", "bar"), null, null);
 
         final BinaryDataClient binaryDataClient = new BinaryDataClient(connectionConfig);
 
-        ExecutionException ee =
-                Assertions.assertThrows(
-                        ExecutionException.class,
-                        () ->
-                                binaryDataClient
-                                        .upload(
-                                                server.url("/upload"),
-                                                FileUpload.of(textFileLocation),
-                                                null)
-                                        .get());
+        ExecutionException ee = Assertions.assertThrows(
+                ExecutionException.class,
+                () -> binaryDataClient
+                        .upload(server.url("/upload"), FileUpload.of(textFileLocation), null)
+                        .get());
         MatcherAssert.assertThat(ee.getCause(), instanceOf(IllegalStateException.class));
     }
 
@@ -76,21 +71,15 @@ public class BinaryDataClientTest {
         server.enqueue(new MockResponse().setResponseCode(401).setBody("{}"));
         server.start();
 
-        final var connectionConfig =
-                new ConnectionConfig(new BasicAuthHttpAuthentication("foo", "bar"), null, null);
+        final var connectionConfig = new ConnectionConfig(new BasicAuthHttpAuthentication("foo", "bar"), null, null);
 
         final BinaryDataClient binaryDataClient = new BinaryDataClient(connectionConfig);
 
-        ExecutionException ee =
-                Assertions.assertThrows(
-                        ExecutionException.class,
-                        () ->
-                                binaryDataClient
-                                        .upload(
-                                                server.url("/upload"),
-                                                FileUpload.of(textFileLocation),
-                                                null)
-                                        .get());
+        ExecutionException ee = Assertions.assertThrows(
+                ExecutionException.class,
+                () -> binaryDataClient
+                        .upload(server.url("/upload"), FileUpload.of(textFileLocation), null)
+                        .get());
         MatcherAssert.assertThat(ee.getCause(), instanceOf(BlobTransferException.class));
     }
 }

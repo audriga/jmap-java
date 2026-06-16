@@ -40,7 +40,9 @@ public class EmailSubmission extends AbstractIdentifiableEntity {
     @Singular("deliveryStatus")
     private Map<String, DeliveryStatus> deliveryStatus;
 
-    @Singular private List<String> dsnBlobIds;
+    @Singular
+    private List<String> dsnBlobIds;
 
-    @Singular private List<String> mdnBlobIds;
+    @Singular
+    private List<String> mdnBlobIds;
 }

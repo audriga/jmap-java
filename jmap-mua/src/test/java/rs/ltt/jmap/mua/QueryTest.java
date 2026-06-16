@@ -44,15 +44,14 @@ public class QueryTest {
 
         final EmailQuery emailQuery = EmailQuery.unfiltered(true);
 
-        try (final Mua mua =
-                Mua.builder()
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .cache(myInMemoryCache)
-                        .username(mockMailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mockMailServer.getAccountId())
-                        .queryPageSize(5)
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .cache(myInMemoryCache)
+                .username(mockMailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mockMailServer.getAccountId())
+                .queryPageSize(5)
+                .build()) {
 
             mua.query(emailQuery).get();
 
@@ -64,8 +63,7 @@ public class QueryTest {
 
             mua.query(emailQuery).get();
 
-            final List<String> threadsAfterRefresh =
-                    myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash());
+            final List<String> threadsAfterRefresh = myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash());
 
             Assertions.assertEquals(5, threadsAfterRefresh.size());
 
@@ -88,14 +86,13 @@ public class QueryTest {
 
         final EmailQuery emailQuery = EmailQuery.unfiltered(true);
 
-        try (final Mua mua =
-                Mua.builder()
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .cache(myInMemoryCache)
-                        .username(mockMailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mockMailServer.getAccountId())
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .cache(myInMemoryCache)
+                .username(mockMailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mockMailServer.getAccountId())
+                .build()) {
 
             mua.query(emailQuery, true).get();
         }
@@ -115,15 +112,14 @@ public class QueryTest {
 
         final EmailQuery emailQuery = EmailQuery.unfiltered(true);
 
-        try (final Mua mua =
-                Mua.builder()
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .cache(myInMemoryCache)
-                        .username(mockMailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mockMailServer.getAccountId())
-                        .queryPageSize(5)
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .cache(myInMemoryCache)
+                .username(mockMailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mockMailServer.getAccountId())
+                .queryPageSize(5)
+                .build()) {
 
             mua.query(emailQuery).get();
 
@@ -149,8 +145,7 @@ public class QueryTest {
     }
 
     @Test
-    public void queryRefreshMoreThanPageSize()
-            throws IOException, InterruptedException, ExecutionException {
+    public void queryRefreshMoreThanPageSize() throws IOException, InterruptedException, ExecutionException {
         final MockMailServer mockMailServer = new MockMailServer(128);
         final MockWebServer server = new MockWebServer();
         server.setDispatcher(mockMailServer);
@@ -159,15 +154,14 @@ public class QueryTest {
 
         final EmailQuery emailQuery = EmailQuery.unfiltered(true);
 
-        try (final Mua mua =
-                Mua.builder()
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .cache(myInMemoryCache)
-                        .username(mockMailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mockMailServer.getAccountId())
-                        .queryPageSize(5)
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .cache(myInMemoryCache)
+                .username(mockMailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mockMailServer.getAccountId())
+                .queryPageSize(5)
+                .build()) {
 
             mua.query(emailQuery).get();
 
@@ -197,8 +191,7 @@ public class QueryTest {
     }
 
     @Test
-    public void queryRefreshMoreThanPageSizeAndGetLimit()
-            throws IOException, InterruptedException, ExecutionException {
+    public void queryRefreshMoreThanPageSizeAndGetLimit() throws IOException, InterruptedException, ExecutionException {
         final MockMailServer mockMailServer = new MockMailServer(128);
         mockMailServer.setMaxObjectsInGet(8);
         final MockWebServer server = new MockWebServer();
@@ -208,15 +201,14 @@ public class QueryTest {
 
         final EmailQuery emailQuery = EmailQuery.unfiltered(true);
 
-        try (final Mua mua =
-                Mua.builder()
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .cache(myInMemoryCache)
-                        .username(mockMailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mockMailServer.getAccountId())
-                        .queryPageSize(5)
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .cache(myInMemoryCache)
+                .username(mockMailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mockMailServer.getAccountId())
+                .queryPageSize(5)
+                .build()) {
 
             mua.query(emailQuery).get();
 

@@ -33,10 +33,9 @@ public class EmailFilterConditionTest {
     public void headerThreeElements() {
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () ->
-                        EmailFilterCondition.builder()
-                                .header(new String[] {"one", "two", "three"})
-                                .build());
+                () -> EmailFilterCondition.builder()
+                        .header(new String[] {"one", "two", "three"})
+                        .build());
     }
 
     @Test

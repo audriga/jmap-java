@@ -79,10 +79,9 @@ public class ResultReferenceResolver {
                 break;
             default:
         }
-        throw new IllegalArgumentException(
-                String.format(
-                        "Unable to resolve path %s for class %s",
-                        path, methodResponse.getClass().getName()));
+        throw new IllegalArgumentException(String.format(
+                "Unable to resolve path %s for class %s",
+                path, methodResponse.getClass().getName()));
     }
 
     private static MethodResponse find(
@@ -95,16 +94,14 @@ public class ResultReferenceResolver {
         }
         final String methodCallName = Mapper.METHOD_CALLS.inverse().get(resultReference.getClazz());
         for (final Response.Invocation invocation : invocations) {
-            final String responseCallName =
-                    Mapper.METHOD_RESPONSES
-                            .inverse()
-                            .get(invocation.getMethodResponse().getClass());
+            final String responseCallName = Mapper.METHOD_RESPONSES
+                    .inverse()
+                    .get(invocation.getMethodResponse().getClass());
             if (methodCallName.equals(responseCallName)) {
                 return invocation.getMethodResponse();
             }
         }
-        throw new IllegalArgumentException(
-                "Unable to find matching response for " + methodCallName);
+        throw new IllegalArgumentException("Unable to find matching response for " + methodCallName);
     }
 
     private static String[] nullToEmpty(final String[] value) {

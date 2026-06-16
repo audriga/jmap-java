@@ -30,9 +30,7 @@ public abstract class SetException extends Exception {
     private final Map<String, SetError> notDestroyed;
 
     protected SetException(
-            Map<String, SetError> notCreated,
-            Map<String, SetError> notUpdated,
-            Map<String, SetError> notDestroyed) {
+            Map<String, SetError> notCreated, Map<String, SetError> notUpdated, Map<String, SetError> notDestroyed) {
         super(message(notCreated, notUpdated, notDestroyed));
         this.notCreated = notCreated;
         this.notUpdated = notUpdated;
@@ -43,11 +41,8 @@ public abstract class SetException extends Exception {
             final Map<String, SetError> notCreated,
             final Map<String, SetError> notUpdated,
             final Map<String, SetError> notDestroyed) {
-        final List<String> messages =
-                Arrays.asList(
-                        message("created", notCreated),
-                        message("updated", notUpdated),
-                        message("destroyed", notDestroyed));
+        final List<String> messages = Arrays.asList(
+                message("created", notCreated), message("updated", notUpdated), message("destroyed", notDestroyed));
         return Joiner.on(' ').join(Collections2.filter(messages, Objects::nonNull));
     }
 
@@ -56,9 +51,7 @@ public abstract class SetException extends Exception {
             return null;
         }
         final Collection<SetErrorType> types =
-                Collections2.filter(
-                        Collections2.transform(errors.values(), SetError::getType),
-                        Objects::nonNull);
+                Collections2.filter(Collections2.transform(errors.values(), SetError::getType), Objects::nonNull);
         return String.format("not %s: (%s)", action, Joiner.on(", ").join(types));
     }
 

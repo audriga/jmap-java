@@ -34,14 +34,13 @@ public class MailboxServiceTest {
         final MockMailServer mailServer = new MockMailServer(2);
         server.setDispatcher(mailServer);
         final MyInMemoryCache cache = new MyInMemoryCache();
-        try (final Mua mua =
-                Mua.builder()
-                        .cache(cache)
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .username(mailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mailServer.getAccountId())
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .cache(cache)
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .username(mailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mailServer.getAccountId())
+                .build()) {
             mua.refreshMailboxes().get();
             final Mailbox inboxBeforeModification = cache.getMailbox(Role.INBOX);
             Assertions.assertEquals(2, inboxBeforeModification.getTotalThreads());
@@ -60,26 +59,24 @@ public class MailboxServiceTest {
         final MockMailServer mailServer = new MockMailServer(2);
         server.setDispatcher(mailServer);
         final MyInMemoryCache cache = new MyInMemoryCache();
-        try (final Mua mua =
-                Mua.builder()
-                        .cache(cache)
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .username(mailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mailServer.getAccountId())
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .cache(cache)
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .username(mailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mailServer.getAccountId())
+                .build()) {
             mua.refreshMailboxes().get();
             final List<Mailbox> mailboxes = cache.getMailboxes();
             Assertions.assertEquals(1, mailboxes.size());
-            Mailbox archive = Mailbox.builder().role(Role.ARCHIVE).name("Archive").build();
+            Mailbox archive =
+                    Mailbox.builder().role(Role.ARCHIVE).name("Archive").build();
             Assertions.assertEquals(Boolean.TRUE, mua.createMailbox(archive).get());
             mua.refreshMailboxes().get();
             final List<Mailbox> mailboxesAfterCreate = cache.getMailboxes();
             Assertions.assertEquals(2, mailboxesAfterCreate.size());
             Assertions.assertTrue(
-                    mailboxesAfterCreate.stream()
-                            .map(Mailbox::getName)
-                            .anyMatch("Archive"::equals));
+                    mailboxesAfterCreate.stream().map(Mailbox::getName).anyMatch("Archive"::equals));
         }
     }
 }

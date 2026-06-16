@@ -38,10 +38,8 @@ import rs.ltt.jmap.common.websocket.WebSocketMessage;
 public class WebSocketPushService extends WebSocketJmapApiClient
         implements PushService, OnStateChangeListenerManager.Callback {
 
-    private final OnStateChangeListenerManager onStateChangeListenerManager =
-            new OnStateChangeListenerManager(this);
-    private final List<OnConnectionStateChangeListener> onConnectionStateListeners =
-            new ArrayList<>();
+    private final OnStateChangeListenerManager onStateChangeListenerManager = new OnStateChangeListenerManager(this);
+    private final List<OnConnectionStateChangeListener> onConnectionStateListeners = new ArrayList<>();
     private ReconnectionStrategy reconnectionStrategy =
             ReconnectionStrategy.truncatedBinaryExponentialBackoffStrategy(60, 4);
     private Duration pingInterval = null;
@@ -65,16 +63,14 @@ public class WebSocketPushService extends WebSocketJmapApiClient
     }
 
     @Override
-    public void addOnConnectionStateListener(
-            OnConnectionStateChangeListener onConnectionStateListener) {
+    public void addOnConnectionStateListener(OnConnectionStateChangeListener onConnectionStateListener) {
         synchronized (this.onConnectionStateListeners) {
             this.onConnectionStateListeners.add(onConnectionStateListener);
         }
     }
 
     @Override
-    public void removeOnConnectionStateListener(
-            OnConnectionStateChangeListener onConnectionStateListener) {
+    public void removeOnConnectionStateListener(OnConnectionStateChangeListener onConnectionStateListener) {
         synchronized (this.onConnectionStateListeners) {
             this.onConnectionStateListeners.remove(onConnectionStateListener);
         }
@@ -94,7 +90,8 @@ public class WebSocketPushService extends WebSocketJmapApiClient
 
     private void disablePushNotifications() {
         LOGGER.info("Disable push notifications");
-        final PushDisableWebSocketMessage message = PushDisableWebSocketMessage.builder().build();
+        final PushDisableWebSocketMessage message =
+                PushDisableWebSocketMessage.builder().build();
         send(message);
     }
 
@@ -120,8 +117,7 @@ public class WebSocketPushService extends WebSocketJmapApiClient
                 listener.onConnectionStateChange(state);
             }
         }
-        if (state.needsReconnect()
-                && this.onStateChangeListenerManager.isPushNotificationsEnabled()) {
+        if (state.needsReconnect() && this.onStateChangeListenerManager.isPushNotificationsEnabled()) {
             scheduleReconnect();
         }
     }
@@ -137,12 +133,8 @@ public class WebSocketPushService extends WebSocketJmapApiClient
                 final int count = this.connectionDurations.size();
                 if (count >= 5) {
                     final Duration median =
-                            Duration.ofNanos(
-                                    Math.round(
-                                            Quantiles.median().compute(this.connectionDurations)));
-                    duration =
-                            Durations.max(
-                                    median.minus(PING_INTERVAL_TOLERANCE), PING_INTERVAL_TOLERANCE);
+                            Duration.ofNanos(Math.round(Quantiles.median().compute(this.connectionDurations)));
+                    duration = Durations.max(median.minus(PING_INTERVAL_TOLERANCE), PING_INTERVAL_TOLERANCE);
                     LOGGER.info("Using automatically adjusted ping interval of {}", duration);
                 } else {
                     duration = Duration.ZERO;
@@ -155,8 +147,8 @@ public class WebSocketPushService extends WebSocketJmapApiClient
     }
 
     /**
-     * The ping frame interval used when pushes are enabled. Set to 0 to disable. Set to null to use
-     * automatic adjustment based on the time between receiving the last frame and receiving an EOF.
+     * The ping frame interval used when pushes are enabled. Set to 0 to disable. Set to null to use automatic
+     * adjustment based on the time between receiving the last frame and receiving an EOF.
      *
      * @param interval Set to null to use automatic adjustment
      */
@@ -203,9 +195,8 @@ public class WebSocketPushService extends WebSocketJmapApiClient
         final int attempt = this.attempt;
         final Duration reconnectIn = reconnectionStrategy.getNextReconnectionAttempt(attempt);
         LOGGER.info("schedule reconnect in {} for {} time", reconnectIn, attempt + 1);
-        this.reconnectionFuture =
-                Services.SCHEDULED_EXECUTOR_SERVICE.schedule(
-                        this::connectWebSocket, reconnectIn.toMillis(), TimeUnit.MILLISECONDS);
+        this.reconnectionFuture = Services.SCHEDULED_EXECUTOR_SERVICE.schedule(
+                this::connectWebSocket, reconnectIn.toMillis(), TimeUnit.MILLISECONDS);
         if (currentFuture != null) {
             currentFuture.cancel(true);
         }

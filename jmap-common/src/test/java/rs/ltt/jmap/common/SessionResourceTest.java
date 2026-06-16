@@ -31,23 +31,18 @@ public class SessionResourceTest {
     public void wrongAccountCapability() {
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () ->
-                        SessionResource.builder()
-                                .apiUrl("/jmap/")
-                                .state("initial")
-                                .account(
-                                        "user@example.com",
-                                        Account.builder()
-                                                .accountCapabilities(
-                                                        ImmutableMap.of(
-                                                                SubmissionAccountCapability.class,
-                                                                MailAccountCapability.builder()
-                                                                        .build()))
-                                                .build())
-                                .primaryAccounts(
-                                        ImmutableMap.of(
-                                                MailAccountCapability.class, "user@example.com"))
-                                .build());
+                () -> SessionResource.builder()
+                        .apiUrl("/jmap/")
+                        .state("initial")
+                        .account(
+                                "user@example.com",
+                                Account.builder()
+                                        .accountCapabilities(ImmutableMap.of(
+                                                SubmissionAccountCapability.class,
+                                                MailAccountCapability.builder().build()))
+                                        .build())
+                        .primaryAccounts(ImmutableMap.of(MailAccountCapability.class, "user@example.com"))
+                        .build());
     }
 
     @Test
@@ -58,10 +53,9 @@ public class SessionResourceTest {
                 .account(
                         "user@example.com",
                         Account.builder()
-                                .accountCapabilities(
-                                        ImmutableMap.of(
-                                                MailAccountCapability.class,
-                                                MailAccountCapability.builder().build()))
+                                .accountCapabilities(ImmutableMap.of(
+                                        MailAccountCapability.class,
+                                        MailAccountCapability.builder().build()))
                                 .build())
                 .primaryAccounts(ImmutableMap.of(MailAccountCapability.class, "user@example.com"))
                 .build();
@@ -71,26 +65,22 @@ public class SessionResourceTest {
     public void wrongCapability() {
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () ->
-                        SessionResource.builder()
-                                .apiUrl("/jmap/")
-                                .state("initital")
-                                .capabilities(
-                                        ImmutableMap.of(
-                                                CoreCapability.class,
-                                                WebSocketCapability.builder().build()))
-                                .build());
+                () -> SessionResource.builder()
+                        .apiUrl("/jmap/")
+                        .state("initital")
+                        .capabilities(ImmutableMap.of(
+                                CoreCapability.class,
+                                WebSocketCapability.builder().build()))
+                        .build());
     }
 
     @Test
     public void correctCapability() {
-        Assertions.assertNotNull(
-                SessionResource.builder()
-                        .apiUrl("/jmap/")
-                        .state("initital")
-                        .capabilities(
-                                ImmutableMap.of(
-                                        CoreCapability.class, CoreCapability.builder().build()))
-                        .build());
+        Assertions.assertNotNull(SessionResource.builder()
+                .apiUrl("/jmap/")
+                .state("initital")
+                .capabilities(ImmutableMap.of(
+                        CoreCapability.class, CoreCapability.builder().build()))
+                .build());
     }
 }

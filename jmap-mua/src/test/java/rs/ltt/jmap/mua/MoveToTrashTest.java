@@ -38,30 +38,23 @@ public class MoveToTrashTest {
         final MockWebServer server = new MockWebServer();
 
         server.enqueue(new MockResponse().setBody(readResourceAsString("common/01-session.json")));
-        server.enqueue(
-                new MockResponse().setBody(readResourceAsString("common/02-mailboxes.json")));
+        server.enqueue(new MockResponse().setBody(readResourceAsString("common/02-mailboxes.json")));
 
-        try (final Mua mua =
-                Mua.builder()
-                        .sessionResource(server.url(WELL_KNOWN_PATH))
-                        .username(USERNAME)
-                        .password(PASSWORD)
-                        .accountId(ACCOUNT_ID)
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .sessionResource(server.url(WELL_KNOWN_PATH))
+                .username(USERNAME)
+                .password(PASSWORD)
+                .accountId(ACCOUNT_ID)
+                .build()) {
             mua.refreshMailboxes().get();
 
-            Assertions.assertFalse(
-                    mua.moveToTrash(
-                                    ImmutableSet.of(
-                                            new MyIdentifiableEmailWithMailboxes("e0", "mb4")))
-                            .get());
+            Assertions.assertFalse(mua.moveToTrash(ImmutableSet.of(new MyIdentifiableEmailWithMailboxes("e0", "mb4")))
+                    .get());
 
-            Assertions.assertFalse(
-                    mua.moveToTrash(
-                                    ImmutableSet.of(
-                                            new MyIdentifiableEmailWithMailboxes("e0", "mb4"),
-                                            new MyIdentifiableEmailWithMailboxes("e1", "mb4")))
-                            .get());
+            Assertions.assertFalse(mua.moveToTrash(ImmutableSet.of(
+                            new MyIdentifiableEmailWithMailboxes("e0", "mb4"),
+                            new MyIdentifiableEmailWithMailboxes("e1", "mb4")))
+                    .get());
         }
 
         server.shutdown();

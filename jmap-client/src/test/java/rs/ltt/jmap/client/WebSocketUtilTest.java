@@ -29,14 +29,16 @@ public class WebSocketUtilTest {
     public void regularWss() {
         final String input = "wss://localhost/path";
         Assertions.assertEquals(
-                "https://localhost/path", WebSocketUtil.normalizeUrl(BASE, input).toString());
+                "https://localhost/path",
+                WebSocketUtil.normalizeUrl(BASE, input).toString());
     }
 
     @Test
     public void regularWssEmptyPath() {
         final String input = "wss:";
         Assertions.assertEquals(
-                "https://example.com:8080/", WebSocketUtil.normalizeUrl(BASE, input).toString());
+                "https://example.com:8080/",
+                WebSocketUtil.normalizeUrl(BASE, input).toString());
     }
 
     @Test
@@ -48,18 +50,17 @@ public class WebSocketUtilTest {
 
     @Test
     public void unknownScheme() {
-        Assertions.assertThrows(
-                IllegalArgumentException.class,
-                () -> {
-                    WebSocketUtil.normalizeUrl(BASE, "unknown://localhost/path");
-                });
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            WebSocketUtil.normalizeUrl(BASE, "unknown://localhost/path");
+        });
     }
 
     @Test
     public void pathOnly() {
         final String input = "/path";
         Assertions.assertEquals(
-                "http://example.com:8080/path", WebSocketUtil.normalizeUrl(BASE, input).toString());
+                "http://example.com:8080/path",
+                WebSocketUtil.normalizeUrl(BASE, input).toString());
     }
 
     @Test

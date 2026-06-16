@@ -37,12 +37,10 @@ public class ThreadService extends AbstractMuaService {
         super(muaSession);
     }
 
-    protected ListenableFuture<Status> updateThreads(
-            final String state, final JmapClient.MultiCall multiCall) {
+    protected ListenableFuture<Status> updateThreads(final String state, final JmapClient.MultiCall multiCall) {
         Preconditions.checkNotNull(state, "state can not be null when updating threads");
         LOGGER.info("Refreshing threads since state {}", state);
-        final UpdateUtil.MethodResponsesFuture methodResponsesFuture =
-                UpdateUtil.threads(multiCall, accountId, state);
+        final UpdateUtil.MethodResponsesFuture methodResponsesFuture = UpdateUtil.threads(multiCall, accountId, state);
         registerCacheInvalidationCallback(methodResponsesFuture, this::invalidateCache);
         return methodResponsesFuture.addCallback(
                 () -> {
@@ -52,8 +50,7 @@ public class ThreadService extends AbstractMuaService {
                             methodResponsesFuture.created(GetThreadMethodResponse.class);
                     final GetThreadMethodResponse updatedResponse =
                             methodResponsesFuture.updated(GetThreadMethodResponse.class);
-                    final Update<Thread> update =
-                            Update.of(changesResponse, createdResponse, updatedResponse);
+                    final Update<Thread> update = Update.of(changesResponse, createdResponse, updatedResponse);
                     if (update.hasChanges()) {
                         cache.updateThreads(update);
                     }

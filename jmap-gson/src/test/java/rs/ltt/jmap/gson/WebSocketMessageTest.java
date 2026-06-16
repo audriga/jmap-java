@@ -37,17 +37,13 @@ public class WebSocketMessageTest extends AbstractGsonTest {
 
     @Test
     public void serializeRequest() throws IOException {
-        final Request request =
-                new Request.Builder()
-                        .call(
-                                SetEmailMethodCall.builder()
-                                        .accountId("accountId")
-                                        .ifInState("state")
-                                        .update(
-                                                ImmutableMap.of(
-                                                        "M123", Patches.remove("keywords/$seen")))
-                                        .build())
-                        .build();
+        final Request request = new Request.Builder()
+                .call(SetEmailMethodCall.builder()
+                        .accountId("accountId")
+                        .ifInState("state")
+                        .update(ImmutableMap.of("M123", Patches.remove("keywords/$seen")))
+                        .build())
+                .build();
         RequestWebSocketMessage message =
                 RequestWebSocketMessage.builder().id("my-id").request(request).build();
         Assertions.assertEquals(
@@ -56,45 +52,33 @@ public class WebSocketMessageTest extends AbstractGsonTest {
 
     @Test
     public void deserializeResponse() throws IOException {
-        final WebSocketMessage webSocketMessage =
-                parseFromResource("websocket/response.json", WebSocketMessage.class);
+        final WebSocketMessage webSocketMessage = parseFromResource("websocket/response.json", WebSocketMessage.class);
         Assertions.assertTrue(webSocketMessage instanceof ResponseWebSocketMessage);
-        final ResponseWebSocketMessage responseWebSocketMessage =
-                (ResponseWebSocketMessage) webSocketMessage;
-        Assertions.assertEquals(
-                2, responseWebSocketMessage.getResponse().getMethodResponses().length);
+        final ResponseWebSocketMessage responseWebSocketMessage = (ResponseWebSocketMessage) webSocketMessage;
+        Assertions.assertEquals(2, responseWebSocketMessage.getResponse().getMethodResponses().length);
     }
 
     @Test
     public void deserializeUnknownCapability() throws IOException {
         final WebSocketMessage webSocketMessage =
                 parseFromResource("websocket/unknown-capability.json", WebSocketMessage.class);
-        MatcherAssert.assertThat(
-                webSocketMessage, CoreMatchers.instanceOf(ErrorResponseWebSocketMessage.class));
-        ErrorResponse errorResponse =
-                ((ErrorResponseWebSocketMessage) webSocketMessage).getPayload();
+        MatcherAssert.assertThat(webSocketMessage, CoreMatchers.instanceOf(ErrorResponseWebSocketMessage.class));
+        ErrorResponse errorResponse = ((ErrorResponseWebSocketMessage) webSocketMessage).getPayload();
         Assertions.assertEquals(errorResponse.getType(), ErrorType.UNKNOWN_CAPABILITY);
     }
 
     @Test
     public void deserializeEmpty() {
-        final JsonParseException jsonParseException =
-                Assertions.assertThrows(
-                        JsonParseException.class,
-                        () -> parseFromResource("websocket/empty.json", WebSocketMessage.class));
-        Assertions.assertEquals(
-                "WebSocketMessage had no @type attribute", jsonParseException.getMessage());
+        final JsonParseException jsonParseException = Assertions.assertThrows(
+                JsonParseException.class, () -> parseFromResource("websocket/empty.json", WebSocketMessage.class));
+        Assertions.assertEquals("WebSocketMessage had no @type attribute", jsonParseException.getMessage());
     }
 
     @Test
     public void deserializeUnknownType() {
-        final JsonParseException jsonParseException =
-                Assertions.assertThrows(
-                        JsonParseException.class,
-                        () ->
-                                parseFromResource(
-                                        "websocket/unknown-type.json", WebSocketMessage.class));
-        Assertions.assertEquals(
-                "Unknown WebSocketMessage type unknown", jsonParseException.getMessage());
+        final JsonParseException jsonParseException = Assertions.assertThrows(
+                JsonParseException.class,
+                () -> parseFromResource("websocket/unknown-type.json", WebSocketMessage.class));
+        Assertions.assertEquals("Unknown WebSocketMessage type unknown", jsonParseException.getMessage());
     }
 }

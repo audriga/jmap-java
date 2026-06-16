@@ -29,45 +29,31 @@ public class ResponseSerializationTest extends AbstractGsonTest {
 
     @Test
     public void customNotAnnotatedMethodError() {
-        final ImmutableList.Builder<Response.Invocation> responseInvocations =
-                ImmutableList.builder();
-        responseInvocations.add(
-                new Response.Invocation(new CustomMethodError(), UUID.randomUUID().toString()));
+        final ImmutableList.Builder<Response.Invocation> responseInvocations = ImmutableList.builder();
+        responseInvocations.add(new Response.Invocation(
+                new CustomMethodError(), UUID.randomUUID().toString()));
         Response response =
-                new Response(
-                        responseInvocations.build().toArray(new Response.Invocation[0]),
-                        "session-state-01");
-        final JsonIOException jsonIOException =
-                Assertions.assertThrows(
-                        JsonIOException.class,
-                        () -> {
-                            getGson().toJson(response);
-                        });
+                new Response(responseInvocations.build().toArray(new Response.Invocation[0]), "session-state-01");
+        final JsonIOException jsonIOException = Assertions.assertThrows(JsonIOException.class, () -> {
+            getGson().toJson(response);
+        });
         Assertions.assertEquals(
-                "Unable to serialize CustomMethodError. Did you annotate the Method with"
-                        + " @JmapError?",
+                "Unable to serialize CustomMethodError. Did you annotate the Method with" + " @JmapError?",
                 jsonIOException.getMessage());
     }
 
     @Test
     public void customNotAnnotatedMethodResponse() {
-        final ImmutableList.Builder<Response.Invocation> responseInvocations =
-                ImmutableList.builder();
-        responseInvocations.add(
-                new Response.Invocation(new CustomMethodResponse(), UUID.randomUUID().toString()));
+        final ImmutableList.Builder<Response.Invocation> responseInvocations = ImmutableList.builder();
+        responseInvocations.add(new Response.Invocation(
+                new CustomMethodResponse(), UUID.randomUUID().toString()));
         Response response =
-                new Response(
-                        responseInvocations.build().toArray(new Response.Invocation[0]),
-                        "session-state-01");
-        final JsonIOException jsonIOException =
-                Assertions.assertThrows(
-                        JsonIOException.class,
-                        () -> {
-                            getGson().toJson(response);
-                        });
+                new Response(responseInvocations.build().toArray(new Response.Invocation[0]), "session-state-01");
+        final JsonIOException jsonIOException = Assertions.assertThrows(JsonIOException.class, () -> {
+            getGson().toJson(response);
+        });
         Assertions.assertEquals(
-                "Unable to serialize CustomMethodResponse. Did you annotate the method with"
-                        + " @JmapMethod?",
+                "Unable to serialize CustomMethodResponse. Did you annotate the method with" + " @JmapMethod?",
                 jsonIOException.getMessage());
     }
 

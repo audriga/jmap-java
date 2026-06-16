@@ -44,19 +44,17 @@ public class MockMailServerTest {
         mailServer.setReportCanCalculateQueryChanges(true);
         server.setDispatcher(mailServer);
 
-        try (final Mua mua =
-                Mua.builder()
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .username(mailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mailServer.getAccountId())
-                        .build()) {
-            final EmailQuery query =
-                    EmailQuery.of(
-                            FilterOperator.or(
-                                    EmailFilterCondition.builder().inMailbox("0").build(),
-                                    EmailFilterCondition.builder().inMailbox("1").build()),
-                            true);
+        try (final Mua mua = Mua.builder()
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .username(mailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mailServer.getAccountId())
+                .build()) {
+            final EmailQuery query = EmailQuery.of(
+                    FilterOperator.or(
+                            EmailFilterCondition.builder().inMailbox("0").build(),
+                            EmailFilterCondition.builder().inMailbox("1").build()),
+                    true);
             mua.query(query).get();
             mua.refresh().get();
             mua.query(query).get();
@@ -70,23 +68,20 @@ public class MockMailServerTest {
         final MockMailServer mailServer = new MockMailServer(128);
         server.setDispatcher(mailServer);
         final MyInMemoryCache cache = new MyInMemoryCache();
-        try (final Mua mua =
-                Mua.builder()
-                        .cache(cache)
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .username(mailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mailServer.getAccountId())
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .cache(cache)
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .username(mailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mailServer.getAccountId())
+                .build()) {
             mua.query(EmailQuery.unfiltered()).get();
             final Email email = mailServer.generateEmailOnTop();
             final Status status = mua.refresh().get();
             Assertions.assertEquals(Status.UPDATED, status);
+            Assertions.assertTrue(cache.getEmailIds().contains(email.getId()), "new email id not found in cache");
             Assertions.assertTrue(
-                    cache.getEmailIds().contains(email.getId()), "new email id not found in cache");
-            Assertions.assertTrue(
-                    cache.getThreadIds().contains(email.getThreadId()),
-                    "new thread id not found in cache");
+                    cache.getThreadIds().contains(email.getThreadId()), "new thread id not found in cache");
         }
         server.shutdown();
     }
@@ -97,22 +92,17 @@ public class MockMailServerTest {
         final MockMailServer mailServer = new MockMailServer(2);
         server.setDispatcher(mailServer);
         final MyInMemoryCache cache = new MyInMemoryCache();
-        try (final Mua mua =
-                Mua.builder()
-                        .cache(cache)
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .username(mailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mailServer.getAccountId())
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .cache(cache)
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .username(mailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mailServer.getAccountId())
+                .build()) {
             mua.query(EmailQuery.unfiltered()).get();
             final Mailbox mailboxBeforeModification = cache.getMailbox(Role.INBOX);
-            Assertions.assertEquals(
-                    2,
-                    mailboxBeforeModification.getUnreadThreads(),
-                    "Miss match in unread threads");
-            Assertions.assertEquals(
-                    3, mailboxBeforeModification.getUnreadEmails(), "Miss match in unread emails");
+            Assertions.assertEquals(2, mailboxBeforeModification.getUnreadThreads(), "Miss match in unread threads");
+            Assertions.assertEquals(3, mailboxBeforeModification.getUnreadEmails(), "Miss match in unread emails");
             final List<CachedEmail> emails = cache.getEmails("T1");
             mua.setKeyword(emails, Keyword.SEEN).get();
 
@@ -120,13 +110,9 @@ public class MockMailServerTest {
 
             final Mailbox mailboxAfterModification = cache.getMailbox(Role.INBOX);
             Assertions.assertEquals(
-                    1,
-                    mailboxAfterModification.getUnreadThreads(),
-                    "Miss match in unread thread after modification");
+                    1, mailboxAfterModification.getUnreadThreads(), "Miss match in unread thread after modification");
             Assertions.assertEquals(
-                    1,
-                    mailboxAfterModification.getUnreadEmails(),
-                    "Miss match in unread email after modification");
+                    1, mailboxAfterModification.getUnreadEmails(), "Miss match in unread email after modification");
         }
         server.shutdown();
     }
@@ -138,31 +124,28 @@ public class MockMailServerTest {
         server.setDispatcher(mailServer);
         final MyInMemoryCache cache = new MyInMemoryCache();
 
-        final Mua reader =
-                Mua.builder()
-                        .cache(cache)
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .username(mailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mailServer.getAccountId())
-                        .build();
+        final Mua reader = Mua.builder()
+                .cache(cache)
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .username(mailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mailServer.getAccountId())
+                .build();
 
-        final Mua writer =
-                Mua.builder()
-                        .cache(new InMemoryCache())
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .username(mailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mailServer.getAccountId())
-                        .build();
+        final Mua writer = Mua.builder()
+                .cache(new InMemoryCache())
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .username(mailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mailServer.getAccountId())
+                .build();
 
         reader.query(EmailQuery.unfiltered()).get();
         writer.query(EmailQuery.unfiltered()).get();
         final Mailbox mailboxBeforeModification = cache.getMailbox(Role.INBOX);
         final Mailbox archiveBeforeModification = cache.getMailbox(Role.ARCHIVE);
         Assertions.assertNull(archiveBeforeModification);
-        Assertions.assertEquals(
-                64, mailboxBeforeModification.getUnreadThreads(), "Miss match in unread threads");
+        Assertions.assertEquals(64, mailboxBeforeModification.getUnreadThreads(), "Miss match in unread threads");
         final List<CachedEmail> t1 = cache.getEmails("T1");
         writer.setKeyword(t1, Keyword.SEEN).get();
 
@@ -194,14 +177,13 @@ public class MockMailServerTest {
         final MockMailServer mailServer = new MockMailServer(2);
         server.setDispatcher(mailServer);
         final MyInMemoryCache cache = new MyInMemoryCache();
-        try (final Mua mua =
-                Mua.builder()
-                        .cache(cache)
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .username(mailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mailServer.getAccountId())
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .cache(cache)
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .username(mailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mailServer.getAccountId())
+                .build()) {
             mua.query(EmailQuery.unfiltered()).get();
             final List<CachedEmail> threadT1 = cache.getEmails("T1");
             mua.archive(threadT1).get();

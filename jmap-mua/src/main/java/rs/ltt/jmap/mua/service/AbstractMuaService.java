@@ -76,8 +76,7 @@ public abstract class AbstractMuaService {
                         final boolean hasMoreChanges = changesMethodResponse.isHasMoreChanges();
                         if (hasMoreChanges && oldState.equals(newState)) {
                             LOGGER.error(
-                                    "Invalid server response to {} oldState==newState despite"
-                                            + " having more changes",
+                                    "Invalid server response to {} oldState==newState despite" + " having more changes",
                                     Mapper.METHOD_RESPONSES
                                             .inverse()
                                             .get(methodResponses.getMain().getClass()));

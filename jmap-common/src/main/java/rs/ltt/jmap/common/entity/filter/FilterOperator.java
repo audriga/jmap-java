@@ -35,20 +35,17 @@ public class FilterOperator<T extends AbstractIdentifiableEntity> implements Fil
     }
 
     @SafeVarargs
-    public static <T extends AbstractIdentifiableEntity> FilterOperator<T> and(
-            Filter<T>... filters) {
+    public static <T extends AbstractIdentifiableEntity> FilterOperator<T> and(Filter<T>... filters) {
         return new FilterOperator<>(filters, Operator.AND);
     }
 
     @SafeVarargs
-    public static <T extends AbstractIdentifiableEntity> FilterOperator<T> or(
-            Filter<T>... filters) {
+    public static <T extends AbstractIdentifiableEntity> FilterOperator<T> or(Filter<T>... filters) {
         return new FilterOperator<>(filters, Operator.OR);
     }
 
     @SafeVarargs
-    public static <T extends AbstractIdentifiableEntity> FilterOperator<T> not(
-            Filter<T>... filters) {
+    public static <T extends AbstractIdentifiableEntity> FilterOperator<T> not(Filter<T>... filters) {
         return new FilterOperator<>(filters, Operator.NOT);
     }
 

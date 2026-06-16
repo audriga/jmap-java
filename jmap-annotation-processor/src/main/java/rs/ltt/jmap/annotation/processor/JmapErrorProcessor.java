@@ -49,17 +49,14 @@ public class JmapErrorProcessor extends AbstractProcessor {
         super.init(processingEnvironment);
         this.filer = processingEnvironment.getFiler();
         this.typeUtils = processingEnvironment.getTypeUtils();
-        this.capability =
-                processingEnvironment
-                        .getElementUtils()
-                        .getTypeElement(INTERFACE.getName())
-                        .asType();
+        this.capability = processingEnvironment
+                .getElementUtils()
+                .getTypeElement(INTERFACE.getName())
+                .asType();
     }
 
-    public boolean process(
-            Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
-        Set<? extends Element> elements =
-                roundEnvironment.getElementsAnnotatedWith(JmapError.class);
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
+        Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith(JmapError.class);
         final List<TypeElement> classes = new ArrayList<>();
         for (Element element : elements) {
             if (element instanceof TypeElement) {
@@ -67,12 +64,11 @@ public class JmapErrorProcessor extends AbstractProcessor {
                 if (typeUtils.isAssignable(element.asType(), capability)) {
                     classes.add(typeElement);
                 } else {
-                    System.out.println(
-                            typeElement.getQualifiedName()
-                                    + " does not implement "
-                                    + capability
-                                    + " but "
-                                    + typeElement.getInterfaces());
+                    System.out.println(typeElement.getQualifiedName()
+                            + " does not implement "
+                            + capability
+                            + " but "
+                            + typeElement.getInterfaces());
                 }
             }
         }
@@ -87,15 +83,12 @@ public class JmapErrorProcessor extends AbstractProcessor {
 
         try {
             FileObject resourceFile =
-                    filer.createResource(
-                            StandardLocation.CLASS_OUTPUT, "", Utils.getFilenameFor(INTERFACE));
+                    filer.createResource(StandardLocation.CLASS_OUTPUT, "", Utils.getFilenameFor(INTERFACE));
             PrintWriter printWriter = new PrintWriter(resourceFile.openOutputStream());
             for (TypeElement typeElement : classes) {
                 JmapError annotation = typeElement.getAnnotation(JmapError.class);
                 printWriter.format(
-                        "%s %s%n",
-                        processingEnv.getElementUtils().getBinaryName(typeElement),
-                        annotation.value());
+                        "%s %s%n", processingEnv.getElementUtils().getBinaryName(typeElement), annotation.value());
             }
             printWriter.flush();
             printWriter.close();

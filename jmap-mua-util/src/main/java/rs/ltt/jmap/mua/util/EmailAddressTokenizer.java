@@ -29,8 +29,7 @@ public class EmailAddressTokenizer {
         return tokenize(cs, false);
     }
 
-    public static List<EmailAddressToken> tokenize(
-            final CharSequence cs, final boolean requireExplicitDelimiter) {
+    public static List<EmailAddressToken> tokenize(final CharSequence cs, final boolean requireExplicitDelimiter) {
         final ImmutableList.Builder<EmailAddressToken> tokenBuilder = new ImmutableList.Builder<>();
         final TokenReader tokenReader = new TokenReader(cs);
         ArrayList<Token> current = new ArrayList<>();
@@ -63,8 +62,7 @@ public class EmailAddressTokenizer {
                 || token.tokenType == TokenType.END;
     }
 
-    private static EmailAddressToken combine(
-            final CharSequence charSequence, List<Token> tokenList) {
+    private static EmailAddressToken combine(final CharSequence charSequence, List<Token> tokenList) {
         final ArrayList<Token> labelTokens = new ArrayList<>();
         final ArrayList<Token> addressTokens = new ArrayList<>();
         boolean inAddress = false;
@@ -118,8 +116,7 @@ public class EmailAddressTokenizer {
     private static Token findFirstNonWhiteSpace(List<Token> tokens, boolean removeQuote) {
         for (int i = 0; i < tokens.size(); ++i) {
             final Token token = tokens.get(i);
-            if (token.tokenType != TokenType.WHITESPACE
-                    && (!removeQuote || token.tokenType != TokenType.QUOTE_BEGIN)) {
+            if (token.tokenType != TokenType.WHITESPACE && (!removeQuote || token.tokenType != TokenType.QUOTE_BEGIN)) {
                 return token;
             }
         }
@@ -129,8 +126,7 @@ public class EmailAddressTokenizer {
     private static Token findLastNonWhiteSpace(List<Token> tokens, boolean removeQuote) {
         for (int i = tokens.size() - 1; i >= 0; --i) {
             final Token token = tokens.get(i);
-            if (token.tokenType != TokenType.WHITESPACE
-                    && (!removeQuote || token.tokenType != TokenType.QUOTE_END)) {
+            if (token.tokenType != TokenType.WHITESPACE && (!removeQuote || token.tokenType != TokenType.QUOTE_END)) {
                 return token;
             }
         }

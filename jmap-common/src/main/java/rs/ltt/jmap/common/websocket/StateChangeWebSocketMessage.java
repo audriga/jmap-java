@@ -30,8 +30,7 @@ public class StateChangeWebSocketMessage extends StateChange implements WebSocke
     private String pushState;
 
     public StateChangeWebSocketMessage(
-            Map<String, Map<Class<? extends AbstractIdentifiableEntity>, String>> changed,
-            String pushState) {
+            Map<String, Map<Class<? extends AbstractIdentifiableEntity>, String>> changed, String pushState) {
         super(changed);
         this.pushState = pushState;
     }

@@ -31,8 +31,7 @@ public class CreationIdResolver {
     }
 
     private static String resolve(
-            final String creationId,
-            final ListMultimap<String, Response.Invocation> previousResponses) {
+            final String creationId, final ListMultimap<String, Response.Invocation> previousResponses) {
         Preconditions.checkNotNull(creationId);
         Preconditions.checkArgument(creationId.charAt(0) == '#');
         final String strippedId = creationId.substring(1);

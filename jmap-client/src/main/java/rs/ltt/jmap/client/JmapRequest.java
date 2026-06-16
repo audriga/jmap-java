@@ -30,8 +30,7 @@ import rs.ltt.jmap.common.method.MethodCall;
 
 public class JmapRequest {
 
-    private final ImmutableMap<Request.Invocation, SettableFuture<MethodResponses>>
-            invocationFutureImmutableMap;
+    private final ImmutableMap<Request.Invocation, SettableFuture<MethodResponses>> invocationFutureImmutableMap;
     private final Request request;
     private final ArrayList<Future<?>> dependentFutures = new ArrayList<>();
 
@@ -58,8 +57,7 @@ public class JmapRequest {
         this.dependentFutures.add(future);
     }
 
-    public ImmutableMap<Request.Invocation, SettableFuture<MethodResponses>>
-            getInvocationFutureImmutableMap() {
+    public ImmutableMap<Request.Invocation, SettableFuture<MethodResponses>> getInvocationFutureImmutableMap() {
         return invocationFutureImmutableMap;
     }
 
@@ -75,13 +73,11 @@ public class JmapRequest {
 
     public static class Builder {
 
-        private final Map<Request.Invocation, SettableFuture<MethodResponses>> map =
-                new LinkedHashMap<>();
+        private final Map<Request.Invocation, SettableFuture<MethodResponses>> map = new LinkedHashMap<>();
         private int nextMethodCallId = 0;
 
         public Call call(final MethodCall methodCall) {
-            final Request.Invocation invocation =
-                    new Request.Invocation(methodCall, nextMethodCallId());
+            final Request.Invocation invocation = new Request.Invocation(methodCall, nextMethodCallId());
             final ListenableFuture<MethodResponses> future = add(invocation);
             return new Call(future, invocation);
         }

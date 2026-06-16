@@ -25,15 +25,18 @@ import rs.ltt.jmap.common.method.MethodCall;
 @AllArgsConstructor
 public abstract class CopyMethodCall<T extends AbstractIdentifiableEntity> implements MethodCall {
 
-    @NonNull private String fromAccountId;
+    @NonNull
+    private String fromAccountId;
 
     private String ifFromInState;
 
-    @NonNull private String accountId;
+    @NonNull
+    private String accountId;
 
     private String ifInState;
 
-    @NonNull private Map<String, T> create;
+    @NonNull
+    private Map<String, T> create;
 
     private Boolean onSuccessDestroyOriginal;
 

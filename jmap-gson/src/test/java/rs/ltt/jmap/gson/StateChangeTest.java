@@ -30,8 +30,7 @@ public class StateChangeTest extends AbstractGsonTest {
 
     @Test
     public void deserialize() throws IOException {
-        final StateChange stateChange =
-                parseFromResource("push/state-change.json", StateChange.class);
+        final StateChange stateChange = parseFromResource("push/state-change.json", StateChange.class);
         final Map<Class<? extends AbstractIdentifiableEntity>, String> max =
                 stateChange.getChanged().get("max@example.com");
         Assertions.assertEquals(2, max.size());
@@ -44,11 +43,10 @@ public class StateChangeTest extends AbstractGsonTest {
 
     @Test
     public void serialize() throws IOException {
-        final StateChange stateChange =
-                StateChange.builder()
-                        .changed("max@example.com", ImmutableMap.of(Email.class, "initial"))
-                        .changed("sam@example.com", ImmutableMap.of(Identity.class, "initial"))
-                        .build();
+        final StateChange stateChange = StateChange.builder()
+                .changed("max@example.com", ImmutableMap.of(Email.class, "initial"))
+                .changed("sam@example.com", ImmutableMap.of(Identity.class, "initial"))
+                .build();
         final Gson gson = getGson();
         final String json = gson.toJson(stateChange);
         final String expected = readResourceAsString("push/state-change-out.json");
@@ -57,10 +55,9 @@ public class StateChangeTest extends AbstractGsonTest {
 
     @Test
     public void serializeUnknown() throws Exception {
-        final StateChange stateChange =
-                StateChange.builder()
-                        .changed("max@example.com", ImmutableMap.of(UnknownEntity.class, "ignored"))
-                        .build();
+        final StateChange stateChange = StateChange.builder()
+                .changed("max@example.com", ImmutableMap.of(UnknownEntity.class, "ignored"))
+                .build();
         final Gson gson = getGson();
         Assertions.assertThrows(JsonIOException.class, () -> gson.toJson(stateChange));
     }

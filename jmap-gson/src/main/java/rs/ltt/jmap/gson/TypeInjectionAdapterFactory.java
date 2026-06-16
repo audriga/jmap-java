@@ -32,10 +32,7 @@ public class TypeInjectionAdapterFactory implements TypeAdapterFactory {
         if (annotation == null) {
             return null;
         }
-        final String type =
-                Strings.isNullOrEmpty(annotation.value())
-                        ? clazz.getSimpleName()
-                        : annotation.value();
+        final String type = Strings.isNullOrEmpty(annotation.value()) ? clazz.getSimpleName() : annotation.value();
         final TypeAdapter<T> delegateAdapter = gson.getDelegateAdapter(this, typeToken);
         return new TypeAdapter<T>() {
             @Override

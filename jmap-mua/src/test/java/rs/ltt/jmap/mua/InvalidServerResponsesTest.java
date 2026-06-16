@@ -44,30 +44,22 @@ public class InvalidServerResponsesTest {
         final MockWebServer server = new MockWebServer();
 
         server.enqueue(new MockResponse().setBody(readResourceAsString("common/01-session.json")));
+        server.enqueue(new MockResponse().setBody(readResourceAsString("common/02-mailboxes.json")));
         server.enqueue(
-                new MockResponse().setBody(readResourceAsString("common/02-mailboxes.json")));
-        server.enqueue(
-                new MockResponse()
-                        .setBody(
-                                readResourceAsString(
-                                        "invalid-server-response/invalid-mailbox-set.json")));
+                new MockResponse().setBody(readResourceAsString("invalid-server-response/invalid-mailbox-set.json")));
 
-        try (final Mua mua =
-                Mua.builder()
-                        .sessionResource(server.url(WELL_KNOWN_PATH))
-                        .username(USERNAME)
-                        .password(PASSWORD)
-                        .accountId(ACCOUNT_ID)
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .sessionResource(server.url(WELL_KNOWN_PATH))
+                .username(USERNAME)
+                .password(PASSWORD)
+                .accountId(ACCOUNT_ID)
+                .build()) {
             mua.refreshMailboxes().get();
             final ListenableFuture<Boolean> future =
                     mua.createMailbox(Mailbox.builder().name("Spam").build());
             final ExecutionException executionException =
-                    Assertions.assertThrows(
-                            ExecutionException.class, () -> future.get(5, TimeUnit.SECONDS));
-            MatcherAssert.assertThat(
-                    executionException.getCause(),
-                    CoreMatchers.instanceOf(SetMailboxException.class));
+                    Assertions.assertThrows(ExecutionException.class, () -> future.get(5, TimeUnit.SECONDS));
+            MatcherAssert.assertThat(executionException.getCause(), CoreMatchers.instanceOf(SetMailboxException.class));
         }
         server.shutdown();
     }

@@ -39,7 +39,10 @@ public class AddedItem<T> {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("item", item).add("index", index).toString();
+        return MoreObjects.toStringHelper(this)
+                .add("item", item)
+                .add("index", index)
+                .toString();
     }
 
     public T getItem() {

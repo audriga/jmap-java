@@ -23,11 +23,10 @@ import okhttp3.HttpUrl;
 
 public final class WebSocketUtil {
 
-    private static final ImmutableBiMap<String, String> SCHEME_MAP =
-            new ImmutableBiMap.Builder<String, String>()
-                    .put("ws", "http")
-                    .put("wss", "https")
-                    .build();
+    private static final ImmutableBiMap<String, String> SCHEME_MAP = new ImmutableBiMap.Builder<String, String>()
+            .put("ws", "http")
+            .put("wss", "https")
+            .build();
 
     private WebSocketUtil() {}
 
@@ -37,9 +36,7 @@ public final class WebSocketUtil {
             final HttpUrl.Builder builder = base.newBuilder(url);
             Preconditions.checkState(
                     builder != null,
-                    String.format(
-                            "Unable to assemble final WebSocket URL from base=%s and url=%s",
-                            base, url));
+                    String.format("Unable to assemble final WebSocket URL from base=%s and url=%s", base, url));
             return builder.build();
         }
         final String scheme = url.substring(0, schemeEndIndex).toLowerCase(Locale.ENGLISH);
@@ -52,9 +49,7 @@ public final class WebSocketUtil {
                 final HttpUrl.Builder builder = base.newBuilder(authority);
                 Preconditions.checkState(
                         builder != null,
-                        String.format(
-                                "Unable to assemble final WebSocket URL from base=%s and url=%s",
-                                base, url));
+                        String.format("Unable to assemble final WebSocket URL from base=%s and url=%s", base, url));
                 builder.scheme(normalizedScheme);
                 return builder.build();
             }

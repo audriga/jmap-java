@@ -41,8 +41,7 @@ public class RequestInvocationTypeAdapter extends TypeAdapter<Request.Invocation
         final Class<? extends MethodCall> clazz = methodCall.getClass();
         final String name = METHOD_CALLS.inverse().get(clazz);
         if (name == null) {
-            throw new JsonIOException(
-                    String.format("%s is not a registered @JmapMethod", clazz.getName()));
+            throw new JsonIOException(String.format("%s is not a registered @JmapMethod", clazz.getName()));
         }
         jsonWriter.beginArray();
         jsonWriter.value(name);

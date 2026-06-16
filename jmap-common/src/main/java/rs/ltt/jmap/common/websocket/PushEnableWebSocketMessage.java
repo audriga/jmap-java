@@ -27,7 +27,8 @@ import rs.ltt.jmap.annotation.Type;
 @Type("WebSocketPushEnable")
 public class PushEnableWebSocketMessage implements WebSocketMessage {
 
-    @Singular private List<String> dataTypes;
+    @Singular
+    private List<String> dataTypes;
 
     private String pushState;
 }

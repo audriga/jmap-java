@@ -38,22 +38,17 @@ public class MoveToInboxTest {
         final MockWebServer server = new MockWebServer();
 
         server.enqueue(new MockResponse().setBody(readResourceAsString("common/01-session.json")));
-        server.enqueue(
-                new MockResponse().setBody(readResourceAsString("common/02-mailboxes.json")));
+        server.enqueue(new MockResponse().setBody(readResourceAsString("common/02-mailboxes.json")));
 
-        try (final Mua mua =
-                Mua.builder()
-                        .sessionResource(server.url(WELL_KNOWN_PATH))
-                        .username(USERNAME)
-                        .password(PASSWORD)
-                        .accountId(ACCOUNT_ID)
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .sessionResource(server.url(WELL_KNOWN_PATH))
+                .username(USERNAME)
+                .password(PASSWORD)
+                .accountId(ACCOUNT_ID)
+                .build()) {
             mua.refreshMailboxes().get();
-            Assertions.assertFalse(
-                    mua.moveToInbox(
-                                    ImmutableSet.of(
-                                            new MyIdentifiableEmailWithMailboxes("e0", "mb0")))
-                            .get());
+            Assertions.assertFalse(mua.moveToInbox(ImmutableSet.of(new MyIdentifiableEmailWithMailboxes("e0", "mb0")))
+                    .get());
         }
         server.shutdown();
     }

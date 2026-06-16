@@ -25,8 +25,7 @@ import rs.ltt.jmap.common.method.response.standard.GetMethodResponse;
 public class GetIdentityMethodResponse extends GetMethodResponse<Identity> {
 
     @Builder
-    public GetIdentityMethodResponse(
-            String accountId, String state, String[] notFound, Identity[] list) {
+    public GetIdentityMethodResponse(String accountId, String state, String[] notFound, Identity[] list) {
         super(accountId, state, notFound, list);
     }
 }

@@ -35,38 +35,31 @@ public interface Cache {
 
     String getMailboxState();
 
-    @NonNull QueryStateWrapper getQueryState(@Nullable String query);
+    @NonNull
+    QueryStateWrapper getQueryState(@Nullable String query);
 
-    @NonNull ObjectsState getObjectsState();
+    @NonNull
+    ObjectsState getObjectsState();
 
     void setMailboxes(TypedState<Mailbox> state, Mailbox[] mailboxes) throws CacheWriteException;
 
     void updateMailboxes(Update<Mailbox> mailboxUpdate, String[] updatedProperties)
             throws CacheWriteException, CacheConflictException;
 
-    Collection<? extends IdentifiableMailboxWithRole> getSpecialMailboxes()
+    Collection<? extends IdentifiableMailboxWithRole> getSpecialMailboxes() throws NotSynchronizedException;
+
+    IdentifiableMailboxWithRoleAndName getMailboxByNameAndParent(final String name, final String parentId)
             throws NotSynchronizedException;
 
-    IdentifiableMailboxWithRoleAndName getMailboxByNameAndParent(
-            final String name, final String parentId) throws NotSynchronizedException;
-
-    Collection<? extends IdentifiableMailboxWithRoleAndName> getMailboxesByNames(
-            final String[] names);
+    Collection<? extends IdentifiableMailboxWithRoleAndName> getMailboxesByNames(final String[] names);
 
     void setThreadsAndEmails(
-            TypedState<Thread> threadState,
-            Thread[] threads,
-            TypedState<Email> emailState,
-            Email[] emails);
+            TypedState<Thread> threadState, Thread[] threads, TypedState<Email> emailState, Email[] emails);
 
     void addThreadsAndEmail(
-            TypedState<Thread> threadState,
-            Thread[] threads,
-            TypedState<Email> emailState,
-            Email[] emails);
+            TypedState<Thread> threadState, Thread[] threads, TypedState<Email> emailState, Email[] emails);
 
-    void updateThreads(Update<Thread> threadUpdate)
-            throws CacheWriteException, CacheConflictException;
+    void updateThreads(Update<Thread> threadUpdate) throws CacheWriteException, CacheConflictException;
 
     void updateEmails(Update<Email> emailUpdate, String[] updatedProperties)
             throws CacheWriteException, CacheConflictException;
@@ -76,11 +69,9 @@ public interface Cache {
     void invalidateMailboxes();
 
     // Identity
-    void setIdentities(TypedState<Identity> state, Identity[] identities)
-            throws CacheWriteException;
+    void setIdentities(TypedState<Identity> state, Identity[] identities) throws CacheWriteException;
 
-    void updateIdentities(Update<Identity> identityUpdate)
-            throws CacheWriteException, CacheConflictException;
+    void updateIdentities(Update<Identity> identityUpdate) throws CacheWriteException, CacheConflictException;
 
     void invalidateIdentities();
 
@@ -92,9 +83,7 @@ public interface Cache {
             throws CacheWriteException, CacheConflictException;
 
     void updateQueryResults(
-            String queryString,
-            QueryUpdate<Email, QueryResultItem> update,
-            TypedState<Email> emailState)
+            String queryString, QueryUpdate<Email, QueryResultItem> update, TypedState<Email> emailState)
             throws CacheWriteException, CacheConflictException;
 
     void invalidateQueryResult(String queryString);

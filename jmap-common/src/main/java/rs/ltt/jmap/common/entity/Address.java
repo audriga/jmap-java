@@ -27,5 +27,6 @@ public class Address {
 
     private String email;
 
-    @Singular private Map<String, Object> parameters;
+    @Singular
+    private Map<String, Object> parameters;
 }

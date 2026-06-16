@@ -59,8 +59,7 @@ public class WebSocketJmapApiClient extends AbstractJmapApiClient implements Clo
             final ConnectionConfig connectionConfig,
             @Nullable final SessionStateListener sessionStateListener) {
         super(sessionStateListener);
-        this.webSocketUrl =
-                Preconditions.checkNotNull(webSocketUrl, "This WebSocket URL must not be null");
+        this.webSocketUrl = Preconditions.checkNotNull(webSocketUrl, "This WebSocket URL must not be null");
         this.connectionConfig = connectionConfig;
     }
 
@@ -82,11 +81,10 @@ public class WebSocketJmapApiClient extends AbstractJmapApiClient implements Clo
     private void send(final JmapRequest jmapRequest) {
         final String requestId = UUID.randomUUID().toString();
         this.inFlightRequests.put(requestId, jmapRequest);
-        final RequestWebSocketMessage message =
-                RequestWebSocketMessage.builder()
-                        .id(requestId)
-                        .request(jmapRequest.getRequest())
-                        .build();
+        final RequestWebSocketMessage message = RequestWebSocketMessage.builder()
+                .id(requestId)
+                .request(jmapRequest.getRequest())
+                .build();
         if (send(message)) {
             return;
         }
@@ -105,9 +103,7 @@ public class WebSocketJmapApiClient extends AbstractJmapApiClient implements Clo
         final WebSocket current = this.currentWebSocket;
         if (current == null) {
             throw new IllegalStateException(
-                    String.format(
-                            "WebSocket was unexpectedly null even though we are in state %s",
-                            this.state));
+                    String.format("WebSocket was unexpectedly null even though we are in state %s", this.state));
         }
         return current;
     }
@@ -152,12 +148,11 @@ public class WebSocketJmapApiClient extends AbstractJmapApiClient implements Clo
         authentication.authenticate(requestBuilder);
         requestBuilder.header(HttpHeaders.SEC_WEBSOCKET_PROTOCOL, JMAP);
         final Request request = requestBuilder.build();
-        final OkHttpClient okHttpClient =
-                Services.okHttpClient(connectionConfig.getTrustManager())
-                        .newBuilder()
-                        .callTimeout(30, TimeUnit.SECONDS)
-                        .pingInterval(getPingInterval())
-                        .build();
+        final OkHttpClient okHttpClient = Services.okHttpClient(connectionConfig.getTrustManager())
+                .newBuilder()
+                .callTimeout(30, TimeUnit.SECONDS)
+                .pingInterval(getPingInterval())
+                .build();
         setCurrentWebSocket(okHttpClient.newWebSocket(request, new WebSocketProcessor(this)));
     }
 
@@ -209,19 +204,14 @@ public class WebSocketJmapApiClient extends AbstractJmapApiClient implements Clo
         final String requestId = apiMessage.getRequestId();
         if (requestId == null) {
             // all our Requests have an id set. We expect the server to do the same
-            policyViolation(
-                    new IllegalStateException(
-                            String.format(
-                                    "Server sent %s w/o requestId",
-                                    apiMessage.getClass().getSimpleName())));
+            policyViolation(new IllegalStateException(String.format(
+                    "Server sent %s w/o requestId", apiMessage.getClass().getSimpleName())));
             return false;
         }
         final JmapRequest jmapRequest = inFlightRequests.remove(requestId);
         if (jmapRequest == null) {
             policyViolation(
-                    new IllegalStateException(
-                            String.format(
-                                    "Could not find in flight request with id %s", requestId)));
+                    new IllegalStateException(String.format("Could not find in flight request with id %s", requestId)));
             return false;
         }
         final Object payload = apiMessage.getPayload();
@@ -251,8 +241,7 @@ public class WebSocketJmapApiClient extends AbstractJmapApiClient implements Clo
         failPendingRequests(inFlightRequests.values().iterator(), throwable);
     }
 
-    private static void failPendingRequests(
-            Iterator<JmapRequest> iterator, final Throwable throwable) {
+    private static void failPendingRequests(Iterator<JmapRequest> iterator, final Throwable throwable) {
         while (iterator.hasNext()) {
             final JmapRequest jmapRequest = iterator.next();
             jmapRequest.setException(throwable);
@@ -313,8 +302,7 @@ public class WebSocketJmapApiClient extends AbstractJmapApiClient implements Clo
         }
 
         @Override
-        public void onFailure(
-                @NotNull WebSocket webSocket, @NotNull Throwable t, Response response) {
+        public void onFailure(@NotNull WebSocket webSocket, @NotNull Throwable t, Response response) {
             super.onFailure(webSocket, t, response);
             client.onFailure(t, response);
         }

@@ -56,9 +56,7 @@ public class PluginService extends AbstractMuaService {
     public ListenableFuture<Email> executeEmailBuildStagePlugins(final Email email) {
         ListenableFuture<Email> currentFuture = Futures.immediateFuture(email);
         for (final EmailBuildStagePlugin plugin : emailBuildStagePlugins) {
-            currentFuture =
-                    Futures.transformAsync(
-                            currentFuture, plugin::onBuildEmail, MoreExecutors.directExecutor());
+            currentFuture = Futures.transformAsync(currentFuture, plugin::onBuildEmail, MoreExecutors.directExecutor());
         }
         return currentFuture;
     }

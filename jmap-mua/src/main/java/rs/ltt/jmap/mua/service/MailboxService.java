@@ -58,8 +58,7 @@ public class MailboxService extends AbstractMuaService {
     }
 
     public ListenableFuture<Status> refreshMailboxes() {
-        final ListenableFuture<String> mailboxStateFuture =
-                ioExecutorService.submit(cache::getMailboxState);
+        final ListenableFuture<String> mailboxStateFuture = ioExecutorService.submit(cache::getMailboxState);
 
         return Futures.transformAsync(
                 mailboxStateFuture,
@@ -82,15 +81,13 @@ public class MailboxService extends AbstractMuaService {
 
     protected ListenableFuture<Status> loadMailboxes(final JmapClient.MultiCall multiCall) {
         LOGGER.info("Fetching mailboxes");
-        final ListenableFuture<MethodResponses> getMailboxMethodResponsesFuture =
-                multiCall
-                        .call(GetMailboxMethodCall.builder().accountId(accountId).build())
-                        .getMethodResponses();
+        final ListenableFuture<MethodResponses> getMailboxMethodResponsesFuture = multiCall
+                .call(GetMailboxMethodCall.builder().accountId(accountId).build())
+                .getMethodResponses();
         return Futures.transformAsync(
                 getMailboxMethodResponsesFuture,
                 methodResponses -> {
-                    GetMailboxMethodResponse response =
-                            methodResponses.getMain(GetMailboxMethodResponse.class);
+                    GetMailboxMethodResponse response = methodResponses.getMain(GetMailboxMethodResponse.class);
                     Mailbox[] mailboxes = response.getList();
                     cache.setMailboxes(response.getTypedState(), mailboxes);
                     return Futures.immediateFuture(Status.of(mailboxes.length > 0));
@@ -105,8 +102,7 @@ public class MailboxService extends AbstractMuaService {
         return future;
     }
 
-    protected ListenableFuture<Status> updateMailboxes(
-            final String state, final JmapClient.MultiCall multiCall) {
+    protected ListenableFuture<Status> updateMailboxes(final String state, final JmapClient.MultiCall multiCall) {
         Preconditions.checkNotNull(state, "State can not be null when updating mailboxes");
         LOGGER.info("Refreshing mailboxes since state {}", state);
         final UpdateUtil.MethodResponsesFuture methodResponsesFuture =
@@ -120,8 +116,7 @@ public class MailboxService extends AbstractMuaService {
                             methodResponsesFuture.created(GetMailboxMethodResponse.class);
                     final GetMailboxMethodResponse updatedResponse =
                             methodResponsesFuture.updated(GetMailboxMethodResponse.class);
-                    final Update<Mailbox> update =
-                            Update.of(changesResponse, createdResponse, updatedResponse);
+                    final Update<Mailbox> update = Update.of(changesResponse, createdResponse, updatedResponse);
                     if (update.hasChanges()) {
                         cache.updateMailboxes(update, changesResponse.getUpdatedProperties());
                     }
@@ -140,17 +135,14 @@ public class MailboxService extends AbstractMuaService {
     }
 
     public ListenableFuture<Boolean> createMailbox(final Mailbox mailbox) {
-        ListenableFuture<MethodResponses> future =
-                jmapClient.call(
-                        SetMailboxMethodCall.builder()
-                                .accountId(accountId)
-                                .create(ImmutableMap.of("new-mailbox-0", mailbox))
-                                .build());
+        ListenableFuture<MethodResponses> future = jmapClient.call(SetMailboxMethodCall.builder()
+                .accountId(accountId)
+                .create(ImmutableMap.of("new-mailbox-0", mailbox))
+                .build());
         return Futures.transformAsync(
                 future,
                 methodResponses -> {
-                    SetMailboxMethodResponse response =
-                            methodResponses.getMain(SetMailboxMethodResponse.class);
+                    SetMailboxMethodResponse response = methodResponses.getMain(SetMailboxMethodResponse.class);
                     SetMailboxException.throwIfFailed(response);
                     return Futures.immediateFuture(response.getUpdatedCreatedCount() > 0);
                 },
@@ -158,41 +150,34 @@ public class MailboxService extends AbstractMuaService {
     }
 
     /**
-     * Utility method to create a mailbox of a certain role. This method is usually used in
-     * conjunction with a modification of emails in a thread. For example a generalized 'move to
-     * archive' method can call this method ahead of time to create the archive mailbox.
+     * Utility method to create a mailbox of a certain role. This method is usually used in conjunction with a
+     * modification of emails in a thread. For example a generalized 'move to archive' method can call this method ahead
+     * of time to create the archive mailbox.
      *
-     * <p>When called with an ObjectsState the SetMailboxMethodCall will be guarded with an
-     * ifInState parameter. In that case an automatic call to updateMailboxes is made as well - The
-     * idea behind that approach is that if the ifInState fails we will at least have an up to date
-     * state on the next attempt.
+     * <p>When called with an ObjectsState the SetMailboxMethodCall will be guarded with an ifInState parameter. In that
+     * case an automatic call to updateMailboxes is made as well - The idea behind that approach is that if the
+     * ifInState fails we will at least have an up to date state on the next attempt.
      *
      * @param role The role of the mailbox we want to create.
-     * @param objectsState If an ObjectsState is giving the create call will be guarded with a
-     *     ifInState
+     * @param objectsState If an ObjectsState is giving the create call will be guarded with a ifInState
      * @param multiCall The MultiCall that will later have the SetEmailMethodCall added to it.
      * @return
      */
     protected ListenableFuture<MethodResponses> createMailbox(
-            @NonNull final Role role,
-            @Nullable ObjectsState objectsState,
-            final JmapClient.MultiCall multiCall) {
+            @NonNull final Role role, @Nullable ObjectsState objectsState, final JmapClient.MultiCall multiCall) {
         return createMailboxes(
-                ImmutableMap.of(CreateUtil.createId(role), MailboxUtil.create(role)),
-                objectsState,
-                multiCall);
+                ImmutableMap.of(CreateUtil.createId(role), MailboxUtil.create(role)), objectsState, multiCall);
     }
 
     protected ListenableFuture<MethodResponses> createMailboxes(
             @NonNull Map<String, Mailbox> mailboxes,
             @Nullable ObjectsState objectsState,
             final JmapClient.MultiCall multiCall) {
-        final SetMailboxMethodCall setMailboxMethodCall =
-                SetMailboxMethodCall.builder()
-                        .accountId(this.accountId)
-                        .ifInState(objectsState == null ? null : objectsState.mailboxState)
-                        .create(mailboxes)
-                        .build();
+        final SetMailboxMethodCall setMailboxMethodCall = SetMailboxMethodCall.builder()
+                .accountId(this.accountId)
+                .ifInState(objectsState == null ? null : objectsState.mailboxState)
+                .create(mailboxes)
+                .build();
         final ListenableFuture<MethodResponses> future =
                 multiCall.call(setMailboxMethodCall).getMethodResponses();
         if (objectsState != null && objectsState.mailboxState != null) {
@@ -204,22 +189,18 @@ public class MailboxService extends AbstractMuaService {
     protected ListenableFuture<Void> ensureNoPreexistingMailbox(final List<Role> roles) {
         final List<ListenableFuture<Void>> futures =
                 roles.stream().map(this::ensureNoPreexistingMailbox).collect(Collectors.toList());
-        return Futures.transform(
-                Futures.allAsList(futures), voids -> null, MoreExecutors.directExecutor());
+        return Futures.transform(Futures.allAsList(futures), voids -> null, MoreExecutors.directExecutor());
     }
 
     protected ListenableFuture<Void> ensureNoPreexistingMailbox(@NonNull final Role role) {
         return Futures.transform(
-                ioExecutorService.submit(
-                        () ->
-                                cache.getMailboxByNameAndParent(
-                                        MailboxUtil.create(role).getName(), null)),
+                ioExecutorService.submit(() ->
+                        cache.getMailboxByNameAndParent(MailboxUtil.create(role).getName(), null)),
                 mb -> PreexistingMailboxException.throwIfNotNull(mb, role),
                 MoreExecutors.directExecutor());
     }
 
-    public ListenableFuture<Boolean> setRole(
-            final IdentifiableMailboxWithRole mailbox, final Role role) {
+    public ListenableFuture<Boolean> setRole(final IdentifiableMailboxWithRole mailbox, final Role role) {
         return Futures.transformAsync(
                 getObjectsState(),
                 objectsState -> setRole(mailbox, role, objectsState),
@@ -227,23 +208,19 @@ public class MailboxService extends AbstractMuaService {
     }
 
     private ListenableFuture<Boolean> setRole(
-            final IdentifiableMailboxWithRole mailbox,
-            final Role role,
-            final ObjectsState objectsState) {
-        final SetMailboxMethodCall setMailboxMethodCall =
-                SetMailboxMethodCall.builder()
-                        .accountId(this.accountId)
-                        .ifInState(objectsState == null ? null : objectsState.mailboxState)
-                        .update(ImmutableMap.of(mailbox.getId(), Patches.set("role", role)))
-                        .build();
+            final IdentifiableMailboxWithRole mailbox, final Role role, final ObjectsState objectsState) {
+        final SetMailboxMethodCall setMailboxMethodCall = SetMailboxMethodCall.builder()
+                .accountId(this.accountId)
+                .ifInState(objectsState == null ? null : objectsState.mailboxState)
+                .update(ImmutableMap.of(mailbox.getId(), Patches.set("role", role)))
+                .build();
         return Futures.transformAsync(
                 jmapClient.call(setMailboxMethodCall),
                 methodResponses -> {
                     final SetMailboxMethodResponse setMailboxMethodResponse =
                             methodResponses.getMain(SetMailboxMethodResponse.class);
                     SetMailboxException.throwIfFailed(setMailboxMethodResponse);
-                    return Futures.immediateFuture(
-                            setMailboxMethodResponse.getUpdatedCreatedCount() > 0);
+                    return Futures.immediateFuture(setMailboxMethodResponse.getUpdatedCreatedCount() > 0);
                 },
                 ioExecutorService);
     }
@@ -256,51 +233,43 @@ public class MailboxService extends AbstractMuaService {
         if (archive != null) {
             Preconditions.checkArgument(archive.getRole() == Role.ARCHIVE);
         }
-        final String[] unidentifiableMailboxes =
-                additions.stream()
-                        .filter(m -> Objects.isNull(m.getId()))
-                        .map(IdentifiableMailboxWithRoleAndName::getName)
-                        .toArray(String[]::new);
+        final String[] unidentifiableMailboxes = additions.stream()
+                .filter(m -> Objects.isNull(m.getId()))
+                .map(IdentifiableMailboxWithRoleAndName::getName)
+                .toArray(String[]::new);
 
         return Futures.transform(
                 ioExecutorService.submit(() -> cache.getMailboxesByNames(unidentifiableMailboxes)),
                 mailboxes -> {
-                    final Map<String, List<IdentifiableMailboxWithRoleAndName>> nameToMailboxes =
-                            mailboxes.stream()
-                                    .collect(
-                                            Collectors.groupingBy(
-                                                    IdentifiableMailboxWithRoleAndName::getName));
-                    final ImmutableMap.Builder<String, Mailbox> mailboxCreationsBuilder =
-                            ImmutableMap.builder();
-                    final ImmutableList.Builder<String> mailboxIdBuilder =
-                            new ImmutableList.Builder<>();
+                    final Map<String, List<IdentifiableMailboxWithRoleAndName>> nameToMailboxes = mailboxes.stream()
+                            .collect(Collectors.groupingBy(IdentifiableMailboxWithRoleAndName::getName));
+                    final ImmutableMap.Builder<String, Mailbox> mailboxCreationsBuilder = ImmutableMap.builder();
+                    final ImmutableList.Builder<String> mailboxIdBuilder = new ImmutableList.Builder<>();
                     if (archive == null) {
                         mailboxCreationsBuilder.put(
-                                CreateUtil.createId(Role.ARCHIVE),
-                                MailboxUtil.create(Role.ARCHIVE));
+                                CreateUtil.createId(Role.ARCHIVE), MailboxUtil.create(Role.ARCHIVE));
                     }
                     for (IdentifiableMailboxWithRoleAndName mailbox : additions) {
                         if (Objects.isNull(mailbox.getId())) {
                             final Optional<IdentifiableMailboxWithRoleAndName> optionalMailbox =
-                                    nameToMailboxes
-                                            .getOrDefault(
-                                                    mailbox.getName(), Collections.emptyList())
-                                            .stream()
+                                    nameToMailboxes.getOrDefault(mailbox.getName(), Collections.emptyList()).stream()
                                             .findFirst();
                             if (optionalMailbox.isPresent()) {
                                 mailboxIdBuilder.add(optionalMailbox.get().getId());
                             } else {
                                 final String uuid = UUID.randomUUID().toString();
                                 mailboxCreationsBuilder.put(
-                                        uuid, Mailbox.builder().name(mailbox.getName()).build());
+                                        uuid,
+                                        Mailbox.builder()
+                                                .name(mailbox.getName())
+                                                .build());
                                 mailboxIdBuilder.add(CreateUtil.createIdReference(uuid));
                             }
                         } else {
                             mailboxIdBuilder.add(mailbox.getId());
                         }
                     }
-                    final ImmutableMap<String, Mailbox> mailboxCreations =
-                            mailboxCreationsBuilder.build();
+                    final ImmutableMap<String, Mailbox> mailboxCreations = mailboxCreationsBuilder.build();
                     if (mailboxCreations.size() > 0) {
                         createMailboxes(mailboxCreations, objectsState, multiCall);
                     }

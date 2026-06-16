@@ -29,20 +29,17 @@ public class LegacyFileUpload implements Uploadable, Closeable {
     private final long contentLength;
     private final MediaType mediaType;
 
-    private LegacyFileUpload(final File file, final MediaType mediaType)
-            throws FileNotFoundException {
+    private LegacyFileUpload(final File file, final MediaType mediaType) throws FileNotFoundException {
         this.inputStream = new FileInputStream(file);
         this.contentLength = file.length();
         this.mediaType = mediaType;
     }
 
-    public static LegacyFileUpload of(final File file, final MediaType mediaType)
-            throws IOException {
+    public static LegacyFileUpload of(final File file, final MediaType mediaType) throws IOException {
         if (file.isFile()) {
             return new LegacyFileUpload(file, mediaType);
         } else {
-            throw new IOException(
-                    String.format("%s is not a regular file", file.getAbsoluteFile()));
+            throw new IOException(String.format("%s is not a regular file", file.getAbsoluteFile()));
         }
     }
 
@@ -50,8 +47,7 @@ public class LegacyFileUpload implements Uploadable, Closeable {
     public FileInputStream getInputStream() {
         if (this.inputStream.closed) {
             throw new IllegalStateException(
-                    "FileInputStream has already been closed. Are you using a network"
-                            + " interceptor/logger?");
+                    "FileInputStream has already been closed. Are you using a network" + " interceptor/logger?");
         }
         return inputStream;
     }

@@ -36,8 +36,7 @@ public class GetPushSubscriptionMethodCall implements MethodCall {
     @Builder
     public GetPushSubscriptionMethodCall(
             String[] ids, String[] properties, Request.Invocation.ResultReference idsReference) {
-        Preconditions.checkArgument(
-                ids == null || idsReference == null, "Can't set both 'ids' and 'idsReference'");
+        Preconditions.checkArgument(ids == null || idsReference == null, "Can't set both 'ids' and 'idsReference'");
         this.ids = ids;
         this.properties = properties;
         this.idsReference = idsReference;

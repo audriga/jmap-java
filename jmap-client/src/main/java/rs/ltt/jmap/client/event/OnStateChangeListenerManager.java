@@ -74,10 +74,9 @@ public class OnStateChangeListenerManager {
     public boolean onStateChange(StateChange stateChange) {
         final AtomicBoolean result = new AtomicBoolean(false);
         synchronized (this.onStateChangeListeners) {
-            this.onStateChangeListeners.forEach(
-                    listener -> {
-                        result.compareAndSet(false, listener.onStateChange(stateChange));
-                    });
+            this.onStateChangeListeners.forEach(listener -> {
+                result.compareAndSet(false, listener.onStateChange(stateChange));
+            });
         }
         return result.get();
     }

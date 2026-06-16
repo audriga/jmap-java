@@ -29,9 +29,7 @@ public class MethodErrorResponseException extends JmapApiException {
     private final MethodCall methodCall;
 
     MethodErrorResponseException(
-            MethodErrorResponse methodErrorResponse,
-            MethodResponse[] additional,
-            MethodCall methodCall) {
+            MethodErrorResponse methodErrorResponse, MethodResponse[] additional, MethodCall methodCall) {
         super(message(methodErrorResponse, additional, methodCall));
         this.methodErrorResponse = methodErrorResponse;
         this.additional = additional;
@@ -51,8 +49,7 @@ public class MethodErrorResponseException extends JmapApiException {
         messageBuilder.append(" in response to ");
         messageBuilder.append(Mapper.METHOD_CALLS.inverse().get(methodCall.getClass()));
         if (methodErrorResponse instanceof InvalidArgumentsMethodErrorResponse) {
-            final String description =
-                    ((InvalidArgumentsMethodErrorResponse) methodErrorResponse).getDescription();
+            final String description = ((InvalidArgumentsMethodErrorResponse) methodErrorResponse).getDescription();
             if (description != null) {
                 messageBuilder.append(" (");
                 messageBuilder.append(description);
@@ -62,11 +59,9 @@ public class MethodErrorResponseException extends JmapApiException {
         return messageBuilder.toString();
     }
 
-    public static boolean matches(
-            Throwable throwable, Class<? extends MethodErrorResponse> methodError) {
+    public static boolean matches(Throwable throwable, Class<? extends MethodErrorResponse> methodError) {
         if (throwable instanceof MethodErrorResponseException) {
-            final MethodErrorResponseException methodErrorResponseException =
-                    (MethodErrorResponseException) throwable;
+            final MethodErrorResponseException methodErrorResponseException = (MethodErrorResponseException) throwable;
             return methodError.isInstance(methodErrorResponseException.getMethodErrorResponse());
         }
         return false;

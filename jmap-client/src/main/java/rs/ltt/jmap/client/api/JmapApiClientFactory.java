@@ -30,18 +30,15 @@ public class JmapApiClientFactory {
     private final SessionStateListener sessionStateListener;
 
     public JmapApiClientFactory(
-            @NonNull final ConnectionConfig connectionConfig,
-            SessionStateListener sessionStateListener) {
+            @NonNull final ConnectionConfig connectionConfig, SessionStateListener sessionStateListener) {
         this.connectionConfig = connectionConfig;
         this.sessionStateListener = sessionStateListener;
     }
 
     public JmapApiClient getJmapApiClient(final Session session, final boolean useWebSocket) {
-        final WebSocketCapability webSocketCapability =
-                session.getCapability(WebSocketCapability.class);
+        final WebSocketCapability webSocketCapability = session.getCapability(WebSocketCapability.class);
         if (validWebSocketCapability(webSocketCapability) && useWebSocket) {
-            final HttpUrl url =
-                    WebSocketUtil.normalizeUrl(session.getBase(), webSocketCapability.getUrl());
+            final HttpUrl url = WebSocketUtil.normalizeUrl(session.getBase(), webSocketCapability.getUrl());
             if (Boolean.TRUE.equals(webSocketCapability.getSupportsPush())) {
                 return new WebSocketPushService(url, connectionConfig, sessionStateListener);
             } else {

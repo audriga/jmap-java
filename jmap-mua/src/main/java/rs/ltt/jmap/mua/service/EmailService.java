@@ -68,16 +68,13 @@ public class EmailService extends AbstractMuaService {
         return Futures.transformAsync(
                 getService(MailboxService.class).getMailboxes(),
                 mailboxes -> {
-                    final IdentifiableMailboxWithRole draft =
-                            MailboxUtil.find(mailboxes, Role.DRAFTS);
-                    return ensureNoPreexistingMailbox(
-                            draft, Role.DRAFTS, () -> draft(email, draft));
+                    final IdentifiableMailboxWithRole draft = MailboxUtil.find(mailboxes, Role.DRAFTS);
+                    return ensureNoPreexistingMailbox(draft, Role.DRAFTS, () -> draft(email, draft));
                 },
                 MoreExecutors.directExecutor());
     }
 
-    public ListenableFuture<String> draft(
-            final Email email, final IdentifiableMailboxWithRole drafts) {
+    public ListenableFuture<String> draft(final Email email, final IdentifiableMailboxWithRole drafts) {
         final JmapClient.MultiCall multiCall = jmapClient.newMultiCall();
         final ListenableFuture<String> future = draft(email, drafts, multiCall);
         multiCall.execute();
@@ -85,9 +82,7 @@ public class EmailService extends AbstractMuaService {
     }
 
     private ListenableFuture<String> draft(
-            final Email email,
-            final IdentifiableMailboxWithRole drafts,
-            final JmapClient.MultiCall multiCall) {
+            final Email email, final IdentifiableMailboxWithRole drafts, final JmapClient.MultiCall multiCall) {
         return store(email, drafts, Role.DRAFTS, multiCall);
     }
 
@@ -96,8 +91,7 @@ public class EmailService extends AbstractMuaService {
             final IdentifiableMailboxWithRole mailbox,
             final Role role,
             final JmapClient.MultiCall multiCall) {
-        Preconditions.checkNotNull(
-                email, "Email can not be null when attempting to create a draft");
+        Preconditions.checkNotNull(email, "Email can not be null when attempting to create a draft");
         Preconditions.checkState(email.getId() == null, "id is a server-set property");
         Preconditions.checkState(email.getBlobId() == null, "blobId is a server-set property");
         Preconditions.checkState(email.getThreadId() == null, "threadId is a server-set property");
@@ -109,8 +103,7 @@ public class EmailService extends AbstractMuaService {
         final Email.EmailBuilder emailBuilder = email.toBuilder();
         final ListenableFuture<MethodResponses> mailboxCreateFuture;
         if (mailbox == null) {
-            mailboxCreateFuture =
-                    getService(MailboxService.class).createMailbox(role, null, multiCall);
+            mailboxCreateFuture = getService(MailboxService.class).createMailbox(role, null, multiCall);
         } else {
             mailboxCreateFuture = null;
         }
@@ -123,17 +116,12 @@ public class EmailService extends AbstractMuaService {
             emailBuilder.keyword(Keyword.DRAFT, true);
         }
         emailBuilder.keyword(Keyword.SEEN, true);
-        final ListenableFuture<MethodResponses> future =
-                multiCall
-                        .call(
-                                SetEmailMethodCall.builder()
-                                        .accountId(accountId)
-                                        .create(
-                                                ImmutableMap.of(
-                                                        CreateUtil.EMAIL_CREATION_ID,
-                                                        emailBuilder.build()))
-                                        .build())
-                        .getMethodResponses();
+        final ListenableFuture<MethodResponses> future = multiCall
+                .call(SetEmailMethodCall.builder()
+                        .accountId(accountId)
+                        .create(ImmutableMap.of(CreateUtil.EMAIL_CREATION_ID, emailBuilder.build()))
+                        .build())
+                .getMethodResponses();
         return Futures.transformAsync(
                 future,
                 methodResponses -> {
@@ -146,21 +134,18 @@ public class EmailService extends AbstractMuaService {
                             methodResponses.getMain(SetEmailMethodResponse.class);
                     SetEmailException.throwIfFailed(setEmailMethodResponse);
                     final Map<String, Email> created = setEmailMethodResponse.getCreated();
-                    final Email email1 =
-                            created != null ? created.get(CreateUtil.EMAIL_CREATION_ID) : null;
+                    final Email email1 = created != null ? created.get(CreateUtil.EMAIL_CREATION_ID) : null;
                     if (email1 != null) {
                         return Futures.immediateFuture(email1.getId());
                     } else {
-                        throw new IllegalStateException(
-                                "Unable to find email id in method response");
+                        throw new IllegalStateException("Unable to find email id in method response");
                     }
                 },
                 MoreExecutors.directExecutor());
     }
 
     private <O> ListenableFuture<O> ensureNoPreexistingMailbox(
-            final IdentifiableMailboxWithRole mailbox, final Role role, AsyncCallable<O> callable)
-            throws Exception {
+            final IdentifiableMailboxWithRole mailbox, final Role role, AsyncCallable<O> callable) throws Exception {
         if (mailbox == null) {
             return Futures.transformAsync(
                     getService(MailboxService.class).ensureNoPreexistingMailbox(role),
@@ -177,30 +162,25 @@ public class EmailService extends AbstractMuaService {
                 getService(MailboxService.class).getMailboxes(),
                 mailboxes -> {
                     final IdentifiableMailboxWithRole mailbox = MailboxUtil.find(mailboxes, role);
-                    return ensureNoPreexistingMailbox(
-                            mailbox, role, () -> store(email, mailbox, role));
+                    return ensureNoPreexistingMailbox(mailbox, role, () -> store(email, mailbox, role));
                 },
                 MoreExecutors.directExecutor());
     }
 
-    private ListenableFuture<String> store(
-            final Email email, final IdentifiableMailboxWithRole mailbox, Role role) {
+    private ListenableFuture<String> store(final Email email, final IdentifiableMailboxWithRole mailbox, Role role) {
         final JmapClient.MultiCall multiCall = jmapClient.newMultiCall();
         final ListenableFuture<String> future = store(email, mailbox, role, multiCall);
         multiCall.execute();
         return future;
     }
 
-    public ListenableFuture<Boolean> submit(
-            final IdentifiableEmailWithMailboxIds email, final Identity identity) {
+    public ListenableFuture<Boolean> submit(final IdentifiableEmailWithMailboxIds email, final Identity identity) {
         return Futures.transformAsync(
                 getService(MailboxService.class).getMailboxes(),
                 mailboxes -> {
                     Preconditions.checkNotNull(
-                            mailboxes,
-                            "SpecialMailboxes collection must not be null but can be empty");
-                    final IdentifiableMailboxWithRole drafts =
-                            MailboxUtil.find(mailboxes, Role.DRAFTS);
+                            mailboxes, "SpecialMailboxes collection must not be null but can be empty");
+                    final IdentifiableMailboxWithRole drafts = MailboxUtil.find(mailboxes, Role.DRAFTS);
                     final String draftMailboxId;
                     if (drafts == null || !email.getMailboxIds().containsKey(drafts.getId())) {
                         draftMailboxId = null;
@@ -209,9 +189,7 @@ public class EmailService extends AbstractMuaService {
                     }
                     final IdentifiableMailboxWithRole sent = MailboxUtil.find(mailboxes, Role.SENT);
                     return ensureNoPreexistingMailbox(
-                            sent,
-                            Role.SENT,
-                            () -> submit(email.getId(), identity, draftMailboxId, sent));
+                            sent, Role.SENT, () -> submit(email.getId(), identity, draftMailboxId, sent));
                 },
                 MoreExecutors.directExecutor());
     }
@@ -222,8 +200,7 @@ public class EmailService extends AbstractMuaService {
             @Nullable String draftMailboxId,
             final IdentifiableMailboxWithRole sent) {
         final JmapClient.MultiCall multiCall = jmapClient.newMultiCall();
-        final ListenableFuture<Boolean> future =
-                submit(emailId, identity, draftMailboxId, sent, multiCall);
+        final ListenableFuture<Boolean> future = submit(emailId, identity, draftMailboxId, sent, multiCall);
         multiCall.execute();
         return future;
     }
@@ -235,12 +212,10 @@ public class EmailService extends AbstractMuaService {
             @Nullable final IdentifiableMailboxWithRole sent,
             final JmapClient.MultiCall multiCall) {
         Preconditions.checkNotNull(emailId, "emailId can not be null when attempting to submit");
-        Preconditions.checkNotNull(
-                identity, "identity can not be null when attempting to submit an email");
+        Preconditions.checkNotNull(identity, "identity can not be null when attempting to submit an email");
         final ListenableFuture<MethodResponses> mailboxCreateFuture;
         if (sent == null) {
-            mailboxCreateFuture =
-                    getService(MailboxService.class).createMailbox(Role.SENT, null, multiCall);
+            mailboxCreateFuture = getService(MailboxService.class).createMailbox(Role.SENT, null, multiCall);
         } else {
             mailboxCreateFuture = null;
         }
@@ -249,25 +224,19 @@ public class EmailService extends AbstractMuaService {
         // TODO change this patch to just remove from draft, put into sent, and keep others
         patchesBuilder.set(
                 "mailboxIds",
-                ImmutableMap.of(
-                        sent == null ? CreateUtil.createIdReference(Role.SENT) : sent.getId(),
-                        true));
-        final ListenableFuture<MethodResponses> setEmailSubmissionFuture =
-                multiCall
-                        .call(
-                                SetEmailSubmissionMethodCall.builder()
-                                        .accountId(accountId)
-                                        .create(
-                                                ImmutableMap.of(
-                                                        "es0",
-                                                        EmailSubmission.builder()
-                                                                .emailId(emailId)
-                                                                .identityId(identity.getId())
-                                                                .build()))
-                                        .onSuccessUpdateEmail(
-                                                ImmutableMap.of("#es0", patchesBuilder.build()))
-                                        .build())
-                        .getMethodResponses();
+                ImmutableMap.of(sent == null ? CreateUtil.createIdReference(Role.SENT) : sent.getId(), true));
+        final ListenableFuture<MethodResponses> setEmailSubmissionFuture = multiCall
+                .call(SetEmailSubmissionMethodCall.builder()
+                        .accountId(accountId)
+                        .create(ImmutableMap.of(
+                                "es0",
+                                EmailSubmission.builder()
+                                        .emailId(emailId)
+                                        .identityId(identity.getId())
+                                        .build()))
+                        .onSuccessUpdateEmail(ImmutableMap.of("#es0", patchesBuilder.build()))
+                        .build())
+                .getMethodResponses();
         return Futures.transformAsync(
                 setEmailSubmissionFuture,
                 methodResponses -> {
@@ -279,32 +248,23 @@ public class EmailService extends AbstractMuaService {
                     SetEmailSubmissionMethodResponse setEmailSubmissionMethodResponse =
                             methodResponses.getMain(SetEmailSubmissionMethodResponse.class);
                     SetEmailSubmissionException.throwIfFailed(setEmailSubmissionMethodResponse);
-                    return Futures.immediateFuture(
-                            setEmailSubmissionMethodResponse.getUpdatedCreatedCount() > 0);
+                    return Futures.immediateFuture(setEmailSubmissionMethodResponse.getUpdatedCreatedCount() > 0);
                 },
                 MoreExecutors.directExecutor());
     }
 
-    public ListenableFuture<Boolean> submit(
-            final String emailId, final IdentifiableIdentity identity) {
+    public ListenableFuture<Boolean> submit(final String emailId, final IdentifiableIdentity identity) {
         return Futures.transformAsync(
                 getService(MailboxService.class).getMailboxes(),
                 mailboxes -> {
                     Preconditions.checkNotNull(
-                            mailboxes,
-                            "SpecialMailboxes collection must not be null but can be empty");
-                    final IdentifiableMailboxWithRole drafts =
-                            MailboxUtil.find(mailboxes, Role.DRAFTS);
+                            mailboxes, "SpecialMailboxes collection must not be null but can be empty");
+                    final IdentifiableMailboxWithRole drafts = MailboxUtil.find(mailboxes, Role.DRAFTS);
                     final IdentifiableMailboxWithRole sent = MailboxUtil.find(mailboxes, Role.SENT);
                     return ensureNoPreexistingMailbox(
                             sent,
                             Role.SENT,
-                            () ->
-                                    submit(
-                                            emailId,
-                                            identity,
-                                            drafts == null ? null : drafts.getId(),
-                                            sent));
+                            () -> submit(emailId, identity, drafts == null ? null : drafts.getId(), sent));
                 },
                 MoreExecutors.directExecutor());
     }
@@ -314,17 +274,11 @@ public class EmailService extends AbstractMuaService {
                 getService(MailboxService.class).getMailboxes(),
                 mailboxes -> {
                     Preconditions.checkNotNull(
-                            mailboxes,
-                            "SpecialMailboxes collection must not be null but can be empty");
-                    final IdentifiableMailboxWithRole drafts =
-                            MailboxUtil.find(mailboxes, Role.DRAFTS);
+                            mailboxes, "SpecialMailboxes collection must not be null but can be empty");
+                    final IdentifiableMailboxWithRole drafts = MailboxUtil.find(mailboxes, Role.DRAFTS);
                     final IdentifiableMailboxWithRole sent = MailboxUtil.find(mailboxes, Role.SENT);
                     return ensureNoPreexistingMailbox(
-                            sent,
-                            Role.SENT,
-                            drafts,
-                            Role.DRAFTS,
-                            () -> send(email, identity, drafts, sent));
+                            sent, Role.SENT, drafts, Role.DRAFTS, () -> send(email, identity, drafts, sent));
                 },
                 MoreExecutors.directExecutor());
     }
@@ -368,21 +322,18 @@ public class EmailService extends AbstractMuaService {
             final IdentifiableMailboxWithRole sent) {
         final JmapClient.MultiCall multiCall = jmapClient.newMultiCall();
         final ListenableFuture<String> draftFuture = draft(email, drafts, multiCall);
-        final ListenableFuture<Boolean> submitFuture =
-                submit(
-                        CreateUtil.EMAIL_CREATION_ID_REFERENCE,
-                        identity,
-                        drafts == null ? CreateUtil.createIdReference(Role.DRAFTS) : drafts.getId(),
-                        sent,
-                        multiCall);
+        final ListenableFuture<Boolean> submitFuture = submit(
+                CreateUtil.EMAIL_CREATION_ID_REFERENCE,
+                identity,
+                drafts == null ? CreateUtil.createIdReference(Role.DRAFTS) : drafts.getId(),
+                sent,
+                multiCall);
         multiCall.execute();
-        return Futures.transformAsync(
-                submitFuture, success -> draftFuture, MoreExecutors.directExecutor());
+        return Futures.transformAsync(submitFuture, success -> draftFuture, MoreExecutors.directExecutor());
     }
 
     public ListenableFuture<Boolean> setKeyword(
-            final Collection<? extends IdentifiableEmailWithKeywords> emails,
-            final String keyword) {
+            final Collection<? extends IdentifiableEmailWithKeywords> emails, final String keyword) {
         return Futures.transformAsync(
                 getObjectsState(),
                 objectsState -> setKeyword(emails, keyword, objectsState),
@@ -393,16 +344,13 @@ public class EmailService extends AbstractMuaService {
             final Collection<? extends IdentifiableEmailWithKeywords> emails,
             final String keyword,
             final ObjectsState objectsState) {
-        final ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder =
-                ImmutableMap.builder();
+        final ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder = ImmutableMap.builder();
         for (IdentifiableEmailWithKeywords email : emails) {
             if (!email.getKeywords().containsKey(keyword)) {
-                emailPatchObjectMapBuilder.put(
-                        email.getId(), Patches.set("keywords/" + keyword, true));
+                emailPatchObjectMapBuilder.put(email.getId(), Patches.set("keywords/" + keyword, true));
             }
         }
-        final ImmutableMap<String, Map<String, Object>> patches =
-                emailPatchObjectMapBuilder.build();
+        final ImmutableMap<String, Map<String, Object>> patches = emailPatchObjectMapBuilder.build();
         return applyEmailPatches(patches, objectsState);
     }
 
@@ -412,25 +360,22 @@ public class EmailService extends AbstractMuaService {
             return Futures.immediateFuture(false);
         }
         JmapClient.MultiCall multiCall = jmapClient.newMultiCall();
-        ListenableFuture<Boolean> future =
-                applyEmailPatches(patches, objectsState, true, multiCall);
+        ListenableFuture<Boolean> future = applyEmailPatches(patches, objectsState, true, multiCall);
         multiCall.execute();
         return future;
     }
 
     /**
-     * Utility method to update emails with a given patch set. Optionally this call will be guarded
-     * with an ifInState parameter. If it is this method will also chain an updateEmailCall right
-     * after it. The rational for that is that when the first call fails with a miss matched state a
-     * second attempt (not triggered automatically) will most likely succeed.
+     * Utility method to update emails with a given patch set. Optionally this call will be guarded with an ifInState
+     * parameter. If it is this method will also chain an updateEmailCall right after it. The rational for that is that
+     * when the first call fails with a miss matched state a second attempt (not triggered automatically) will most
+     * likely succeed.
      *
-     * <p>When calling this method after creating a mailbox ifInState should be set to false;
-     * Otherwise the createMailbox call will increase the state and the subsequent setEmail call
-     * would fail.
+     * <p>When calling this method after creating a mailbox ifInState should be set to false; Otherwise the
+     * createMailbox call will increase the state and the subsequent setEmail call would fail.
      *
      * @param patches The map of patches
-     * @param objectsState An ObjectsState that will be used to guard the set call. Only used when
-     *     ifInState is true
+     * @param objectsState An ObjectsState that will be used to guard the set call. Only used when ifInState is true
      * @param ifInState Whether or not to guard the call
      * @param multiCall
      * @return
@@ -443,15 +388,13 @@ public class EmailService extends AbstractMuaService {
         if (ifInState) {
             Preconditions.checkNotNull(objectsState);
         }
-        final ListenableFuture<MethodResponses> future =
-                multiCall
-                        .call(
-                                SetEmailMethodCall.builder()
-                                        .accountId(accountId)
-                                        .ifInState(ifInState ? objectsState.emailState : null)
-                                        .update(patches)
-                                        .build())
-                        .getMethodResponses();
+        final ListenableFuture<MethodResponses> future = multiCall
+                .call(SetEmailMethodCall.builder()
+                        .accountId(accountId)
+                        .ifInState(ifInState ? objectsState.emailState : null)
+                        .update(patches)
+                        .build())
+                .getMethodResponses();
         if (ifInState && objectsState.emailState != null) {
             updateEmails(objectsState.emailState, multiCall);
         }
@@ -461,18 +404,15 @@ public class EmailService extends AbstractMuaService {
                     SetEmailMethodResponse setEmailMethodResponse =
                             methodResponses.getMain(SetEmailMethodResponse.class);
                     SetEmailException.throwIfFailed(setEmailMethodResponse);
-                    return Futures.immediateFuture(
-                            setEmailMethodResponse.getUpdatedCreatedCount() > 0);
+                    return Futures.immediateFuture(setEmailMethodResponse.getUpdatedCreatedCount() > 0);
                 },
                 ioExecutorService);
     }
 
-    protected ListenableFuture<Status> updateEmails(
-            final String state, final JmapClient.MultiCall multiCall) {
+    protected ListenableFuture<Status> updateEmails(final String state, final JmapClient.MultiCall multiCall) {
         Preconditions.checkNotNull(state, "state can not be null when updating emails");
         LOGGER.info("Refreshing emails since state {}", state);
-        final UpdateUtil.MethodResponsesFuture methodResponsesFuture =
-                UpdateUtil.emails(multiCall, accountId, state);
+        final UpdateUtil.MethodResponsesFuture methodResponsesFuture = UpdateUtil.emails(multiCall, accountId, state);
         registerCacheInvalidationCallback(methodResponsesFuture, this::invalidateCache);
         return methodResponsesFuture.addCallback(
                 () -> {
@@ -482,10 +422,8 @@ public class EmailService extends AbstractMuaService {
                             methodResponsesFuture.created(GetEmailMethodResponse.class);
                     final GetEmailMethodResponse updatedResponse =
                             methodResponsesFuture.updated(GetEmailMethodResponse.class);
-                    final Update<Email> update =
-                            Update.of(changesResponse, createdResponse, updatedResponse);
-                    getService(PluginService.class)
-                            .executeEmailCacheStagePlugins(update.getCreated());
+                    final Update<Email> update = Update.of(changesResponse, createdResponse, updatedResponse);
+                    getService(PluginService.class).executeEmailCacheStagePlugins(update.getCreated());
                     if (update.hasChanges()) {
                         cache.updateEmails(update, Email.Properties.MUTABLE);
                     }
@@ -499,16 +437,12 @@ public class EmailService extends AbstractMuaService {
         cache.invalidateEmailThreadsAndQueries();
     }
 
-    public ListenableFuture<Boolean> discardDraft(
-            final @NonNull IdentifiableEmailWithKeywords email) {
+    public ListenableFuture<Boolean> discardDraft(final @NonNull IdentifiableEmailWithKeywords email) {
         Preconditions.checkNotNull(email);
         Preconditions.checkArgument(
-                email.getKeywords().containsKey(Keyword.DRAFT),
-                "Email does not have $draft keyword");
+                email.getKeywords().containsKey(Keyword.DRAFT), "Email does not have $draft keyword");
         return Futures.transformAsync(
-                getObjectsState(),
-                objectsState -> discardDraft(email, objectsState),
-                MoreExecutors.directExecutor());
+                getObjectsState(), objectsState -> discardDraft(email, objectsState), MoreExecutors.directExecutor());
     }
 
     private ListenableFuture<Boolean> discardDraft(
@@ -524,15 +458,13 @@ public class EmailService extends AbstractMuaService {
             final @NonNull IdentifiableEmailWithKeywords email,
             final ObjectsState objectsState,
             final JmapClient.MultiCall multiCall) {
-        final ListenableFuture<MethodResponses> future =
-                multiCall
-                        .call(
-                                SetEmailMethodCall.builder()
-                                        .accountId(accountId)
-                                        .ifInState(objectsState.emailState)
-                                        .destroy(new String[] {email.getId()})
-                                        .build())
-                        .getMethodResponses();
+        final ListenableFuture<MethodResponses> future = multiCall
+                .call(SetEmailMethodCall.builder()
+                        .accountId(accountId)
+                        .ifInState(objectsState.emailState)
+                        .destroy(new String[] {email.getId()})
+                        .build())
+                .getMethodResponses();
         if (objectsState.emailState != null) {
             updateEmails(objectsState.emailState, multiCall);
         }
@@ -549,8 +481,7 @@ public class EmailService extends AbstractMuaService {
     }
 
     public ListenableFuture<Boolean> removeKeyword(
-            final Collection<? extends IdentifiableEmailWithKeywords> emails,
-            final String keyword) {
+            final Collection<? extends IdentifiableEmailWithKeywords> emails, final String keyword) {
         return Futures.transformAsync(
                 getObjectsState(),
                 objectsState -> removeKeyword(emails, keyword, objectsState),
@@ -561,16 +492,13 @@ public class EmailService extends AbstractMuaService {
             final Collection<? extends IdentifiableEmailWithKeywords> emails,
             final String keyword,
             final ObjectsState objectsState) {
-        final ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder =
-                ImmutableMap.builder();
+        final ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder = ImmutableMap.builder();
         for (IdentifiableEmailWithKeywords email : emails) {
             if (email.getKeywords().containsKey(keyword)) {
-                emailPatchObjectMapBuilder.put(
-                        email.getId(), Patches.remove("keywords/" + keyword));
+                emailPatchObjectMapBuilder.put(email.getId(), Patches.remove("keywords/" + keyword));
             }
         }
-        final ImmutableMap<String, Map<String, Object>> patches =
-                emailPatchObjectMapBuilder.build();
+        final ImmutableMap<String, Map<String, Object>> patches = emailPatchObjectMapBuilder.build();
         return applyEmailPatches(patches, objectsState);
     }
 
@@ -580,10 +508,8 @@ public class EmailService extends AbstractMuaService {
                 getService(MailboxService.class).getMailboxes(),
                 mailboxes -> {
                     Preconditions.checkNotNull(
-                            mailboxes,
-                            "SpecialMailboxes collection must not be null but can be empty");
-                    final IdentifiableMailboxWithRole important =
-                            MailboxUtil.find(mailboxes, Role.IMPORTANT);
+                            mailboxes, "SpecialMailboxes collection must not be null but can be empty");
+                    final IdentifiableMailboxWithRole important = MailboxUtil.find(mailboxes, Role.IMPORTANT);
                     return ensureNoPreexistingMailbox(
                             important, Role.IMPORTANT, () -> copyToImportant(emails, important));
                 },
@@ -603,26 +529,22 @@ public class EmailService extends AbstractMuaService {
             @NonNull final Collection<? extends IdentifiableEmailWithMailboxIds> emails,
             @Nullable final IdentifiableMailboxWithRole important,
             final ObjectsState objectsState) {
-        Preconditions.checkNotNull(
-                emails, "emails can not be null when attempting to copy them to important");
+        Preconditions.checkNotNull(emails, "emails can not be null when attempting to copy them to important");
         if (important != null) {
             Preconditions.checkArgument(
-                    important.getRole() == Role.IMPORTANT,
-                    "Supplied important mailbox must have the role IMPORTANT");
+                    important.getRole() == Role.IMPORTANT, "Supplied important mailbox must have the role IMPORTANT");
         }
         final JmapClient.MultiCall multiCall = jmapClient.newMultiCall();
 
         final ListenableFuture<MethodResponses> mailboxCreateFuture;
         if (important == null) {
             mailboxCreateFuture =
-                    getService(MailboxService.class)
-                            .createMailbox(Role.IMPORTANT, objectsState, multiCall);
+                    getService(MailboxService.class).createMailbox(Role.IMPORTANT, objectsState, multiCall);
         } else {
             mailboxCreateFuture = null;
         }
 
-        ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder =
-                ImmutableMap.builder();
+        ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder = ImmutableMap.builder();
         for (IdentifiableEmailWithMailboxIds email : emails) {
             final Map<String, Boolean> mailboxIds = new HashMap<>(email.getMailboxIds());
             if (important == null) {
@@ -631,23 +553,20 @@ public class EmailService extends AbstractMuaService {
                 mailboxIds.put(important.getId(), true);
             }
             if (!mailboxIds.equals(email.getMailboxIds())) {
-                emailPatchObjectMapBuilder.put(
-                        email.getId(), Patches.set("mailboxIds", mailboxIds));
+                emailPatchObjectMapBuilder.put(email.getId(), Patches.set("mailboxIds", mailboxIds));
             }
         }
-        final ImmutableMap<String, Map<String, Object>> patches =
-                emailPatchObjectMapBuilder.build();
+        final ImmutableMap<String, Map<String, Object>> patches = emailPatchObjectMapBuilder.build();
         if (patches.size() == 0) {
             return Futures.immediateFuture(false);
         }
 
-        final ListenableFuture<Boolean> patchesFuture =
-                applyEmailPatches(
-                        patches,
-                        objectsState,
-                        important != null, // if do not have to create a mailbox in the same call,
-                        // calling ifInState on the emails is fine
-                        multiCall);
+        final ListenableFuture<Boolean> patchesFuture = applyEmailPatches(
+                patches,
+                objectsState,
+                important != null, // if do not have to create a mailbox in the same call,
+                // calling ifInState on the emails is fine
+                multiCall);
 
         multiCall.execute();
 
@@ -677,8 +596,7 @@ public class EmailService extends AbstractMuaService {
             final Collection<? extends IdentifiableEmailWithMailboxIds> emails,
             final IdentifiableMailboxWithRole mailbox,
             final ObjectsState objectsState) {
-        ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder =
-                ImmutableMap.builder();
+        ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder = ImmutableMap.builder();
         for (IdentifiableEmailWithMailboxIds email : emails) {
             if (email.getMailboxIds().containsKey(mailbox.getId())) {
                 continue;
@@ -687,8 +605,7 @@ public class EmailService extends AbstractMuaService {
             patchesBuilder.set("mailboxIds/" + mailbox.getId(), true);
             emailPatchObjectMapBuilder.put(email.getId(), patchesBuilder.build());
         }
-        final ImmutableMap<String, Map<String, Object>> patches =
-                emailPatchObjectMapBuilder.build();
+        final ImmutableMap<String, Map<String, Object>> patches = emailPatchObjectMapBuilder.build();
 
         return applyEmailPatches(patches, objectsState);
     }
@@ -698,22 +615,16 @@ public class EmailService extends AbstractMuaService {
             final Collection<? extends IdentifiableMailboxWithRoleAndName> additions,
             final Collection<? extends IdentifiableMailboxWithRoleAndName> removals) {
         MailboxPreconditions.checkNonMatches(additions, removals);
-        MailboxPreconditions.checkAllIdentifiable(
-                removals, "Only identifiable (id != null) mailboxes can be removed");
+        MailboxPreconditions.checkAllIdentifiable(removals, "Only identifiable (id != null) mailboxes can be removed");
         return Futures.transformAsync(
                 getService(MailboxService.class).getMailboxes(),
                 mailboxes -> {
                     Preconditions.checkNotNull(
-                            mailboxes,
-                            "SpecialMailboxes collection must not be null but can be empty");
-                    final IdentifiableMailboxWithRole archive =
-                            MailboxUtil.find(mailboxes, Role.ARCHIVE);
-                    final IdentifiableMailboxWithRole trash =
-                            MailboxUtil.find(mailboxes, Role.TRASH);
+                            mailboxes, "SpecialMailboxes collection must not be null but can be empty");
+                    final IdentifiableMailboxWithRole archive = MailboxUtil.find(mailboxes, Role.ARCHIVE);
+                    final IdentifiableMailboxWithRole trash = MailboxUtil.find(mailboxes, Role.TRASH);
                     return ensureNoPreexistingMailbox(
-                            archive,
-                            Role.ARCHIVE,
-                            () -> modifyLabels(emails, additions, removals, archive, trash));
+                            archive, Role.ARCHIVE, () -> modifyLabels(emails, additions, removals, archive, trash));
                 },
                 MoreExecutors.directExecutor());
     }
@@ -726,8 +637,7 @@ public class EmailService extends AbstractMuaService {
             final IdentifiableMailboxWithRole trash) {
         return Futures.transformAsync(
                 getObjectsState(),
-                objectsState ->
-                        modifyLabels(emails, additions, removals, archive, trash, objectsState),
+                objectsState -> modifyLabels(emails, additions, removals, archive, trash, objectsState),
                 MoreExecutors.directExecutor());
     }
 
@@ -740,23 +650,12 @@ public class EmailService extends AbstractMuaService {
             final ObjectsState objectsState) {
         final JmapClient.MultiCall multiCall = jmapClient.newMultiCall();
         final List<? extends IdentifiableMailboxWithRoleAndName> mailboxes =
-                additions.stream()
-                        .filter(m -> Objects.isNull(m.getRole()))
-                        .collect(Collectors.toList());
+                additions.stream().filter(m -> Objects.isNull(m.getRole())).collect(Collectors.toList());
         return Futures.transformAsync(
-                getService(MailboxService.class)
-                        .resolveMailboxes(mailboxes, archive, objectsState, multiCall),
+                getService(MailboxService.class).resolveMailboxes(mailboxes, archive, objectsState, multiCall),
                 mailboxIds -> {
-                    final ListenableFuture<Boolean> labelModification =
-                            modifyLabels(
-                                    emails,
-                                    additions,
-                                    removals,
-                                    archive,
-                                    trash,
-                                    objectsState,
-                                    mailboxIds,
-                                    multiCall);
+                    final ListenableFuture<Boolean> labelModification = modifyLabels(
+                            emails, additions, removals, archive, trash, objectsState, mailboxIds, multiCall);
                     multiCall.execute();
                     return labelModification;
                 },
@@ -783,8 +682,7 @@ public class EmailService extends AbstractMuaService {
                     moveToInbox != moveToArchive,
                     "A mailbox with role of INBOX appears in both additions and removals");
         }
-        final ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder =
-                ImmutableMap.builder();
+        final ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder = ImmutableMap.builder();
         for (final IdentifiableEmailWithMailboxIds email : emails) {
             final Map<String, Boolean> mailboxIds = new HashMap<>(email.getMailboxIds());
             if (moveToInbox) {
@@ -811,27 +709,20 @@ public class EmailService extends AbstractMuaService {
             }
             emailPatchObjectMapBuilder.put(email.getId(), Patches.set("mailboxIds", mailboxIds));
         }
-        final ImmutableMap<String, Map<String, Object>> patches =
-                emailPatchObjectMapBuilder.build();
-        final boolean ifInState =
-                archive != null && additionIds.stream().noneMatch(id -> id.startsWith("#"));
+        final ImmutableMap<String, Map<String, Object>> patches = emailPatchObjectMapBuilder.build();
+        final boolean ifInState = archive != null && additionIds.stream().noneMatch(id -> id.startsWith("#"));
         return applyEmailPatches(patches, objectsState, ifInState, multiCall);
     }
 
-    public ListenableFuture<Boolean> moveToInbox(
-            final Collection<? extends IdentifiableEmailWithMailboxIds> emails) {
+    public ListenableFuture<Boolean> moveToInbox(final Collection<? extends IdentifiableEmailWithMailboxIds> emails) {
         return Futures.transformAsync(
                 getService(MailboxService.class).getMailboxes(),
                 mailboxes -> {
                     Preconditions.checkNotNull(
-                            mailboxes,
-                            "SpecialMailboxes collection must not be null but can be empty");
-                    final IdentifiableMailboxWithRole archive =
-                            MailboxUtil.find(mailboxes, Role.ARCHIVE);
-                    final IdentifiableMailboxWithRole trash =
-                            MailboxUtil.find(mailboxes, Role.TRASH);
-                    final IdentifiableMailboxWithRole inbox =
-                            MailboxUtil.find(mailboxes, Role.INBOX);
+                            mailboxes, "SpecialMailboxes collection must not be null but can be empty");
+                    final IdentifiableMailboxWithRole archive = MailboxUtil.find(mailboxes, Role.ARCHIVE);
+                    final IdentifiableMailboxWithRole trash = MailboxUtil.find(mailboxes, Role.TRASH);
+                    final IdentifiableMailboxWithRole inbox = MailboxUtil.find(mailboxes, Role.INBOX);
                     return ensureNoPreexistingMailbox(
                             inbox, Role.INBOX, () -> moveToInbox(emails, archive, trash, inbox));
                 },
@@ -855,22 +746,18 @@ public class EmailService extends AbstractMuaService {
             final IdentifiableMailboxWithRole trash,
             final IdentifiableMailboxWithRole inbox,
             final ObjectsState objectsState) {
-        Preconditions.checkNotNull(
-                emails, "emails can not be null when attempting to move them to inbox");
+        Preconditions.checkNotNull(emails, "emails can not be null when attempting to move them to inbox");
 
         final JmapClient.MultiCall multiCall = jmapClient.newMultiCall();
 
         final ListenableFuture<MethodResponses> mailboxCreateFuture;
         if (inbox == null) {
-            mailboxCreateFuture =
-                    getService(MailboxService.class)
-                            .createMailbox(Role.INBOX, objectsState, multiCall);
+            mailboxCreateFuture = getService(MailboxService.class).createMailbox(Role.INBOX, objectsState, multiCall);
         } else {
             mailboxCreateFuture = null;
         }
 
-        final ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder =
-                ImmutableMap.builder();
+        final ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder = ImmutableMap.builder();
         for (final IdentifiableEmailWithMailboxIds email : emails) {
             final Map<String, Boolean> mailboxIds = new HashMap<>(email.getMailboxIds());
             if (archive != null) {
@@ -885,12 +772,10 @@ public class EmailService extends AbstractMuaService {
                 mailboxIds.put(inbox.getId(), true);
             }
             if (!mailboxIds.equals(email.getMailboxIds())) {
-                emailPatchObjectMapBuilder.put(
-                        email.getId(), Patches.set("mailboxIds", mailboxIds));
+                emailPatchObjectMapBuilder.put(email.getId(), Patches.set("mailboxIds", mailboxIds));
             }
         }
-        final ImmutableMap<String, Map<String, Object>> patches =
-                emailPatchObjectMapBuilder.build();
+        final ImmutableMap<String, Map<String, Object>> patches = emailPatchObjectMapBuilder.build();
         if (patches.size() == 0) {
             return Futures.immediateFuture(false);
         }
@@ -913,25 +798,20 @@ public class EmailService extends AbstractMuaService {
                 MoreExecutors.directExecutor());
     }
 
-    public ListenableFuture<Boolean> archive(
-            final Collection<? extends IdentifiableEmailWithMailboxIds> emails) {
+    public ListenableFuture<Boolean> archive(final Collection<? extends IdentifiableEmailWithMailboxIds> emails) {
         return Futures.transformAsync(
                 getService(MailboxService.class).getMailboxes(),
                 mailboxes -> {
                     Preconditions.checkNotNull(
-                            mailboxes,
-                            "SpecialMailboxes collection must not be null but can be empty");
-                    final IdentifiableMailboxWithRole inbox =
-                            MailboxUtil.find(mailboxes, Role.INBOX);
+                            mailboxes, "SpecialMailboxes collection must not be null but can be empty");
+                    final IdentifiableMailboxWithRole inbox = MailboxUtil.find(mailboxes, Role.INBOX);
                     Preconditions.checkState(
                             inbox != null,
                             "Inbox mailbox not found. Calling archive (remove from inbox) on a"
                                     + " collection of emails even though there is no inbox does not"
                                     + " make sense");
-                    final IdentifiableMailboxWithRole archive =
-                            MailboxUtil.find(mailboxes, Role.ARCHIVE);
-                    return ensureNoPreexistingMailbox(
-                            archive, Role.ARCHIVE, () -> archive(emails, inbox, archive));
+                    final IdentifiableMailboxWithRole archive = MailboxUtil.find(mailboxes, Role.ARCHIVE);
+                    return ensureNoPreexistingMailbox(archive, Role.ARCHIVE, () -> archive(emails, inbox, archive));
                 },
                 MoreExecutors.directExecutor());
     }
@@ -951,22 +831,18 @@ public class EmailService extends AbstractMuaService {
             @NonNull final IdentifiableMailboxWithRole inbox,
             @Nullable final IdentifiableMailboxWithRole archive,
             final ObjectsState objectsState) {
-        Preconditions.checkNotNull(
-                emails, "emails can not be null when attempting to archive them");
+        Preconditions.checkNotNull(emails, "emails can not be null when attempting to archive them");
 
         final JmapClient.MultiCall multiCall = jmapClient.newMultiCall();
 
         final ListenableFuture<MethodResponses> mailboxCreateFuture;
         if (archive == null) {
-            mailboxCreateFuture =
-                    getService(MailboxService.class)
-                            .createMailbox(Role.ARCHIVE, objectsState, multiCall);
+            mailboxCreateFuture = getService(MailboxService.class).createMailbox(Role.ARCHIVE, objectsState, multiCall);
         } else {
             mailboxCreateFuture = null;
         }
 
-        ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder =
-                ImmutableMap.builder();
+        ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder = ImmutableMap.builder();
         for (IdentifiableEmailWithMailboxIds email : emails) {
             if (!email.getMailboxIds().containsKey(inbox.getId())) {
                 continue;
@@ -980,8 +856,7 @@ public class EmailService extends AbstractMuaService {
             }
             emailPatchObjectMapBuilder.put(email.getId(), Patches.set("mailboxIds", mailboxIds));
         }
-        final ImmutableMap<String, Map<String, Object>> patches =
-                emailPatchObjectMapBuilder.build();
+        final ImmutableMap<String, Map<String, Object>> patches = emailPatchObjectMapBuilder.build();
         if (patches.size() == 0) {
             return Futures.immediateFuture(false);
         }
@@ -1009,12 +884,10 @@ public class EmailService extends AbstractMuaService {
             @NonNull Mailbox mailbox,
             @Nullable final IdentifiableMailboxWithRole archive) {
         Preconditions.checkNotNull(
-                mailbox,
-                "Mailbox can not be null when attempting to remove it from a collection of emails");
+                mailbox, "Mailbox can not be null when attempting to remove it from a collection of emails");
         if (archive != null) {
             Preconditions.checkArgument(
-                    archive.getRole() == Role.ARCHIVE,
-                    "Supplied archive mailbox must have the role ARCHIVE");
+                    archive.getRole() == Role.ARCHIVE, "Supplied archive mailbox must have the role ARCHIVE");
         }
         return removeFromMailbox(emails, mailbox.getId(), archive);
     }
@@ -1034,21 +907,16 @@ public class EmailService extends AbstractMuaService {
             final String mailboxId,
             @Nullable final IdentifiableMailboxWithRole archive,
             final ObjectsState objectsState) {
-        Preconditions.checkNotNull(
-                emails, "emails can not be null when attempting to remove them from a mailbox");
-        Preconditions.checkNotNull(
-                mailboxId, "mailboxId can not be null when attempting to remove emails");
+        Preconditions.checkNotNull(emails, "emails can not be null when attempting to remove them from a mailbox");
+        Preconditions.checkNotNull(mailboxId, "mailboxId can not be null when attempting to remove emails");
         final JmapClient.MultiCall multiCall = jmapClient.newMultiCall();
         final ListenableFuture<MethodResponses> mailboxCreateFuture;
         if (archive == null) {
-            mailboxCreateFuture =
-                    getService(MailboxService.class)
-                            .createMailbox(Role.ARCHIVE, objectsState, multiCall);
+            mailboxCreateFuture = getService(MailboxService.class).createMailbox(Role.ARCHIVE, objectsState, multiCall);
         } else {
             mailboxCreateFuture = null;
         }
-        ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder =
-                ImmutableMap.builder();
+        ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder = ImmutableMap.builder();
         for (IdentifiableEmailWithMailboxIds email : emails) {
             if (!email.getMailboxIds().containsKey(mailboxId)) {
                 continue;
@@ -1064,8 +932,7 @@ public class EmailService extends AbstractMuaService {
             }
             emailPatchObjectMapBuilder.put(email.getId(), Patches.set("mailboxIds", mailboxIds));
         }
-        final ImmutableMap<String, Map<String, Object>> patches =
-                emailPatchObjectMapBuilder.build();
+        final ImmutableMap<String, Map<String, Object>> patches = emailPatchObjectMapBuilder.build();
         if (patches.size() == 0) {
             return Futures.immediateFuture(false);
         }
@@ -1089,33 +956,26 @@ public class EmailService extends AbstractMuaService {
     }
 
     public ListenableFuture<Boolean> removeFromMailbox(
-            final Collection<? extends IdentifiableEmailWithMailboxIds> emails,
-            final String mailboxId) {
+            final Collection<? extends IdentifiableEmailWithMailboxIds> emails, final String mailboxId) {
         return Futures.transformAsync(
                 getService(MailboxService.class).getMailboxes(),
                 mailboxes -> {
                     Preconditions.checkNotNull(
-                            mailboxes,
-                            "SpecialMailboxes collection must not be null but can be empty");
-                    final IdentifiableMailboxWithRole archive =
-                            MailboxUtil.find(mailboxes, Role.ARCHIVE);
+                            mailboxes, "SpecialMailboxes collection must not be null but can be empty");
+                    final IdentifiableMailboxWithRole archive = MailboxUtil.find(mailboxes, Role.ARCHIVE);
                     return removeFromMailbox(emails, mailboxId, archive);
                 },
                 MoreExecutors.directExecutor());
     }
 
-    public ListenableFuture<Boolean> moveToTrash(
-            final Collection<? extends IdentifiableEmailWithMailboxIds> emails) {
+    public ListenableFuture<Boolean> moveToTrash(final Collection<? extends IdentifiableEmailWithMailboxIds> emails) {
         return Futures.transformAsync(
                 getService(MailboxService.class).getMailboxes(),
                 mailboxes -> {
                     Preconditions.checkNotNull(
-                            mailboxes,
-                            "SpecialMailboxes collection must not be null but can be empty");
-                    final IdentifiableMailboxWithRole trash =
-                            MailboxUtil.find(mailboxes, Role.TRASH);
-                    return ensureNoPreexistingMailbox(
-                            trash, Role.TRASH, () -> moveToTrash(emails, trash));
+                            mailboxes, "SpecialMailboxes collection must not be null but can be empty");
+                    final IdentifiableMailboxWithRole trash = MailboxUtil.find(mailboxes, Role.TRASH);
+                    return ensureNoPreexistingMailbox(trash, Role.TRASH, () -> moveToTrash(emails, trash));
                 },
                 MoreExecutors.directExecutor());
     }
@@ -1136,14 +996,11 @@ public class EmailService extends AbstractMuaService {
         final JmapClient.MultiCall multiCall = jmapClient.newMultiCall();
         final ListenableFuture<MethodResponses> mailboxCreateFuture;
         if (trash == null) {
-            mailboxCreateFuture =
-                    getService(MailboxService.class)
-                            .createMailbox(Role.TRASH, objectsState, multiCall);
+            mailboxCreateFuture = getService(MailboxService.class).createMailbox(Role.TRASH, objectsState, multiCall);
         } else {
             mailboxCreateFuture = null;
         }
-        ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder =
-                ImmutableMap.builder();
+        ImmutableMap.Builder<String, Map<String, Object>> emailPatchObjectMapBuilder = ImmutableMap.builder();
         for (IdentifiableEmailWithMailboxIds email : emails) {
             if (trash != null
                     && email.getMailboxIds().size() == 1
@@ -1152,16 +1009,13 @@ public class EmailService extends AbstractMuaService {
             }
             Patches.Builder patchesBuilder = Patches.builder();
             if (trash == null) {
-                patchesBuilder.set(
-                        "mailboxIds",
-                        ImmutableMap.of(CreateUtil.createIdReference(Role.TRASH), true));
+                patchesBuilder.set("mailboxIds", ImmutableMap.of(CreateUtil.createIdReference(Role.TRASH), true));
             } else {
                 patchesBuilder.set("mailboxIds", ImmutableMap.of(trash.getId(), true));
             }
             emailPatchObjectMapBuilder.put(email.getId(), patchesBuilder.build());
         }
-        final ImmutableMap<String, Map<String, Object>> patches =
-                emailPatchObjectMapBuilder.build();
+        final ImmutableMap<String, Map<String, Object>> patches = emailPatchObjectMapBuilder.build();
         if (patches.size() == 0) {
             return Futures.immediateFuture(false);
         }
@@ -1186,13 +1040,10 @@ public class EmailService extends AbstractMuaService {
                 getService(MailboxService.class).getMailboxes(),
                 mailboxes -> {
                     Preconditions.checkNotNull(
-                            mailboxes,
-                            "SpecialMailboxes collection must not be null but can be empty");
-                    final IdentifiableMailboxWithRole trash =
-                            MailboxUtil.find(mailboxes, Role.TRASH);
+                            mailboxes, "SpecialMailboxes collection must not be null but can be empty");
+                    final IdentifiableMailboxWithRole trash = MailboxUtil.find(mailboxes, Role.TRASH);
                     if (trash == null) {
-                        return Futures.immediateFailedFuture(
-                                new IllegalStateException("No mailbox with trash role"));
+                        return Futures.immediateFailedFuture(new IllegalStateException("No mailbox with trash role"));
                     }
                     return emptyTrash(trash);
                 },
@@ -1203,20 +1054,16 @@ public class EmailService extends AbstractMuaService {
         final JmapClient.MultiCall multiCall = jmapClient.newMultiCall();
         final EmailFilterCondition filter =
                 EmailFilterCondition.builder().inMailbox(trash.getId()).build();
-        final JmapRequest.Call queryCall =
-                multiCall.call(
-                        QueryEmailMethodCall.builder().accountId(accountId).filter(filter).build());
-        final ListenableFuture<MethodResponses> setFuture =
-                multiCall
-                        .call(
-                                SetEmailMethodCall.builder()
-                                        .accountId(accountId)
-                                        .destroyReference(
-                                                queryCall.createResultReference(
-                                                        Request.Invocation.ResultReference.Path
-                                                                .IDS))
-                                        .build())
-                        .getMethodResponses();
+        final JmapRequest.Call queryCall = multiCall.call(QueryEmailMethodCall.builder()
+                .accountId(accountId)
+                .filter(filter)
+                .build());
+        final ListenableFuture<MethodResponses> setFuture = multiCall
+                .call(SetEmailMethodCall.builder()
+                        .accountId(accountId)
+                        .destroyReference(queryCall.createResultReference(Request.Invocation.ResultReference.Path.IDS))
+                        .build())
+                .getMethodResponses();
         multiCall.execute();
         return Futures.transformAsync(
                 setFuture,

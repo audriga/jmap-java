@@ -25,8 +25,7 @@ import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
 import rs.ltt.jmap.common.entity.filter.Filter;
 import rs.ltt.jmap.common.util.Mapper;
 
-public class FilterSerializer
-        implements JsonSerializer<Filter<? extends AbstractIdentifiableEntity>> {
+public class FilterSerializer implements JsonSerializer<Filter<? extends AbstractIdentifiableEntity>> {
 
     public static void register(final GsonBuilder builder) {
         for (final Type type : Mapper.TYPE_TO_ENTITY_CLASS.keySet()) {
@@ -36,9 +35,7 @@ public class FilterSerializer
 
     @Override
     public JsonElement serialize(
-            Filter<? extends AbstractIdentifiableEntity> filter,
-            Type type,
-            JsonSerializationContext context) {
+            Filter<? extends AbstractIdentifiableEntity> filter, Type type, JsonSerializationContext context) {
         return context.serialize(filter);
     }
 }

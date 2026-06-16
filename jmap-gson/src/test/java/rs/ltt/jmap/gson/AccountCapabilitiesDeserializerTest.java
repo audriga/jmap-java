@@ -13,8 +13,7 @@ import rs.ltt.jmap.common.entity.capability.VacationResponseAccountCapability;
 
 public class AccountCapabilitiesDeserializerTest extends AbstractGsonTest {
     private static final Type TYPE =
-            new TypeToken<
-                    Map<Class<? extends AccountCapability>, AccountCapability>>() {}.getType();
+            new TypeToken<Map<Class<? extends AccountCapability>, AccountCapability>>() {}.getType();
 
     @Test
     public void mailAccountCapability() throws Exception {
@@ -29,8 +28,7 @@ public class AccountCapabilitiesDeserializerTest extends AbstractGsonTest {
         assertEquals(Long.valueOf(10), mailAccountCapability.getMaxMailboxDepth());
         assertEquals(200, mailAccountCapability.maxSizeMailboxName());
         assertEquals(50_000_000, mailAccountCapability.maxSizeAttachmentsPerEmail());
-        assertArrayEquals(
-                new String[] {"receivedAt"}, mailAccountCapability.getEmailQuerySortOptions());
+        assertArrayEquals(new String[] {"receivedAt"}, mailAccountCapability.getEmailQuerySortOptions());
         assertTrue(mailAccountCapability.mayCreateTopLevelMailbox());
     }
 
@@ -40,14 +38,11 @@ public class AccountCapabilitiesDeserializerTest extends AbstractGsonTest {
                 parseFromResource("account-capability/submission.json", TYPE);
 
         assertTrue(accountCapabilities.containsKey(SubmissionAccountCapability.class));
-        AccountCapability accountCapability =
-                accountCapabilities.get(SubmissionAccountCapability.class);
+        AccountCapability accountCapability = accountCapabilities.get(SubmissionAccountCapability.class);
         assertEquals(SubmissionAccountCapability.class, accountCapability.getClass());
-        SubmissionAccountCapability submissionAccountCapability =
-                (SubmissionAccountCapability) accountCapability;
+        SubmissionAccountCapability submissionAccountCapability = (SubmissionAccountCapability) accountCapability;
         assertEquals(0, submissionAccountCapability.maxDelayedSend());
-        Map<String, String[]> submissionExtensions =
-                submissionAccountCapability.getSubmissionExtensions();
+        Map<String, String[]> submissionExtensions = submissionAccountCapability.getSubmissionExtensions();
         assertEquals(1, submissionExtensions.size());
         assertTrue(submissionExtensions.containsKey("SIZE"));
         String[] sizeExtensionArguments = submissionExtensions.get("SIZE");

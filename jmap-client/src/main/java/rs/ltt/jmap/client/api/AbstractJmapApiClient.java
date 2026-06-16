@@ -40,8 +40,7 @@ public abstract class AbstractJmapApiClient implements JmapApiClient {
         this.sessionStateListener = sessionStateListener;
     }
 
-    protected void processResponse(
-            final JmapRequest jmapRequest, final GenericResponse genericResponse) {
+    protected void processResponse(final JmapRequest jmapRequest, final GenericResponse genericResponse) {
         if (genericResponse instanceof ErrorResponse) {
             jmapRequest.setException(new ErrorResponseException((ErrorResponse) genericResponse));
         } else if (genericResponse instanceof Response) {
@@ -57,8 +56,7 @@ public abstract class AbstractJmapApiClient implements JmapApiClient {
             // re-fetching the session resource.
             onSessionStateRetrieved(response.getSessionState());
 
-            for (Map.Entry<Request.Invocation, SettableFuture<MethodResponses>> entry :
-                    map.entrySet()) {
+            for (Map.Entry<Request.Invocation, SettableFuture<MethodResponses>> entry : map.entrySet()) {
                 final Request.Invocation invocation = entry.getKey();
                 final SettableFuture<MethodResponses> future = entry.getValue();
                 final MethodResponses methodResponses = responseAnalyzer.find(invocation);
@@ -68,20 +66,16 @@ public abstract class AbstractJmapApiClient implements JmapApiClient {
                 }
                 final MethodResponse main = methodResponses.getMain();
                 if (main instanceof MethodErrorResponse) {
-                    future.setException(
-                            new MethodErrorResponseException(
-                                    (MethodErrorResponse) main,
-                                    methodResponses.getAdditional(),
-                                    invocation.getMethodCall()));
+                    future.setException(new MethodErrorResponseException(
+                            (MethodErrorResponse) main, methodResponses.getAdditional(), invocation.getMethodCall()));
                 } else {
                     future.set(methodResponses);
                 }
             }
         } else {
-            throw new IllegalArgumentException(
-                    String.format(
-                            "Unable to process response of type %s",
-                            genericResponse.getClass().getName()));
+            throw new IllegalArgumentException(String.format(
+                    "Unable to process response of type %s",
+                    genericResponse.getClass().getName()));
         }
     }
 

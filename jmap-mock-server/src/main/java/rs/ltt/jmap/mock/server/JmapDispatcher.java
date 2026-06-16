@@ -79,79 +79,69 @@ public abstract class JmapDispatcher extends Dispatcher {
     protected final Map<String, byte[]> inMemoryAttachments = new HashMap<>();
     private int sessionState = 0;
     private FailureTrigger failureTrigger = FailureTrigger.NONE;
-    private final WebSocketListener webSocketListener =
-            new WebSocketListener() {
-                @Override
-                public void onClosed(
-                        @NotNull WebSocket webSocket, int code, @NotNull String reason) {
-                    super.onClosed(webSocket, code, reason);
-                }
+    private final WebSocketListener webSocketListener = new WebSocketListener() {
+        @Override
+        public void onClosed(@NotNull WebSocket webSocket, int code, @NotNull String reason) {
+            super.onClosed(webSocket, code, reason);
+        }
 
-                @Override
-                public void onClosing(
-                        @NotNull WebSocket webSocket, int code, @NotNull String reason) {
-                    super.onClosing(webSocket, code, reason);
-                    System.out.println("MockServer received code " + code);
-                }
+        @Override
+        public void onClosing(@NotNull WebSocket webSocket, int code, @NotNull String reason) {
+            super.onClosing(webSocket, code, reason);
+            System.out.println("MockServer received code " + code);
+        }
 
-                @Override
-                public void onFailure(
-                        @NotNull WebSocket webSocket,
-                        @NotNull Throwable t,
-                        @Nullable okhttp3.Response response) {
-                    super.onFailure(webSocket, t, response);
-                }
+        @Override
+        public void onFailure(@NotNull WebSocket webSocket, @NotNull Throwable t, @Nullable okhttp3.Response response) {
+            super.onFailure(webSocket, t, response);
+        }
 
-                @Override
-                public void onMessage(@NotNull WebSocket webSocket, @NotNull String text) {
-                    super.onMessage(webSocket, text);
-                    if (failureTrigger == FailureTrigger.CLOSE) {
-                        webSocket.close(1000, null);
-                        return;
-                    }
-                    if (failureTrigger == FailureTrigger.IGNORE) {
-                        return;
-                    }
-                    if (failureTrigger == FailureTrigger.INVALID) {
-                        webSocket.send("[]");
-                        return;
-                    }
-                    final WebSocketMessage webSocketMessage =
-                            GSON.fromJson(text, WebSocketMessage.class);
-                    if (webSocketMessage instanceof RequestWebSocketMessage) {
-                        final AbstractApiWebSocketMessage response =
-                                dispatch(((RequestWebSocketMessage) webSocketMessage));
-                        webSocket.send(GSON.toJson(response));
-                        return;
-                    }
-                    if (webSocketMessage instanceof PushEnableWebSocketMessage) {
-                        if (pushEnabledWebSockets.contains(webSocket)) {
-                            System.out.println("skip adding socket");
-                            return;
-                        }
-                        pushEnabledWebSockets.add(webSocket);
-                        System.out.println(
-                                "added socket for a total of " + pushEnabledWebSockets.size());
-                        return;
-                    }
-                    if (webSocketMessage instanceof PushDisableWebSocketMessage) {
-                        pushEnabledWebSockets.remove(webSocket);
-                        return;
-                    }
-                    // TODO support Push enable / push disable
+        @Override
+        public void onMessage(@NotNull WebSocket webSocket, @NotNull String text) {
+            super.onMessage(webSocket, text);
+            if (failureTrigger == FailureTrigger.CLOSE) {
+                webSocket.close(1000, null);
+                return;
+            }
+            if (failureTrigger == FailureTrigger.IGNORE) {
+                return;
+            }
+            if (failureTrigger == FailureTrigger.INVALID) {
+                webSocket.send("[]");
+                return;
+            }
+            final WebSocketMessage webSocketMessage = GSON.fromJson(text, WebSocketMessage.class);
+            if (webSocketMessage instanceof RequestWebSocketMessage) {
+                final AbstractApiWebSocketMessage response = dispatch(((RequestWebSocketMessage) webSocketMessage));
+                webSocket.send(GSON.toJson(response));
+                return;
+            }
+            if (webSocketMessage instanceof PushEnableWebSocketMessage) {
+                if (pushEnabledWebSockets.contains(webSocket)) {
+                    System.out.println("skip adding socket");
+                    return;
                 }
+                pushEnabledWebSockets.add(webSocket);
+                System.out.println("added socket for a total of " + pushEnabledWebSockets.size());
+                return;
+            }
+            if (webSocketMessage instanceof PushDisableWebSocketMessage) {
+                pushEnabledWebSockets.remove(webSocket);
+                return;
+            }
+            // TODO support Push enable / push disable
+        }
 
-                @Override
-                public void onMessage(@NotNull WebSocket webSocket, @NotNull ByteString bytes) {
-                    super.onMessage(webSocket, bytes);
-                }
+        @Override
+        public void onMessage(@NotNull WebSocket webSocket, @NotNull ByteString bytes) {
+            super.onMessage(webSocket, bytes);
+        }
 
-                @Override
-                public void onOpen(
-                        @NotNull WebSocket webSocket, @NotNull okhttp3.Response response) {
-                    super.onOpen(webSocket, response);
-                }
-            };
+        @Override
+        public void onOpen(@NotNull WebSocket webSocket, @NotNull okhttp3.Response response) {
+            super.onOpen(webSocket, response);
+        }
+    };
     private boolean advertiseWebSocket = true;
     private long maxObjectsInGet = 4096;
 
@@ -207,13 +197,12 @@ public abstract class JmapDispatcher extends Dispatcher {
             final byte[] blob = request.getBody().readByteArray();
             final String blobId = Hashing.sha256().hashBytes(blob).toString();
             this.inMemoryAttachments.put(blobId, blob);
-            final Upload upload =
-                    Upload.builder()
-                            .size(size)
-                            .accountId(getAccountId())
-                            .blobId(blobId)
-                            .type(contentType)
-                            .build();
+            final Upload upload = Upload.builder()
+                    .size(size)
+                    .accountId(getAccountId())
+                    .blobId(blobId)
+                    .type(contentType)
+                    .build();
             return new MockResponse().setResponseCode(200).setBody(GSON.toJson(upload));
         } else {
             return new MockResponse().setResponseCode(404);
@@ -280,8 +269,7 @@ public abstract class JmapDispatcher extends Dispatcher {
     }
 
     private MockResponse session() {
-        ImmutableMap.Builder<Class<? extends Capability>, Capability> capabilityBuilder =
-                ImmutableMap.builder();
+        ImmutableMap.Builder<Class<? extends Capability>, Capability> capabilityBuilder = ImmutableMap.builder();
         capabilityBuilder.put(
                 CoreCapability.class,
                 CoreCapability.builder()
@@ -291,30 +279,30 @@ public abstract class JmapDispatcher extends Dispatcher {
         if (this.advertiseWebSocket) {
             capabilityBuilder.put(
                     WebSocketCapability.class,
-                    WebSocketCapability.builder().url(WEB_SOCKET_PATH).supportsPush(true).build());
+                    WebSocketCapability.builder()
+                            .url(WEB_SOCKET_PATH)
+                            .supportsPush(true)
+                            .build());
         }
         final String id = getAccountId();
-        final SessionResource sessionResource =
-                SessionResource.builder()
-                        .apiUrl(API_PATH)
-                        .uploadUrl(UPLOAD_PATH)
-                        .downloadUrl(DOWNLOAD_PATH + "?blobId={blobId}")
-                        .state(getSessionState())
-                        .account(
-                                id,
-                                Account.builder()
-                                        .accountCapabilities(
-                                                ImmutableMap.of(
-                                                        MailAccountCapability.class,
-                                                        MailAccountCapability.builder()
-                                                                .maxSizeAttachmentsPerEmail(
-                                                                        50 * 1024 * 1024L) // 50MiB
-                                                                .build()))
-                                        .name(account.getEmail())
-                                        .build())
-                        .capabilities(capabilityBuilder.build())
-                        .primaryAccounts(ImmutableMap.of(MailAccountCapability.class, id))
-                        .build();
+        final SessionResource sessionResource = SessionResource.builder()
+                .apiUrl(API_PATH)
+                .uploadUrl(UPLOAD_PATH)
+                .downloadUrl(DOWNLOAD_PATH + "?blobId={blobId}")
+                .state(getSessionState())
+                .account(
+                        id,
+                        Account.builder()
+                                .accountCapabilities(ImmutableMap.of(
+                                        MailAccountCapability.class,
+                                        MailAccountCapability.builder()
+                                                .maxSizeAttachmentsPerEmail(50 * 1024 * 1024L) // 50MiB
+                                                .build()))
+                                .name(account.getEmail())
+                                .build())
+                .capabilities(capabilityBuilder.build())
+                .primaryAccounts(ImmutableMap.of(MailAccountCapability.class, id))
+                .build();
 
         return new MockResponse().setBody(GSON.toJson(sessionResource));
     }
@@ -329,14 +317,10 @@ public abstract class JmapDispatcher extends Dispatcher {
 
     private MockResponse request(final RecordedRequest request) {
         final String contentType = Strings.nullToEmpty(request.getHeader("Content-Type"));
-        if (!"application/json"
-                .equals(Iterables.getFirst(Splitter.on(';').split(contentType), null))) {
+        if (!"application/json".equals(Iterables.getFirst(Splitter.on(';').split(contentType), null))) {
             return new MockResponse()
                     .setResponseCode(400)
-                    .setBody(
-                            GSON.toJson(
-                                    new ErrorResponse(
-                                            ErrorType.NOT_JSON, 400, "Unsupported content type")));
+                    .setBody(GSON.toJson(new ErrorResponse(ErrorType.NOT_JSON, 400, "Unsupported content type")));
         }
         final Request jmapRequest;
         try {
@@ -344,9 +328,7 @@ public abstract class JmapDispatcher extends Dispatcher {
         } catch (final JsonParseException e) {
             return new MockResponse()
                     .setResponseCode(400)
-                    .setBody(
-                            GSON.toJson(
-                                    new ErrorResponse(ErrorType.NOT_JSON, 400, e.getMessage())));
+                    .setBody(GSON.toJson(new ErrorResponse(ErrorType.NOT_JSON, 400, e.getMessage())));
         }
         final GenericResponse response = dispatch(jmapRequest);
         if (response instanceof ErrorResponse) {
@@ -365,18 +347,15 @@ public abstract class JmapDispatcher extends Dispatcher {
         for (final Request.Invocation invocation : methodCalls) {
             final String id = invocation.getId();
             final MethodCall methodCall = invocation.getMethodCall();
-            for (MethodResponse methodResponse :
-                    dispatch(methodCall, ImmutableListMultimap.copyOf(response))) {
+            for (MethodResponse methodResponse : dispatch(methodCall, ImmutableListMultimap.copyOf(response))) {
                 response.put(id, new Response.Invocation(methodResponse, id));
             }
         }
-        return new Response(
-                response.values().toArray(new Response.Invocation[0]), getSessionState());
+        return new Response(response.values().toArray(new Response.Invocation[0]), getSessionState());
     }
 
     protected abstract MethodResponse[] dispatch(
-            final MethodCall methodCall,
-            final ListMultimap<String, Response.Invocation> previousResponses);
+            final MethodCall methodCall, final ListMultimap<String, Response.Invocation> previousResponses);
 
     private MockResponse dispatchJmapWebSocket(final RecordedRequest request) {
         final String authorization = request.getHeader("Authorization");

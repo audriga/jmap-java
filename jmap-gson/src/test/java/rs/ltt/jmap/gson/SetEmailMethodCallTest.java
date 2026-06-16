@@ -17,18 +17,13 @@ public class SetEmailMethodCallTest extends AbstractGsonTest {
         GsonBuilder builder = new GsonBuilder();
         JmapAdapters.register(builder);
         Gson gson = builder.create();
-        Request request =
-                new Request.Builder()
-                        .call(
-                                SetEmailMethodCall.builder()
-                                        .accountId("accountId")
-                                        .ifInState("state")
-                                        .update(
-                                                ImmutableMap.of(
-                                                        "M123", Patches.remove("keywords/$seen")))
-                                        .build())
-                        .build();
-        Assertions.assertEquals(
-                readResourceAsString("request/set-email.json"), gson.toJson(request));
+        Request request = new Request.Builder()
+                .call(SetEmailMethodCall.builder()
+                        .accountId("accountId")
+                        .ifInState("state")
+                        .update(ImmutableMap.of("M123", Patches.remove("keywords/$seen")))
+                        .build())
+                .build();
+        Assertions.assertEquals(readResourceAsString("request/set-email.json"), gson.toJson(request));
     }
 }

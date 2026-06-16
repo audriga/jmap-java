@@ -42,8 +42,7 @@ public class InMemorySessionCache implements SessionCache {
     }
 
     private static String getKey(final String username, final HttpUrl sessionResource) {
-        final String name =
-                username + ':' + (sessionResource == null ? '\00' : sessionResource.toString());
+        final String name = username + ':' + (sessionResource == null ? '\00' : sessionResource.toString());
         return Hashing.sha256().hashString(name, StandardCharsets.UTF_8).toString();
     }
 }

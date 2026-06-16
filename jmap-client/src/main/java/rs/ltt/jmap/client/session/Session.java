@@ -46,9 +46,7 @@ public class Session {
         final HttpUrl.Builder builder = base.newBuilder(apiUrl);
         Preconditions.checkState(
                 builder != null,
-                String.format(
-                        "Unable to assemble final API Url from base=%s and apiUrl=%s",
-                        base, apiUrl));
+                String.format("Unable to assemble final API Url from base=%s and apiUrl=%s", base, apiUrl));
         return builder.build();
     }
 
@@ -57,71 +55,54 @@ public class Session {
     }
 
     public HttpUrl getDownloadUrl(final String accountId, final Downloadable downloadable) {
-        return getDownloadUrl(
-                accountId,
-                downloadable.getBlobId(),
-                downloadable.getName(),
-                downloadable.getType());
+        return getDownloadUrl(accountId, downloadable.getBlobId(), downloadable.getName(), downloadable.getType());
     }
 
     public HttpUrl getDownloadUrl(String accountId, String blobId, String name, String type) {
         final String downloadUrl = sessionResource.getDownloadUrl();
-        Preconditions.checkState(
-                downloadUrl != null, "Session Resource did not contain a download Url");
-        final UriTemplate uriTemplate =
-                UriTemplate.fromTemplate(downloadUrl)
-                        .set("accountId", accountId)
-                        .set("name", name)
-                        .set("blobId", blobId)
-                        .set("type", type);
+        Preconditions.checkState(downloadUrl != null, "Session Resource did not contain a download Url");
+        final UriTemplate uriTemplate = UriTemplate.fromTemplate(downloadUrl)
+                .set("accountId", accountId)
+                .set("name", name)
+                .set("blobId", blobId)
+                .set("type", type);
         final HttpUrl.Builder builder = base.newBuilder(uriTemplate.expand());
         Preconditions.checkState(
                 builder != null,
                 String.format(
-                        "Unable to assemble final download Url from base=%s and downloadUrl=%s",
-                        base, downloadUrl));
+                        "Unable to assemble final download Url from base=%s and downloadUrl=%s", base, downloadUrl));
         return builder.build();
     }
 
     public HttpUrl getEventSourceUrl(
-            Collection<Class<? extends AbstractIdentifiableEntity>> types,
-            CloseAfter closeAfter,
-            Long ping) {
+            Collection<Class<? extends AbstractIdentifiableEntity>> types, CloseAfter closeAfter, Long ping) {
         final String eventSourceUrl = sessionResource.getEventSourceUrl();
-        Preconditions.checkState(
-                eventSourceUrl != null, "Session Resource did not contain an event source Url");
-        final UriTemplate uriTemplate =
-                UriTemplate.fromTemplate(eventSourceUrl)
-                        .set("closeafter", closeAfter.toString().toLowerCase(Locale.US))
-                        .set("ping", ping);
+        Preconditions.checkState(eventSourceUrl != null, "Session Resource did not contain an event source Url");
+        final UriTemplate uriTemplate = UriTemplate.fromTemplate(eventSourceUrl)
+                .set("closeafter", closeAfter.toString().toLowerCase(Locale.US))
+                .set("ping", ping);
         if (types.size() == 0) {
             uriTemplate.set("types", "*");
         } else {
-            uriTemplate.set(
-                    "types", types.stream().map(Class::getSimpleName).toArray(String[]::new));
+            uriTemplate.set("types", types.stream().map(Class::getSimpleName).toArray(String[]::new));
         }
         final HttpUrl.Builder builder = base.newBuilder(uriTemplate.expand());
         Preconditions.checkState(
                 builder != null,
                 String.format(
-                        "Unable to assemble final eventSource Url from base=%s and"
-                                + " eventSourceUrl=%s",
+                        "Unable to assemble final eventSource Url from base=%s and" + " eventSourceUrl=%s",
                         base, eventSourceUrl));
         return builder.build();
     }
 
     public HttpUrl getUploadUrl(String accountId) {
         final String uploadUrl = sessionResource.getUploadUrl();
-        Preconditions.checkState(
-                uploadUrl != null, "Session Resource did not contain an upload Url");
-        final UriTemplate uriTemplate =
-                UriTemplate.fromTemplate(uploadUrl).set("accountId", accountId);
+        Preconditions.checkState(uploadUrl != null, "Session Resource did not contain an upload Url");
+        final UriTemplate uriTemplate = UriTemplate.fromTemplate(uploadUrl).set("accountId", accountId);
         final HttpUrl.Builder builder = base.newBuilder(uriTemplate.expand());
         Preconditions.checkState(
                 builder != null,
-                String.format(
-                        "Unable to assemble final upload Url from base=%s and uploadUrl=%s",
-                        base, uploadUrl));
+                String.format("Unable to assemble final upload Url from base=%s and uploadUrl=%s", base, uploadUrl));
         return builder.build();
     }
 
@@ -143,8 +124,7 @@ public class Session {
         return sessionResource.getCapability(clazz);
     }
 
-    public <T extends AccountCapability> T getAccountCapability(
-            final String accountId, final Class<T> clazz) {
+    public <T extends AccountCapability> T getAccountCapability(final String accountId, final Class<T> clazz) {
         final Account account = sessionResource.getAccounts().get(accountId);
         return account == null ? null : account.getCapability(clazz);
     }

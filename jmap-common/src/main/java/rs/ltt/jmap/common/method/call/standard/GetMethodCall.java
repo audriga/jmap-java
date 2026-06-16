@@ -41,8 +41,7 @@ public abstract class GetMethodCall<T extends AbstractIdentifiableEntity> implem
             String[] ids,
             String[] properties,
             Request.Invocation.ResultReference idsReference) {
-        Preconditions.checkArgument(
-                ids == null || idsReference == null, "Can't set both 'ids' and 'idsReference'");
+        Preconditions.checkArgument(ids == null || idsReference == null, "Can't set both 'ids' and 'idsReference'");
         this.accountId = accountId;
         this.ids = ids;
         this.properties = properties;

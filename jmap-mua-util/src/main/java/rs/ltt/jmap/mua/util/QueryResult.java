@@ -68,8 +68,7 @@ public class QueryResult {
                 methodResponses -> {
                     Preconditions.checkState(
                             methodResponses != null && methodResponses.size() == 2,
-                            "Unable to create QueryResult. Invalid number of input method"
-                                    + " responses");
+                            "Unable to create QueryResult. Invalid number of input method" + " responses");
                     final QueryEmailMethodResponse queryResponse =
                             methodResponses.get(0).getMain(QueryEmailMethodResponse.class);
                     final GetEmailMethodResponse getThreadIdsResponse =
@@ -81,8 +80,7 @@ public class QueryResult {
     }
 
     public static QueryResult of(
-            QueryEmailMethodResponse queryEmailMethodResponse,
-            GetEmailMethodResponse emailMethodResponse) {
+            QueryEmailMethodResponse queryEmailMethodResponse, GetEmailMethodResponse emailMethodResponse) {
         final String[] emailIds = queryEmailMethodResponse.getIds();
         final QueryResultItem[] resultItems = new QueryResultItem[emailIds.length];
         final ImmutableMap<String, String> emailIdToThreadIdMap = map(emailMethodResponse);
@@ -110,16 +108,13 @@ public class QueryResult {
     public static List<AddedItem<QueryResultItem>> of(
             QueryChangesEmailMethodResponse queryChangesEmailMethodResponse,
             GetEmailMethodResponse emailMethodResponse) {
-        final List<AddedItem<String>> addedEmailIdItems =
-                nullToEmpty(queryChangesEmailMethodResponse.getAdded());
+        final List<AddedItem<String>> addedEmailIdItems = nullToEmpty(queryChangesEmailMethodResponse.getAdded());
         ImmutableList.Builder<AddedItem<QueryResultItem>> builder = new ImmutableList.Builder<>();
         final ImmutableMap<String, String> emailIdToThreadIdMap = map(emailMethodResponse);
         for (AddedItem<String> addedItem : addedEmailIdItems) {
             String emailId = addedItem.getItem();
             builder.add(
-                    AddedItem.of(
-                            QueryResultItem.of(emailId, emailIdToThreadIdMap.get(emailId)),
-                            addedItem.getIndex()));
+                    AddedItem.of(QueryResultItem.of(emailId, emailIdToThreadIdMap.get(emailId)), addedItem.getIndex()));
         }
         return builder.build();
     }

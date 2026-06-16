@@ -49,15 +49,11 @@ public final class AttachmentUtil {
     }
 
     public static void verifyAttachmentsDoNotExceedLimit(
-            final Session session,
-            final String account,
-            final Collection<? extends Attachment> attachments) {
+            final Session session, final String account, final Collection<? extends Attachment> attachments) {
         final long combinedAttachmentSize =
                 attachments.stream().map(a -> Math.max(0, a.getSize())).reduce(0L, Long::sum);
-        final MailAccountCapability capability =
-                session.getAccountCapability(account, MailAccountCapability.class);
-        final Long maxSizeAttachments =
-                capability == null ? null : capability.getMaxSizeAttachmentsPerEmail();
+        final MailAccountCapability capability = session.getAccountCapability(account, MailAccountCapability.class);
+        final Long maxSizeAttachments = capability == null ? null : capability.getMaxSizeAttachmentsPerEmail();
         if (maxSizeAttachments != null && combinedAttachmentSize > maxSizeAttachments) {
             throw new CombinedAttachmentSizeExceedsLimitException(maxSizeAttachments);
         }

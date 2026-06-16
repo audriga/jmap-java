@@ -43,17 +43,16 @@ public abstract class MuaSession implements Closeable {
         this.jmapClient = jmapClient;
         this.cache = cache;
         this.accountId = accountId;
-        this.services =
-                ImmutableClassToInstanceMap.<AbstractMuaService>builder()
-                        .put(BinaryService.class, new BinaryService(this))
-                        .put(EmailService.class, new EmailService(this))
-                        .put(IdentityService.class, new IdentityService(this))
-                        .put(MailboxService.class, new MailboxService(this))
-                        .put(PluginService.class, new PluginService(this, plugins))
-                        .put(QueryService.class, new QueryService(this))
-                        .put(RefreshService.class, new RefreshService(this))
-                        .put(ThreadService.class, new ThreadService(this))
-                        .build();
+        this.services = ImmutableClassToInstanceMap.<AbstractMuaService>builder()
+                .put(BinaryService.class, new BinaryService(this))
+                .put(EmailService.class, new EmailService(this))
+                .put(IdentityService.class, new IdentityService(this))
+                .put(MailboxService.class, new MailboxService(this))
+                .put(PluginService.class, new PluginService(this, plugins))
+                .put(QueryService.class, new QueryService(this))
+                .put(RefreshService.class, new RefreshService(this))
+                .put(ThreadService.class, new ThreadService(this))
+                .build();
     }
 
     protected <T extends AbstractMuaService> T getService(Class<T> clazz) {

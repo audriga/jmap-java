@@ -31,8 +31,7 @@ public class StateChange implements PushMessage {
 
     @Builder
     public StateChange(
-            @Singular("changed")
-                    Map<String, Map<Class<? extends AbstractIdentifiableEntity>, String>> changed) {
+            @Singular("changed") Map<String, Map<Class<? extends AbstractIdentifiableEntity>, String>> changed) {
         this.changed = changed;
     }
 

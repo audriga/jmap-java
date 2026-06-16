@@ -39,21 +39,18 @@ public class SetEmailSubmissionMethodCallTest extends AbstractGsonTest {
         final Patches.Builder patchesBuilder = Patches.builder();
         patchesBuilder.remove("keywords/" + Keyword.DRAFT);
         patchesBuilder.set("mailboxIds/MB3", true);
-        SetEmailSubmissionMethodCall submissionCall =
-                SetEmailSubmissionMethodCall.builder()
-                        .accountId("accountId")
-                        .create(
-                                ImmutableMap.of(
-                                        "es0",
-                                        EmailSubmission.builder()
-                                                .emailId("M1234")
-                                                .identityId("I0")
-                                                .build()))
-                        .onSuccessUpdateEmail(ImmutableMap.of("#es0", patchesBuilder.build()))
-                        .build();
+        SetEmailSubmissionMethodCall submissionCall = SetEmailSubmissionMethodCall.builder()
+                .accountId("accountId")
+                .create(ImmutableMap.of(
+                        "es0",
+                        EmailSubmission.builder()
+                                .emailId("M1234")
+                                .identityId("I0")
+                                .build()))
+                .onSuccessUpdateEmail(ImmutableMap.of("#es0", patchesBuilder.build()))
+                .build();
         Request request = new Request.Builder().call(submissionCall).build();
-        Assertions.assertEquals(
-                readResourceAsString("request/set-email-submission.json"), gson.toJson(request));
+        Assertions.assertEquals(readResourceAsString("request/set-email-submission.json"), gson.toJson(request));
     }
 
     @Test
@@ -65,20 +62,17 @@ public class SetEmailSubmissionMethodCallTest extends AbstractGsonTest {
         final Patches.Builder patchesBuilder = Patches.builder();
         patchesBuilder.remove("keywords/" + Keyword.DRAFT);
         patchesBuilder.set("mailboxIds/MB3", true);
-        SetEmailSubmissionMethodCall submissionCall =
-                SetEmailSubmissionMethodCall.builder()
-                        .accountId("accountId")
-                        .create(
-                                ImmutableMap.of(
-                                        "es0",
-                                        EmailSubmission.builder()
-                                                .emailId("M1234")
-                                                .identityId("I0")
-                                                .build()))
-                        .build();
+        SetEmailSubmissionMethodCall submissionCall = SetEmailSubmissionMethodCall.builder()
+                .accountId("accountId")
+                .create(ImmutableMap.of(
+                        "es0",
+                        EmailSubmission.builder()
+                                .emailId("M1234")
+                                .identityId("I0")
+                                .build()))
+                .build();
         final Request request = new Request.Builder().call(submissionCall).build();
         Assertions.assertEquals(
-                readResourceAsString("request/set-email-submission-no-implicit.json"),
-                gson.toJson(request));
+                readResourceAsString("request/set-email-submission-no-implicit.json"), gson.toJson(request));
     }
 }

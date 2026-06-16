@@ -45,11 +45,10 @@ public final class Pusher {
     public static boolean push(final HttpUrl url, final PushMessage message) {
         LOGGER.info("push {} to {}", message.getClass().getSimpleName(), url);
         final Request.Builder requestBuilder =
-                new Request.Builder()
-                        .url(url)
-                        .post(RequestBody.create(GSON.toJson(message), MEDIA_TYPE_JSON));
+                new Request.Builder().url(url).post(RequestBody.create(GSON.toJson(message), MEDIA_TYPE_JSON));
         try {
-            final Response response = OK_HTTP_CLIENT.newCall(requestBuilder.build()).execute();
+            final Response response =
+                    OK_HTTP_CLIENT.newCall(requestBuilder.build()).execute();
             return response.isSuccessful();
         } catch (Exception e) {
             LOGGER.info("Unable to push", e);

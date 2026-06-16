@@ -36,76 +36,52 @@ import rs.ltt.jmap.mua.util.MailboxUtil;
 
 public class ModifyLabelsTest {
 
-    static final IdentifiableMailboxWithRoleAndName INBOX_WITH_ID =
-            new StubMailbox("1", Role.INBOX);
+    static final IdentifiableMailboxWithRoleAndName INBOX_WITH_ID = new StubMailbox("1", Role.INBOX);
     static final IdentifiableMailboxWithRoleAndName INBOX = new StubMailbox(null, Role.INBOX);
-    static final IdentifiableMailboxWithRoleAndName JMAP_WITH_ID =
-            new StubMailbox("2", null, "JMAP");
+    static final IdentifiableMailboxWithRoleAndName JMAP_WITH_ID = new StubMailbox("2", null, "JMAP");
     static final IdentifiableMailboxWithRoleAndName JMAP = new StubMailbox(null, null, "JMAP");
-    static final IdentifiableMailboxWithRoleAndName ARCHIVE_WITH_ID =
-            new StubMailbox("3", Role.ARCHIVE);
+    static final IdentifiableMailboxWithRoleAndName ARCHIVE_WITH_ID = new StubMailbox("3", Role.ARCHIVE);
     static final IdentifiableMailboxWithRoleAndName ARCHIVE = new StubMailbox(null, Role.ARCHIVE);
 
     @Test
     public void removeNonIdentifiable() {
-        Collection<IdentifiableEmailWithMailboxIds> emails =
-                Collections.singleton(
-                        Email.builder().mailboxId(INBOX_WITH_ID.getId(), true).build());
-        try (final Mua mua =
-                Mua.builder()
-                        .username("ignored")
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId("ignored")
-                        .build()) {
+        Collection<IdentifiableEmailWithMailboxIds> emails = Collections.singleton(
+                Email.builder().mailboxId(INBOX_WITH_ID.getId(), true).build());
+        try (final Mua mua = Mua.builder()
+                .username("ignored")
+                .password(JmapDispatcher.PASSWORD)
+                .accountId("ignored")
+                .build()) {
             Assertions.assertThrows(
                     IllegalArgumentException.class,
-                    () ->
-                            mua.modifyLabels(
-                                            emails,
-                                            Collections.emptyList(),
-                                            ImmutableList.of(ARCHIVE))
-                                    .get());
+                    () -> mua.modifyLabels(emails, Collections.emptyList(), ImmutableList.of(ARCHIVE))
+                            .get());
         }
     }
 
     @Test
     public void simultaneousAdditionAndRemoval() {
-        Collection<IdentifiableEmailWithMailboxIds> emails =
-                Collections.singleton(
-                        Email.builder().mailboxId(INBOX_WITH_ID.getId(), true).build());
-        try (final Mua mua =
-                Mua.builder()
-                        .username("ignored")
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId("ignored")
-                        .build()) {
+        Collection<IdentifiableEmailWithMailboxIds> emails = Collections.singleton(
+                Email.builder().mailboxId(INBOX_WITH_ID.getId(), true).build());
+        try (final Mua mua = Mua.builder()
+                .username("ignored")
+                .password(JmapDispatcher.PASSWORD)
+                .accountId("ignored")
+                .build()) {
             Assertions.assertThrows(
                     IllegalArgumentException.class,
-                    () ->
-                            mua.modifyLabels(
-                                            emails,
-                                            ImmutableList.of(INBOX),
-                                            ImmutableList.of(INBOX_WITH_ID))
-                                    .get());
+                    () -> mua.modifyLabels(emails, ImmutableList.of(INBOX), ImmutableList.of(INBOX_WITH_ID))
+                            .get());
             Assertions.assertThrows(
                     IllegalArgumentException.class,
-                    () ->
-                            mua.modifyLabels(
-                                            emails,
-                                            ImmutableList.of(INBOX, JMAP_WITH_ID),
-                                            ImmutableList.of(INBOX_WITH_ID))
-                                    .get());
+                    () -> mua.modifyLabels(
+                                    emails, ImmutableList.of(INBOX, JMAP_WITH_ID), ImmutableList.of(INBOX_WITH_ID))
+                            .get());
             Assertions.assertThrows(
                     IllegalArgumentException.class,
-                    () ->
-                            mua.modifyLabels(
-                                    emails,
-                                    ImmutableList.of(INBOX_WITH_ID, JMAP),
-                                    ImmutableList.of(JMAP_WITH_ID)));
-            mua.modifyLabels(
-                    emails,
-                    ImmutableList.of(INBOX_WITH_ID, JMAP),
-                    ImmutableList.of(ARCHIVE_WITH_ID));
+                    () -> mua.modifyLabels(
+                            emails, ImmutableList.of(INBOX_WITH_ID, JMAP), ImmutableList.of(JMAP_WITH_ID)));
+            mua.modifyLabels(emails, ImmutableList.of(INBOX_WITH_ID, JMAP), ImmutableList.of(ARCHIVE_WITH_ID));
         }
     }
 
@@ -115,21 +91,21 @@ public class ModifyLabelsTest {
         final MockMailServer mailServer = new MockMailServer(2);
         server.setDispatcher(mailServer);
         final MyInMemoryCache cache = new MyInMemoryCache();
-        try (final Mua mua =
-                Mua.builder()
-                        .cache(cache)
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .username(mailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mailServer.getAccountId())
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .cache(cache)
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .username(mailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mailServer.getAccountId())
+                .build()) {
             mua.query(EmailQuery.unfiltered()).get();
 
             final Mailbox inbox = cache.getMailbox(Role.INBOX);
 
             final List<CachedEmail> threadT1 = cache.getEmails("T1");
 
-            mua.modifyLabels(threadT1, Collections.emptyList(), ImmutableList.of(inbox)).get();
+            mua.modifyLabels(threadT1, Collections.emptyList(), ImmutableList.of(inbox))
+                    .get();
 
             Assertions.assertEquals(Status.UPDATED, mua.refresh().get());
 
@@ -152,14 +128,13 @@ public class ModifyLabelsTest {
         final MockMailServer mailServer = new MockMailServer(2);
         server.setDispatcher(mailServer);
         final MyInMemoryCache cache = new MyInMemoryCache();
-        try (final Mua mua =
-                Mua.builder()
-                        .cache(cache)
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .username(mailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mailServer.getAccountId())
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .cache(cache)
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .username(mailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mailServer.getAccountId())
+                .build()) {
             mua.query(EmailQuery.unfiltered()).get();
 
             final Mailbox inbox = cache.getMailbox(Role.INBOX);
@@ -169,7 +144,8 @@ public class ModifyLabelsTest {
 
             final List<CachedEmail> threadT1 = cache.getEmails("T1");
 
-            mua.modifyLabels(threadT1, ImmutableList.of(JMAP), Collections.emptyList()).get();
+            mua.modifyLabels(threadT1, ImmutableList.of(JMAP), Collections.emptyList())
+                    .get();
 
             Assertions.assertEquals(Status.UPDATED, mua.refresh().get());
 
@@ -177,11 +153,10 @@ public class ModifyLabelsTest {
             Assertions.assertEquals(2, inboxAfterModification.getUnreadThreads());
             Assertions.assertEquals(3, inboxAfterModification.getTotalEmails());
 
-            final Mailbox jmap =
-                    cache.getMailboxes().stream()
-                            .filter(mailbox -> mailbox.getName().equals("JMAP"))
-                            .findFirst()
-                            .orElse(null);
+            final Mailbox jmap = cache.getMailboxes().stream()
+                    .filter(mailbox -> mailbox.getName().equals("JMAP"))
+                    .findFirst()
+                    .orElse(null);
             Assertions.assertNotNull(jmap);
 
             Assertions.assertEquals(1, jmap.getTotalThreads());
@@ -189,41 +164,36 @@ public class ModifyLabelsTest {
     }
 
     @Test
-    public void ensureIfInStateIsSet()
-            throws ExecutionException, InterruptedException, IOException {
+    public void ensureIfInStateIsSet() throws ExecutionException, InterruptedException, IOException {
         final MockWebServer server = new MockWebServer();
         final AtomicBoolean ifInState = new AtomicBoolean(false);
-        final MockMailServer mailServer =
-                new MockMailServer(2) {
-                    @Override
-                    protected List<MailboxInfo> generateMailboxes() {
-                        return Arrays.asList(
-                                new MailboxInfo(UUID.randomUUID().toString(), "Inbox", Role.INBOX),
-                                new MailboxInfo(UUID.randomUUID().toString(), "JMAP", null),
-                                new MailboxInfo(
-                                        UUID.randomUUID().toString(), "Archive", Role.ARCHIVE));
-                    }
+        final MockMailServer mailServer = new MockMailServer(2) {
+            @Override
+            protected List<MailboxInfo> generateMailboxes() {
+                return Arrays.asList(
+                        new MailboxInfo(UUID.randomUUID().toString(), "Inbox", Role.INBOX),
+                        new MailboxInfo(UUID.randomUUID().toString(), "JMAP", null),
+                        new MailboxInfo(UUID.randomUUID().toString(), "Archive", Role.ARCHIVE));
+            }
 
-                    @Override
-                    protected MethodResponse[] execute(
-                            SetEmailMethodCall methodCall,
-                            ListMultimap<String, Response.Invocation> previousResponses) {
-                        if (Objects.nonNull(methodCall.getIfInState())) {
-                            ifInState.set(true);
-                        }
-                        return super.execute(methodCall, previousResponses);
-                    }
-                };
+            @Override
+            protected MethodResponse[] execute(
+                    SetEmailMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
+                if (Objects.nonNull(methodCall.getIfInState())) {
+                    ifInState.set(true);
+                }
+                return super.execute(methodCall, previousResponses);
+            }
+        };
         server.setDispatcher(mailServer);
         final MyInMemoryCache cache = new MyInMemoryCache();
-        try (final Mua mua =
-                Mua.builder()
-                        .cache(cache)
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .username(mailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mailServer.getAccountId())
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .cache(cache)
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .username(mailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mailServer.getAccountId())
+                .build()) {
             mua.query(EmailQuery.unfiltered()).get();
             // just reconfirming that mock server is setup correctly
             final Mailbox inbox = cache.getMailbox(Role.INBOX);
@@ -238,11 +208,10 @@ public class ModifyLabelsTest {
 
             Assertions.assertEquals(Status.UPDATED, mua.refresh().get());
 
-            final Mailbox jmap =
-                    cache.getMailboxes().stream()
-                            .filter(mailbox -> mailbox.getName().equals("JMAP"))
-                            .findFirst()
-                            .orElse(null);
+            final Mailbox jmap = cache.getMailboxes().stream()
+                    .filter(mailbox -> mailbox.getName().equals("JMAP"))
+                    .findFirst()
+                    .orElse(null);
             Assertions.assertNotNull(jmap);
 
             Assertions.assertEquals(1, jmap.getTotalThreads());
@@ -255,29 +224,26 @@ public class ModifyLabelsTest {
     }
 
     @Test
-    public void addToExistingJmapLabel()
-            throws ExecutionException, InterruptedException, IOException {
+    public void addToExistingJmapLabel() throws ExecutionException, InterruptedException, IOException {
         final MockWebServer server = new MockWebServer();
         final String jmapMailboxId = UUID.randomUUID().toString();
-        final MockMailServer mailServer =
-                new MockMailServer(2) {
-                    @Override
-                    protected List<MailboxInfo> generateMailboxes() {
-                        return Arrays.asList(
-                                new MailboxInfo(UUID.randomUUID().toString(), "Inbox", Role.INBOX),
-                                new MailboxInfo(jmapMailboxId, "JMAP", null));
-                    }
-                };
+        final MockMailServer mailServer = new MockMailServer(2) {
+            @Override
+            protected List<MailboxInfo> generateMailboxes() {
+                return Arrays.asList(
+                        new MailboxInfo(UUID.randomUUID().toString(), "Inbox", Role.INBOX),
+                        new MailboxInfo(jmapMailboxId, "JMAP", null));
+            }
+        };
         server.setDispatcher(mailServer);
         final MyInMemoryCache cache = new MyInMemoryCache();
-        try (final Mua mua =
-                Mua.builder()
-                        .cache(cache)
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .username(mailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mailServer.getAccountId())
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .cache(cache)
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .username(mailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mailServer.getAccountId())
+                .build()) {
             mua.query(EmailQuery.unfiltered()).get();
             // just reconfirming that mock server is setup correctly
             final Mailbox inbox = cache.getMailbox(Role.INBOX);
@@ -292,11 +258,10 @@ public class ModifyLabelsTest {
 
             Assertions.assertEquals(Status.UPDATED, mua.refresh().get());
 
-            final Mailbox jmap =
-                    cache.getMailboxes().stream()
-                            .filter(mailbox -> mailbox.getName().equals("JMAP"))
-                            .findFirst()
-                            .orElse(null);
+            final Mailbox jmap = cache.getMailboxes().stream()
+                    .filter(mailbox -> mailbox.getName().equals("JMAP"))
+                    .findFirst()
+                    .orElse(null);
             Assertions.assertNotNull(jmap);
 
             Assertions.assertEquals(1, jmap.getTotalThreads());
@@ -309,11 +274,10 @@ public class ModifyLabelsTest {
 
             Assertions.assertEquals(Status.UPDATED, mua.refresh().get());
 
-            final Mailbox jmapAfterSecondModification =
-                    cache.getMailboxes().stream()
-                            .filter(mailbox -> mailbox.getName().equals("JMAP"))
-                            .findFirst()
-                            .orElse(null);
+            final Mailbox jmapAfterSecondModification = cache.getMailboxes().stream()
+                    .filter(mailbox -> mailbox.getName().equals("JMAP"))
+                    .findFirst()
+                    .orElse(null);
             Assertions.assertEquals(2, jmapAfterSecondModification.getTotalThreads());
 
         } finally {

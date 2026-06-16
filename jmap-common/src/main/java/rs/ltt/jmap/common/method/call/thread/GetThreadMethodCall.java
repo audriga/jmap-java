@@ -27,10 +27,7 @@ public class GetThreadMethodCall extends GetMethodCall<Thread> {
 
     @Builder
     public GetThreadMethodCall(
-            String accountId,
-            String[] ids,
-            String[] properties,
-            Request.Invocation.ResultReference idsReference) {
+            String accountId, String[] ids, String[] properties, Request.Invocation.ResultReference idsReference) {
         super(accountId, ids, properties, idsReference);
     }
 }

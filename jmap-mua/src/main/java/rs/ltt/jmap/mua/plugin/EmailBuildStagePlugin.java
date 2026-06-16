@@ -21,5 +21,6 @@ import org.jspecify.annotations.NonNull;
 import rs.ltt.jmap.common.entity.Email;
 
 public interface EmailBuildStagePlugin extends EventCallback {
-    @NonNull ListenableFuture<Email> onBuildEmail(final Email email);
+    @NonNull
+    ListenableFuture<Email> onBuildEmail(final Email email);
 }

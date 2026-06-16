@@ -35,14 +35,12 @@ public class Update {
 
     private final String newVersion;
 
-    private Update(
-            Map<Class<? extends AbstractIdentifiableEntity>, Changes> changes, String newVersion) {
+    private Update(Map<Class<? extends AbstractIdentifiableEntity>, Changes> changes, String newVersion) {
         this.changes = changes;
         this.newVersion = newVersion;
     }
 
-    public static Update of(
-            SetMailboxMethodResponse setMailboxMethodResponse, final String newVersion) {
+    public static Update of(SetMailboxMethodResponse setMailboxMethodResponse, final String newVersion) {
         return new Update(
                 ImmutableMap.of(
                         Mailbox.class,
@@ -57,8 +55,8 @@ public class Update {
     }
 
     public static Update merge(final Collection<Update> updates) {
-        final ImmutableMultimap.Builder<Class<? extends AbstractIdentifiableEntity>, Changes>
-                changesBuilder = ImmutableMultimap.builder();
+        final ImmutableMultimap.Builder<Class<? extends AbstractIdentifiableEntity>, Changes> changesBuilder =
+                ImmutableMultimap.builder();
         String newVersion = null;
         for (final Update update : updates) {
             for (Map.Entry<Class<? extends AbstractIdentifiableEntity>, Changes> entityChanges :
@@ -75,8 +73,7 @@ public class Update {
         return new Update(changes, newVersion);
     }
 
-    private static <T extends AbstractIdentifiableEntity> Map<String, T> nullToEmpty(
-            Map<String, T> value) {
+    private static <T extends AbstractIdentifiableEntity> Map<String, T> nullToEmpty(Map<String, T> value) {
         return value == null ? Collections.emptyMap() : value;
     }
 
@@ -85,9 +82,7 @@ public class Update {
                 new ImmutableMap.Builder<>();
         builder.put(Email.class, new Changes(new String[0], new String[] {email.getId()}));
         builder.put(Thread.class, new Changes(new String[0], new String[] {email.getThreadId()}));
-        builder.put(
-                Mailbox.class,
-                new Changes(email.getMailboxIds().keySet().toArray(new String[0]), new String[0]));
+        builder.put(Mailbox.class, new Changes(email.getMailboxIds().keySet().toArray(new String[0]), new String[0]));
         return new Update(builder.build(), newVersion);
     }
 
@@ -95,10 +90,7 @@ public class Update {
             final Collection<Email> emails, final Collection<String> mailboxes, String newVersion) {
         final ImmutableMap.Builder<Class<? extends AbstractIdentifiableEntity>, Changes> builder =
                 new ImmutableMap.Builder<>();
-        builder.put(
-                Email.class,
-                new Changes(
-                        emails.stream().map(Email::getId).toArray(String[]::new), new String[0]));
+        builder.put(Email.class, new Changes(emails.stream().map(Email::getId).toArray(String[]::new), new String[0]));
         builder.put(Thread.class, new Changes(new String[0], new String[0]));
         builder.put(Mailbox.class, new Changes(mailboxes.toArray(new String[0]), new String[0]));
         return new Update(builder.build(), newVersion);

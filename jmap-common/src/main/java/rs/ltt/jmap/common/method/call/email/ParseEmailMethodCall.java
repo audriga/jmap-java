@@ -25,9 +25,11 @@ import rs.ltt.jmap.common.method.MethodCall;
 @Builder
 public class ParseEmailMethodCall implements MethodCall {
 
-    @NonNull private String accountId;
+    @NonNull
+    private String accountId;
 
-    @NonNull private String[] blobIds;
+    @NonNull
+    private String[] blobIds;
 
     private String[] properties;
 

@@ -75,8 +75,7 @@ public class EmailUtil {
         return new ReplyAddresses(replyTo(emailWithAddresses));
     }
 
-    private static Collection<EmailAddress> replyTo(
-            final IdentifiableEmailWithAddresses emailWithAddresses) {
+    private static Collection<EmailAddress> replyTo(final IdentifiableEmailWithAddresses emailWithAddresses) {
         final Collection<EmailAddress> from = emailWithAddresses.getFrom();
         if (from != null && !from.isEmpty()) {
             return from;
@@ -93,8 +92,7 @@ public class EmailUtil {
     }
 
     public static ReplyAddresses replyAll(
-            final IdentifiableEmailWithAddresses emailWithAddresses,
-            final Collection<String> identityEmailAddresses) {
+            final IdentifiableEmailWithAddresses emailWithAddresses, final Collection<String> identityEmailAddresses) {
         final Collection<EmailAddress> replyTo = emailWithAddresses.getReplyTo();
         final Collection<EmailAddress> cc = emailWithAddresses.getCc();
         if (replyTo != null && replyTo.size() > 0 && (cc == null || cc.isEmpty())) {
@@ -104,8 +102,7 @@ public class EmailUtil {
         ImmutableList.Builder<EmailAddress> ccBuilder = new ImmutableList.Builder<>();
         if (to != null) {
             for (final EmailAddress address : to) {
-                if (Iterables.any(
-                        identityEmailAddresses, i -> i.equalsIgnoreCase(address.getEmail()))) {
+                if (Iterables.any(identityEmailAddresses, i -> i.equalsIgnoreCase(address.getEmail()))) {
                     continue;
                 }
                 ccBuilder.add(address);

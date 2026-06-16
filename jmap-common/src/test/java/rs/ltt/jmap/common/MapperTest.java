@@ -27,8 +27,7 @@ public class MapperTest {
         for (final String jsonName : Mapper.METHOD_CALLS.inverse().values()) {
             Assertions.assertNotNull(
                     Mapper.METHOD_RESPONSES.get(jsonName),
-                    String.format(
-                            "Jmap method call %s has no appropriate method response", jsonName));
+                    String.format("Jmap method call %s has no appropriate method response", jsonName));
         }
     }
 
@@ -37,8 +36,7 @@ public class MapperTest {
         for (final String jsonName : Mapper.METHOD_RESPONSES.inverse().values()) {
             Assertions.assertNotNull(
                     Mapper.METHOD_CALLS.get(jsonName),
-                    String.format(
-                            "Jmap method response %s has no appropriate method call", jsonName));
+                    String.format("Jmap method response %s has no appropriate method call", jsonName));
         }
     }
 }

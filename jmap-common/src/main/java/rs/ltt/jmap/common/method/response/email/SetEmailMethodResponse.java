@@ -38,15 +38,6 @@ public class SetEmailMethodResponse extends SetMethodResponse<Email> {
             @Singular("notCreated") Map<String, SetError> notCreated,
             @Singular("notUpdated") Map<String, SetError> notUpdated,
             @Singular("notDestroyed") Map<String, SetError> notDestroyed) {
-        super(
-                accountId,
-                oldState,
-                newState,
-                created,
-                updated,
-                destroyed,
-                notCreated,
-                notUpdated,
-                notDestroyed);
+        super(accountId, oldState, newState, created, updated, destroyed, notCreated, notUpdated, notDestroyed);
     }
 }

@@ -45,6 +45,9 @@ public class RequestWebSocketMessage extends AbstractApiWebSocketMessage {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this).add("id", id).add("request", request).toString();
+        return MoreObjects.toStringHelper(this)
+                .add("id", id)
+                .add("request", request)
+                .toString();
     }
 }

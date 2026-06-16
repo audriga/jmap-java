@@ -43,8 +43,7 @@ public class Patches {
 
         private Builder() {}
 
-        private final ImmutableMap.Builder<String, Object> mapBuilder =
-                new ImmutableMap.Builder<>();
+        private final ImmutableMap.Builder<String, Object> mapBuilder = new ImmutableMap.Builder<>();
 
         public Builder set(String path, Object value) {
             mapBuilder.put(path, value);

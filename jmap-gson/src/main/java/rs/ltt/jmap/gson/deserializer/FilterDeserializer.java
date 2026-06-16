@@ -24,8 +24,7 @@ import rs.ltt.jmap.common.entity.filter.Filter;
 import rs.ltt.jmap.common.entity.filter.FilterOperator;
 import rs.ltt.jmap.common.util.Mapper;
 
-public class FilterDeserializer
-        implements JsonDeserializer<Filter<? extends AbstractIdentifiableEntity>> {
+public class FilterDeserializer implements JsonDeserializer<Filter<? extends AbstractIdentifiableEntity>> {
 
     public static void register(final GsonBuilder builder) {
         for (final Type type : Mapper.TYPE_TO_ENTITY_CLASS.keySet()) {
@@ -35,19 +34,17 @@ public class FilterDeserializer
 
     @Override
     public Filter<? extends AbstractIdentifiableEntity> deserialize(
-            JsonElement jsonElement, Type type, JsonDeserializationContext context)
-            throws JsonParseException {
+            JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
         final JsonObject jsonObject = jsonElement.getAsJsonObject();
         final boolean isOperator = jsonObject.has("operator") && jsonObject.has("conditions");
-        final Class<? extends AbstractIdentifiableEntity> entityClass =
-                Mapper.TYPE_TO_ENTITY_CLASS.get(type);
+        final Class<? extends AbstractIdentifiableEntity> entityClass = Mapper.TYPE_TO_ENTITY_CLASS.get(type);
         if (isOperator) {
             return context.deserialize(
                     jsonElement,
-                    TypeToken.getParameterized(FilterOperator.class, entityClass).getType());
+                    TypeToken.getParameterized(FilterOperator.class, entityClass)
+                            .getType());
         } else {
-            return context.deserialize(
-                    jsonElement, Mapper.ENTITY_TO_FILTER_CONDITION.get(entityClass));
+            return context.deserialize(jsonElement, Mapper.ENTITY_TO_FILTER_CONDITION.get(entityClass));
         }
     }
 }

@@ -104,18 +104,11 @@ public class EmailFilterCondition implements FilterCondition<Email> {
             final EmailFilterCondition other = (EmailFilterCondition) filter;
             return ComparisonChain.start()
                     .compare(Strings.nullToEmpty(inMailbox), Strings.nullToEmpty(other.inMailbox))
-                    .compare(
-                            inMailboxOtherThan,
-                            other.inMailboxOtherThan,
-                            QueryStringUtils.STRING_ARRAY_COMPARATOR)
+                    .compare(inMailboxOtherThan, other.inMailboxOtherThan, QueryStringUtils.STRING_ARRAY_COMPARATOR)
                     .compare(before, other.before, QueryStringUtils.INSTANT_COMPARATOR)
                     .compare(after, other.after, QueryStringUtils.INSTANT_COMPARATOR)
-                    .compare(
-                            minSize == null ? 0L : minSize,
-                            other.minSize == null ? 0L : other.minSize)
-                    .compare(
-                            maxSize == null ? 0L : maxSize,
-                            other.maxSize == null ? 0L : other.maxSize)
+                    .compare(minSize == null ? 0L : minSize, other.minSize == null ? 0L : other.minSize)
+                    .compare(maxSize == null ? 0L : maxSize, other.maxSize == null ? 0L : other.maxSize)
                     .compare(
                             Strings.nullToEmpty(allInThreadHaveKeyword),
                             Strings.nullToEmpty(other.allInThreadHaveKeyword))

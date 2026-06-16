@@ -88,7 +88,10 @@ public final class Services {
             final var context = getSSLContext();
             context.init(null, new X509TrustManager[] {trustManager}, SECURE_RANDOM);
             final var socketFactory = context.getSocketFactory();
-            return okHttpClient.newBuilder().sslSocketFactory(socketFactory, trustManager).build();
+            return okHttpClient
+                    .newBuilder()
+                    .sslSocketFactory(socketFactory, trustManager)
+                    .build();
         } catch (final NoSuchAlgorithmException | KeyManagementException e) {
             return okHttpClient;
         }

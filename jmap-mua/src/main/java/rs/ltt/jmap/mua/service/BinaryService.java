@@ -39,8 +39,7 @@ public class BinaryService extends AbstractMuaService {
         return jmapClient.download(accountId, downloadable);
     }
 
-    public ListenableFuture<Download> download(
-            final Downloadable downloadable, final long rangeStart) {
+    public ListenableFuture<Download> download(final Downloadable downloadable, final long rangeStart) {
         Preconditions.checkArgument(rangeStart >= 0, "rangeStart must not be smaller than 0");
         return jmapClient.download(accountId, downloadable, rangeStart);
     }
@@ -54,8 +53,7 @@ public class BinaryService extends AbstractMuaService {
         return Futures.transform(
                 jmapClient.getSession(),
                 session -> {
-                    AttachmentUtil.verifyAttachmentsDoNotExceedLimit(
-                            session, accountId, attachments);
+                    AttachmentUtil.verifyAttachmentsDoNotExceedLimit(session, accountId, attachments);
                     return null;
                 },
                 MoreExecutors.directExecutor());

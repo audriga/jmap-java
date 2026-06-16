@@ -75,8 +75,7 @@ public class HttpJmapApiClient extends AbstractJmapApiClient {
                     @Override
                     public void onSuccess(final InputStream inputStream) {
                         try (final InputStreamReader reader = new InputStreamReader(inputStream)) {
-                            final GenericResponse genericResponse =
-                                    GSON.fromJson(reader, GenericResponse.class);
+                            final GenericResponse genericResponse = GSON.fromJson(reader, GenericResponse.class);
                             processResponse(jmapRequest, genericResponse);
                         } catch (final Exception e) {
                             jmapRequest.setException(e);
@@ -98,49 +97,40 @@ public class HttpJmapApiClient extends AbstractJmapApiClient {
         authentication.authenticate(requestBuilder);
         requestBuilder.post(RequestBody.create(out, MEDIA_TYPE_JSON));
         final Call call =
-                Services.okHttpClientLogging(connectionConfig.getTrustManager())
-                        .newCall(requestBuilder.build());
-        final SettableCallFuture<InputStream> settableInputStreamFuture =
-                SettableCallFuture.create(call);
-        call.enqueue(
-                new Callback() {
-                    @Override
-                    public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                        settableInputStreamFuture.setException(e);
-                    }
+                Services.okHttpClientLogging(connectionConfig.getTrustManager()).newCall(requestBuilder.build());
+        final SettableCallFuture<InputStream> settableInputStreamFuture = SettableCallFuture.create(call);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                settableInputStreamFuture.setException(e);
+            }
 
-                    @Override
-                    public void onResponse(@NonNull Call call, @NonNull Response response) {
-                        final int code = response.code();
-                        if (code == 404) {
-                            settableInputStreamFuture.setException(
-                                    new EndpointNotFoundException(
-                                            String.format("API URL(%s) not found", apiUrl)));
-                            return;
-                        }
-                        if (code == 401) {
-                            final List<Challenge> challenges =
-                                    HttpHeaders.parseChallenges(
-                                            response.headers(),
-                                            com.google.common.net.HttpHeaders.WWW_AUTHENTICATE);
-                            settableInputStreamFuture.setException(
-                                    new UnauthorizedException(
-                                            String.format("API URL(%s) was unauthorized", apiUrl),
-                                            challenges));
-                            return;
-                        }
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                final int code = response.code();
+                if (code == 404) {
+                    settableInputStreamFuture.setException(
+                            new EndpointNotFoundException(String.format("API URL(%s) not found", apiUrl)));
+                    return;
+                }
+                if (code == 401) {
+                    final List<Challenge> challenges = HttpHeaders.parseChallenges(
+                            response.headers(), com.google.common.net.HttpHeaders.WWW_AUTHENTICATE);
+                    settableInputStreamFuture.setException(new UnauthorizedException(
+                            String.format("API URL(%s) was unauthorized", apiUrl), challenges));
+                    return;
+                }
 
-                        // TODO: code 500+ should probably just throw internal server error
-                        // exception
-                        final ResponseBody body = response.body();
-                        if (body == null) {
-                            settableInputStreamFuture.setException(
-                                    new IllegalStateException("response body was empty"));
-                            return;
-                        }
-                        settableInputStreamFuture.set(body.byteStream());
-                    }
-                });
+                // TODO: code 500+ should probably just throw internal server error
+                // exception
+                final ResponseBody body = response.body();
+                if (body == null) {
+                    settableInputStreamFuture.setException(new IllegalStateException("response body was empty"));
+                    return;
+                }
+                settableInputStreamFuture.set(body.byteStream());
+            }
+        });
         return settableInputStreamFuture;
     }
 

@@ -22,8 +22,7 @@ public class ErrorResponseDeserializationTest extends AbstractGsonTest {
 
     @Test
     public void deserializeNotJson() throws IOException {
-        GenericResponse genericResponse =
-                parseFromResource("response-error/not-json.json", GenericResponse.class);
+        GenericResponse genericResponse = parseFromResource("response-error/not-json.json", GenericResponse.class);
         MatcherAssert.assertThat(genericResponse, CoreMatchers.instanceOf(ErrorResponse.class));
         ErrorResponse errorResponse = (ErrorResponse) genericResponse;
         Assertions.assertEquals(errorResponse.getType(), ErrorType.NOT_JSON);
@@ -31,8 +30,7 @@ public class ErrorResponseDeserializationTest extends AbstractGsonTest {
 
     @Test
     public void deserializeNotRequest() throws IOException {
-        GenericResponse genericResponse =
-                parseFromResource("response-error/not-request.json", GenericResponse.class);
+        GenericResponse genericResponse = parseFromResource("response-error/not-request.json", GenericResponse.class);
         MatcherAssert.assertThat(genericResponse, CoreMatchers.instanceOf(ErrorResponse.class));
         ErrorResponse errorResponse = (ErrorResponse) genericResponse;
         Assertions.assertEquals(errorResponse.getType(), ErrorType.NOT_REQUEST);

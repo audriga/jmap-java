@@ -28,8 +28,7 @@ public class PackageNamespaceTest {
     public void ensureEveryMethodCallHasNamespace() {
         for (Class<? extends MethodCall> clazz : Mapper.METHOD_CALLS.values()) {
             Assertions.assertNotNull(
-                    Namespace.get(clazz),
-                    String.format("%s is not defining a package namespace", clazz.getName()));
+                    Namespace.get(clazz), String.format("%s is not defining a package namespace", clazz.getName()));
         }
     }
 }

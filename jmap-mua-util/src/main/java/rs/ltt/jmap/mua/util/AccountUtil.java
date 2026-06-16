@@ -31,12 +31,11 @@ public final class AccountUtil {
         if (atPosition <= 0) {
             return username;
         }
-        final List<String> words =
-                Splitter.onPattern("[\\.\\-_]")
-                        .splitToStream(username.substring(0, atPosition))
-                        .filter(word -> word.length() > 0)
-                        .map(AccountUtil::capitalizeFirst)
-                        .collect(Collectors.toList());
+        final List<String> words = Splitter.onPattern("[\\.\\-_]")
+                .splitToStream(username.substring(0, atPosition))
+                .filter(word -> word.length() > 0)
+                .map(AccountUtil::capitalizeFirst)
+                .collect(Collectors.toList());
         if (words.size() > 0) {
             return Joiner.on(' ').join(words);
         } else {

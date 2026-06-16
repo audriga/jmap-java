@@ -38,16 +38,16 @@ public class MuaDownloadTest {
         final MockMailServer mailServer = new MockMailServer(2);
         server.setDispatcher(mailServer);
 
-        final Mua mua =
-                Mua.builder()
-                        .cache(new InMemoryCache())
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .username(mailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(mailServer.getAccountId())
-                        .build();
-        final Downloadable downloadable =
-                EmailBodyPart.builder().blobId("d3d9da72-eff2-4e7c-b682-25efa6972dee").build();
+        final Mua mua = Mua.builder()
+                .cache(new InMemoryCache())
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .username(mailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(mailServer.getAccountId())
+                .build();
+        final Downloadable downloadable = EmailBodyPart.builder()
+                .blobId("d3d9da72-eff2-4e7c-b682-25efa6972dee")
+                .build();
         final Download download = mua.download(downloadable).get();
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ByteStreams.copy(download.getInputStream(), byteArrayOutputStream);

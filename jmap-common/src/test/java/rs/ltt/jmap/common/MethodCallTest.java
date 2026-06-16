@@ -50,10 +50,9 @@ public class MethodCallTest {
     public void isAccountIdRequiredInGetSearchSnippetsMethodCall() {
         Assertions.assertThrows(
                 NullPointerException.class,
-                () ->
-                        GetSearchSnippetsMethodCall.builder()
-                                .emailIds(new String[] {"1", "2"})
-                                .build());
+                () -> GetSearchSnippetsMethodCall.builder()
+                        .emailIds(new String[] {"1", "2"})
+                        .build());
     }
 
     @Test
@@ -65,19 +64,15 @@ public class MethodCallTest {
 
     @Test
     public void preventReferenceAndIdInGetEmailMethodCall() {
-        final Request.Invocation invocation =
-                new Request.Invocation(
-                        QueryEmailMethodCall.builder().accountId("dummy").build(), "1");
+        final Request.Invocation invocation = new Request.Invocation(
+                QueryEmailMethodCall.builder().accountId("dummy").build(), "1");
         Assertions.assertThrows(
                 IllegalArgumentException.class,
-                () ->
-                        GetEmailMethodCall.builder()
-                                .accountId("dummy")
-                                .ids(new String[] {"1", "2"})
-                                .idsReference(
-                                        invocation.createReference(
-                                                Request.Invocation.ResultReference.Path
-                                                        .LIST_EMAIL_IDS))
-                                .build());
+                () -> GetEmailMethodCall.builder()
+                        .accountId("dummy")
+                        .ids(new String[] {"1", "2"})
+                        .idsReference(
+                                invocation.createReference(Request.Invocation.ResultReference.Path.LIST_EMAIL_IDS))
+                        .build());
     }
 }

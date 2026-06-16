@@ -29,13 +29,11 @@ import rs.ltt.jmap.common.util.Mapper;
 public class ResultReferenceTypeAdapter extends TypeAdapter<Request.Invocation.ResultReference> {
 
     public static void register(final GsonBuilder builder) {
-        builder.registerTypeAdapter(
-                Request.Invocation.ResultReference.class, new ResultReferenceTypeAdapter());
+        builder.registerTypeAdapter(Request.Invocation.ResultReference.class, new ResultReferenceTypeAdapter());
     }
 
     @Override
-    public void write(
-            JsonWriter jsonWriter, final Request.Invocation.ResultReference resultReference)
+    public void write(JsonWriter jsonWriter, final Request.Invocation.ResultReference resultReference)
             throws IOException {
         if (resultReference == null) {
             jsonWriter.nullValue();
@@ -43,9 +41,7 @@ public class ResultReferenceTypeAdapter extends TypeAdapter<Request.Invocation.R
         }
         jsonWriter.beginObject();
         jsonWriter.name("resultOf").value(resultReference.getId());
-        jsonWriter
-                .name("name")
-                .value(Mapper.METHOD_CALLS.inverse().get(resultReference.getClazz()));
+        jsonWriter.name("name").value(Mapper.METHOD_CALLS.inverse().get(resultReference.getClazz()));
         jsonWriter.name("path").value(resultReference.getPath());
         jsonWriter.endObject();
     }

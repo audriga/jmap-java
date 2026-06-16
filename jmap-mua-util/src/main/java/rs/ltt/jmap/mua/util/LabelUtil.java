@@ -27,19 +27,12 @@ import rs.ltt.jmap.common.entity.Role;
 
 public class LabelUtil {
 
-    public static final Comparator<? super Label> COMPARATOR =
-            (Comparator<Label>)
-                    (a, b) ->
-                            ComparisonChain.start()
-                                    .compare(order(a.getRole()), (order(b.getRole())))
-                                    .compare(
-                                            Strings.nullToEmpty(a.getName()),
-                                            Strings.nullToEmpty(b.getName()))
-                                    .result();
-    private static final Collection<KeywordLabel> KEYWORD_LABELS =
-            Collections2.transform(
-                    KeywordUtil.KEYWORD_ROLE.entrySet(),
-                    entry -> new KeywordLabel(entry.getKey(), entry.getValue()));
+    public static final Comparator<? super Label> COMPARATOR = (Comparator<Label>) (a, b) -> ComparisonChain.start()
+            .compare(order(a.getRole()), (order(b.getRole())))
+            .compare(Strings.nullToEmpty(a.getName()), Strings.nullToEmpty(b.getName()))
+            .result();
+    private static final Collection<KeywordLabel> KEYWORD_LABELS = Collections2.transform(
+            KeywordUtil.KEYWORD_ROLE.entrySet(), entry -> new KeywordLabel(entry.getKey(), entry.getValue()));
 
     public static List<LabelWithCount> fillUpAndSort(List<? extends LabelWithCount> mailboxes) {
         final ArrayList<LabelWithCount> labels = new ArrayList<>(mailboxes);

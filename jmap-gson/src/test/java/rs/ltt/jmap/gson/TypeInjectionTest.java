@@ -25,11 +25,10 @@ public class TypeInjectionTest extends AbstractGsonTest {
 
     @Test
     public void serializeTypeWithDefaultName() {
-        final PushVerification pushVerification =
-                PushVerification.builder()
-                        .pushSubscriptionId("my-id")
-                        .verificationCode("very-secret")
-                        .build();
+        final PushVerification pushVerification = PushVerification.builder()
+                .pushSubscriptionId("my-id")
+                .verificationCode("very-secret")
+                .build();
         final String json = getGson().toJson(pushVerification);
         Assertions.assertEquals(
                 "{\"@type\":\"PushVerification\",\"pushSubscriptionId\":\"my-id\",\"verificationCode\":\"very-secret\"}",

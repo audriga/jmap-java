@@ -73,15 +73,13 @@ public class MailToUri {
     }
 
     @NonNull
-    public static MailToUri get(final String input, final boolean stripNames)
-            throws IllegalArgumentException {
+    public static MailToUri get(final String input, final boolean stripNames) throws IllegalArgumentException {
         final int schemeDelimiter = input.indexOf(":");
         if (schemeDelimiter < 0) {
             throw new IllegalArgumentException("No scheme detected");
         }
         if (input.substring(0, schemeDelimiter).equals(MAIL_TO)) {
-            final int queryDelimiter =
-                    input.length() > schemeDelimiter ? input.indexOf("?", schemeDelimiter + 1) : -1;
+            final int queryDelimiter = input.length() > schemeDelimiter ? input.indexOf("?", schemeDelimiter + 1) : -1;
             final String to;
             final String query;
             if (queryDelimiter > 0) {
@@ -122,8 +120,7 @@ public class MailToUri {
         throw new IllegalArgumentException("Unknown scheme");
     }
 
-    private static void throwOnName(final Collection<EmailAddress> addresses)
-            throws IllegalArgumentException {
+    private static void throwOnName(final Collection<EmailAddress> addresses) throws IllegalArgumentException {
         for (final EmailAddress address : addresses) {
             if (Strings.isNullOrEmpty(address.getName())) {
                 continue;
@@ -154,26 +151,21 @@ public class MailToUri {
         }
     }
 
-    private static Collection<EmailAddress> parseEmailAddress(
-            final String address, final boolean stripNames) {
-        return stripNames
-                ? stripNames(EmailAddressUtil.parse(address))
-                : EmailAddressUtil.parse(address);
+    private static Collection<EmailAddress> parseEmailAddress(final String address, final boolean stripNames) {
+        return stripNames ? stripNames(EmailAddressUtil.parse(address)) : EmailAddressUtil.parse(address);
     }
 
     private static Collection<EmailAddress> stripNames(Collection<EmailAddress> emailAddresses) {
-        return Collections2.transform(
-                emailAddresses,
-                new Function<EmailAddress, EmailAddress>() {
-                    @Nullable
-                    @Override
-                    public EmailAddress apply(@Nullable EmailAddress emailAddress) {
-                        if (emailAddress == null || Strings.isNullOrEmpty(emailAddress.getName())) {
-                            return emailAddress;
-                        } else {
-                            return EmailAddress.builder().email(emailAddress.getEmail()).build();
-                        }
-                    }
-                });
+        return Collections2.transform(emailAddresses, new Function<EmailAddress, EmailAddress>() {
+            @Nullable
+            @Override
+            public EmailAddress apply(@Nullable EmailAddress emailAddress) {
+                if (emailAddress == null || Strings.isNullOrEmpty(emailAddress.getName())) {
+                    return emailAddress;
+                } else {
+                    return EmailAddress.builder().email(emailAddress.getEmail()).build();
+                }
+            }
+        });
     }
 }

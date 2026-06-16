@@ -72,8 +72,7 @@ public class SessionClient {
         return this.currentSessionFuture;
     }
 
-    private ListenableFuture<Session> fetchSession(
-            final String username, final HttpUrl sessionResource) {
+    private ListenableFuture<Session> fetchSession(final String username, final HttpUrl sessionResource) {
         final SessionCache cache = sessionResourceChanged ? null : sessionCache;
         final ListenableFuture<Session> cachedSessionFuture;
         if (cache == null) {
@@ -101,25 +100,23 @@ public class SessionClient {
         requestBuilder.url(sessionResource);
         authentication.authenticate(requestBuilder);
         final Call call =
-                Services.okHttpClientLogging(connectionConfig.getTrustManager())
-                        .newCall(requestBuilder.build());
+                Services.okHttpClientLogging(connectionConfig.getTrustManager()).newCall(requestBuilder.build());
         final SettableCallFuture<Session> settableFuture = SettableCallFuture.create(call);
-        call.enqueue(
-                new Callback() {
-                    @Override
-                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                        settableFuture.setException(e);
-                    }
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                settableFuture.setException(e);
+            }
 
-                    @Override
-                    public void onResponse(@NotNull Call call, @NotNull Response response) {
-                        try {
-                            settableFuture.set(processResponse(sessionResource, response));
-                        } catch (final Exception e) {
-                            settableFuture.setException(e);
-                        }
-                    }
-                });
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) {
+                try {
+                    settableFuture.set(processResponse(sessionResource, response));
+                } catch (final Exception e) {
+                    settableFuture.setException(e);
+                }
+            }
+        });
         return settableFuture;
     }
 
@@ -128,8 +125,7 @@ public class SessionClient {
         if (code == 200 || code == 201) {
             final ResponseBody body = response.body();
             if (body == null) {
-                throw new InvalidSessionResourceException(
-                        "Unable to fetch session object. Response body was empty.");
+                throw new InvalidSessionResourceException("Unable to fetch session object. Response body was empty.");
             }
             try (final InputStreamReader reader = new InputStreamReader(body.byteStream())) {
                 final SessionResource sessionResource;
@@ -149,19 +145,15 @@ public class SessionClient {
             }
         } else if (code == 401) {
             final List<Challenge> challenges =
-                    HttpHeaders.parseChallenges(
-                            response.headers(), com.google.common.net.HttpHeaders.WWW_AUTHENTICATE);
+                    HttpHeaders.parseChallenges(response.headers(), com.google.common.net.HttpHeaders.WWW_AUTHENTICATE);
             throw new UnauthorizedException(
-                    String.format("Session object(%s) was unauthorized", base.toString()),
-                    challenges);
+                    String.format("Session object(%s) was unauthorized", base.toString()), challenges);
         } else {
-            throw new EndpointNotFoundException(
-                    String.format("Unable to fetch session object(%s)", base.toString()));
+            throw new EndpointNotFoundException(String.format("Unable to fetch session object(%s)", base.toString()));
         }
     }
 
-    private void validateSessionResource(final SessionResource sessionResource)
-            throws InvalidSessionResourceException {
+    private void validateSessionResource(final SessionResource sessionResource) throws InvalidSessionResourceException {
         if (sessionResource.getApiUrl() == null) {
             throw new InvalidSessionResourceException("Missing API URL");
         }

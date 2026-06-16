@@ -38,15 +38,12 @@ public class MailboxPreconditions {
             final IdentifiableMailboxWithRoleAndName a,
             final Collection<? extends IdentifiableMailboxWithRoleAndName> b) {
         if (a.matchesAny(b)) {
-            throw new IllegalArgumentException(
-                    String.format(
-                            "Mailbox with role %s and name %s appears in both arguments",
-                            a.getRole(), a.getName()));
+            throw new IllegalArgumentException(String.format(
+                    "Mailbox with role %s and name %s appears in both arguments", a.getRole(), a.getName()));
         }
     }
 
-    public static void checkAllIdentifiable(
-            final Collection<? extends Identifiable> entities, final String message) {
+    public static void checkAllIdentifiable(final Collection<? extends Identifiable> entities, final String message) {
         if (entities.stream().anyMatch(e -> Objects.isNull(e.getId()))) {
             throw new IllegalArgumentException(message);
         }

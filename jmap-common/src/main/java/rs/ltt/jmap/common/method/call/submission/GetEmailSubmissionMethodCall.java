@@ -27,10 +27,7 @@ public class GetEmailSubmissionMethodCall extends GetMethodCall<EmailSubmission>
 
     @Builder
     public GetEmailSubmissionMethodCall(
-            String accountId,
-            String[] ids,
-            String[] properties,
-            Request.Invocation.ResultReference idsReference) {
+            String accountId, String[] ids, String[] properties, Request.Invocation.ResultReference idsReference) {
         super(accountId, ids, properties, idsReference);
     }
 }

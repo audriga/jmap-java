@@ -42,16 +42,14 @@ public class ToggleImportantTest {
         final MockWebServer server = new MockWebServer();
 
         server.enqueue(new MockResponse().setBody(readResourceAsString("common/01-session.json")));
-        server.enqueue(
-                new MockResponse().setBody(readResourceAsString("common/02-mailboxes.json")));
+        server.enqueue(new MockResponse().setBody(readResourceAsString("common/02-mailboxes.json")));
 
-        try (final Mua mua =
-                Mua.builder()
-                        .sessionResource(server.url(WELL_KNOWN_PATH))
-                        .username(USERNAME)
-                        .password(PASSWORD)
-                        .accountId(ACCOUNT_ID)
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .sessionResource(server.url(WELL_KNOWN_PATH))
+                .username(USERNAME)
+                .password(PASSWORD)
+                .accountId(ACCOUNT_ID)
+                .build()) {
             mua.refreshMailboxes().get();
 
             final Collection<MyIdentifiableEmailWithMailboxes> emails =
@@ -74,30 +72,28 @@ public class ToggleImportantTest {
         final MockWebServer server = new MockWebServer();
 
         server.enqueue(new MockResponse().setBody(readResourceAsString("common/01-session.json")));
-        server.enqueue(
-                new MockResponse().setBody(readResourceAsString("common/02-mailboxes.json")));
+        server.enqueue(new MockResponse().setBody(readResourceAsString("common/02-mailboxes.json")));
 
         final InMemoryCache inMemoryCache = new InMemoryCache();
 
-        try (final Mua mua =
-                Mua.builder()
-                        .sessionResource(server.url(WELL_KNOWN_PATH))
-                        .username(USERNAME)
-                        .password(PASSWORD)
-                        .accountId(ACCOUNT_ID)
-                        .cache(inMemoryCache)
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .sessionResource(server.url(WELL_KNOWN_PATH))
+                .username(USERNAME)
+                .password(PASSWORD)
+                .accountId(ACCOUNT_ID)
+                .cache(inMemoryCache)
+                .build()) {
             mua.refreshMailboxes().get();
 
-            IdentifiableMailboxWithRole mailbox =
-                    MailboxUtil.find(inMemoryCache.getSpecialMailboxes(), Role.IMPORTANT);
+            IdentifiableMailboxWithRole mailbox = MailboxUtil.find(inMemoryCache.getSpecialMailboxes(), Role.IMPORTANT);
 
             Assertions.assertNotNull(mailbox);
 
             final Collection<MyIdentifiableEmailWithMailboxes> emails =
                     ImmutableSet.of(new MyIdentifiableEmailWithMailboxes("e0", "mb0"));
 
-            Assertions.assertFalse(mua.removeFromMailbox(emails, mailbox.getId()).get());
+            Assertions.assertFalse(
+                    mua.removeFromMailbox(emails, mailbox.getId()).get());
         }
 
         server.shutdown();

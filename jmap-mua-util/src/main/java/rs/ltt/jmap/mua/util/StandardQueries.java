@@ -37,15 +37,13 @@ public final class StandardQueries {
 
     public static EmailQuery mailbox(final String mailboxId) {
         Preconditions.checkNotNull(mailboxId);
-        return EmailQuery.of(
-                EmailFilterCondition.builder().inMailbox(mailboxId).build(), SORT_DEFAULT, true);
+        return EmailQuery.of(EmailFilterCondition.builder().inMailbox(mailboxId).build(), SORT_DEFAULT, true);
     }
 
     public static EmailQuery keyword(final String keyword, final String[] trashAndJunk) {
         Preconditions.checkNotNull(keyword);
         Preconditions.checkNotNull(trashAndJunk);
-        Preconditions.checkArgument(
-                trashAndJunk.length <= 2, "Provide mailbox ids for trash and junk");
+        Preconditions.checkArgument(trashAndJunk.length <= 2, "Provide mailbox ids for trash and junk");
         // TODO; we probably want to change this to someInThreadHaveKeyword?
         return EmailQuery.of(
                 EmailFilterCondition.builder()
@@ -59,8 +57,7 @@ public final class StandardQueries {
     public static EmailQuery search(final String searchTerm, final String[] trashAndJunk) {
         Preconditions.checkNotNull(searchTerm);
         Preconditions.checkNotNull(trashAndJunk);
-        Preconditions.checkArgument(
-                trashAndJunk.length <= 2, "Provide mailbox ids for trash and junk");
+        Preconditions.checkArgument(trashAndJunk.length <= 2, "Provide mailbox ids for trash and junk");
         return EmailQuery.of(
                 EmailFilterCondition.builder()
                         .text(searchTerm)
@@ -73,8 +70,7 @@ public final class StandardQueries {
     public static EmailQuery contact(final String contact, final String[] trashAndJunk) {
         Preconditions.checkNotNull(contact);
         Preconditions.checkNotNull(trashAndJunk);
-        Preconditions.checkArgument(
-                trashAndJunk.length <= 2, "Provide mailbox ids for trash and junk");
+        Preconditions.checkArgument(trashAndJunk.length <= 2, "Provide mailbox ids for trash and junk");
         return EmailQuery.of(
                 FilterOperator.and(
                         FilterOperator.or(
@@ -82,7 +78,9 @@ public final class StandardQueries {
                                 EmailFilterCondition.builder().to(contact).build(),
                                 EmailFilterCondition.builder().cc(contact).build(),
                                 EmailFilterCondition.builder().bcc(contact).build()),
-                        EmailFilterCondition.builder().inMailboxOtherThan(trashAndJunk).build()),
+                        EmailFilterCondition.builder()
+                                .inMailboxOtherThan(trashAndJunk)
+                                .build()),
                 SORT_DEFAULT,
                 true);
     }

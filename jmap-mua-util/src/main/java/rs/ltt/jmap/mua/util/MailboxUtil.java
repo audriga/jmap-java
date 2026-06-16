@@ -30,14 +30,12 @@ import rs.ltt.jmap.common.entity.Role;
 public class MailboxUtil {
 
     /**
-     * when auto creating mailboxes we pick a 'human readable' version of the role as the name.
-     * Since mailbox names have to be unique it is not advisable (although not prohibited by the
-     * standard) to use those names when creating 'labels'
+     * when auto creating mailboxes we pick a 'human readable' version of the role as the name. Since mailbox names have
+     * to be unique it is not advisable (although not prohibited by the standard) to use those names when creating
+     * 'labels'
      */
     public static List<String> RESERVED_MAILBOX_NAMES =
-            Arrays.stream(Role.values())
-                    .map(MailboxUtil::humanReadable)
-                    .collect(Collectors.toList());
+            Arrays.stream(Role.values()).map(MailboxUtil::humanReadable).collect(Collectors.toList());
 
     public static @Nullable IdentifiableMailboxWithRole find(
             Collection<? extends IdentifiableMailboxWithRole> mailboxes, Role role) {
@@ -49,8 +47,7 @@ public class MailboxUtil {
         return null;
     }
 
-    public static boolean anyWithRole(
-            Collection<? extends IdentifiableMailboxWithRole> mailboxes, Role role) {
+    public static boolean anyWithRole(Collection<? extends IdentifiableMailboxWithRole> mailboxes, Role role) {
         for (final IdentifiableMailboxWithRole mailbox : mailboxes) {
             if (mailbox.getRole() == role) {
                 return true;
@@ -67,8 +64,7 @@ public class MailboxUtil {
         return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, role.toString());
     }
 
-    public static boolean anyIn(
-            Collection<? extends IdentifiableEmailWithMailboxIds> emails, String mailboxId) {
+    public static boolean anyIn(Collection<? extends IdentifiableEmailWithMailboxIds> emails, String mailboxId) {
         for (IdentifiableEmailWithMailboxIds email : emails) {
             if (email.getMailboxIds().containsKey(mailboxId)) {
                 return true;

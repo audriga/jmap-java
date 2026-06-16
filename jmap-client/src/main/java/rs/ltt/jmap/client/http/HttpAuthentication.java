@@ -37,19 +37,16 @@ public interface HttpAuthentication {
         DIGEST;
 
         public static Set<Scheme> of(final Collection<Challenge> challenges) {
-            return ImmutableSet.copyOf(
-                    Collections2.filter(
-                            Collections2.transform(
-                                    challenges,
-                                    c -> {
-                                        try {
-                                            return Scheme.valueOf(
-                                                    Strings.nullToEmpty(c.scheme()).toUpperCase());
-                                        } catch (final IllegalArgumentException e) {
-                                            return null;
-                                        }
-                                    }),
-                            Objects::nonNull));
+            return ImmutableSet.copyOf(Collections2.filter(
+                    Collections2.transform(challenges, c -> {
+                        try {
+                            return Scheme.valueOf(
+                                    Strings.nullToEmpty(c.scheme()).toUpperCase());
+                        } catch (final IllegalArgumentException e) {
+                            return null;
+                        }
+                    }),
+                    Objects::nonNull));
         }
     }
 }

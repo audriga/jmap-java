@@ -52,8 +52,7 @@ public class RequestBodies {
                         done += read;
                         if (progress != null) {
                             bufferedSink.flush();
-                            progress.onProgress(
-                                    Progress.progress(done, uploadable.getContentLength()));
+                            progress.onProgress(Progress.progress(done, uploadable.getContentLength()));
                         }
                     }
                 }

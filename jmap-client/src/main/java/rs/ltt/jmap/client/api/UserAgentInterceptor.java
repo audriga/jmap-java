@@ -28,14 +28,9 @@ public class UserAgentInterceptor implements Interceptor {
     @NonNull
     public Response intercept(final Chain chain) throws IOException {
         final Request original = chain.request();
-        final Request modified =
-                original.newBuilder()
-                        .header(
-                                "User-Agent",
-                                String.format(
-                                        "%s/%s (%s)",
-                                        Version.ARTIFACT_ID, Version.VERSION, Version.URL))
-                        .build();
+        final Request modified = original.newBuilder()
+                .header("User-Agent", String.format("%s/%s (%s)", Version.ARTIFACT_ID, Version.VERSION, Version.URL))
+                .build();
         return chain.proceed(modified);
     }
 }

@@ -28,9 +28,12 @@ import rs.ltt.jmap.common.method.MethodCall;
 @Builder
 public class ImportEmailMethodCall implements MethodCall {
 
-    @NonNull private String accountId;
+    @NonNull
+    private String accountId;
 
     private String ifInState;
 
-    @NonNull @Singular private Map<String, EmailImport> emails;
+    @NonNull
+    @Singular
+    private Map<String, EmailImport> emails;
 }

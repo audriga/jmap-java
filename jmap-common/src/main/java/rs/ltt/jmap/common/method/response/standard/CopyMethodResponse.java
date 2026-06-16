@@ -23,8 +23,7 @@ import rs.ltt.jmap.common.entity.SetError;
 import rs.ltt.jmap.common.method.MethodResponse;
 
 @Getter
-public abstract class CopyMethodResponse<T extends AbstractIdentifiableEntity>
-        implements MethodResponse {
+public abstract class CopyMethodResponse<T extends AbstractIdentifiableEntity> implements MethodResponse {
 
     private String fromAccountId;
 

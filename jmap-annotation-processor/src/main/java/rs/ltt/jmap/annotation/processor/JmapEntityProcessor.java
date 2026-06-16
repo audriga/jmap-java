@@ -42,8 +42,7 @@ import rs.ltt.jmap.common.entity.filter.FilterCondition;
 @AutoService(Processor.class)
 public class JmapEntityProcessor extends AbstractProcessor {
 
-    private static final Class<AbstractIdentifiableEntity> INTERFACE =
-            AbstractIdentifiableEntity.class;
+    private static final Class<AbstractIdentifiableEntity> INTERFACE = AbstractIdentifiableEntity.class;
 
     private Filer filer;
     private TypeMirror abstractIdMirror;
@@ -54,17 +53,14 @@ public class JmapEntityProcessor extends AbstractProcessor {
         super.init(processingEnvironment);
         this.filer = processingEnvironment.getFiler();
         this.typeUtils = processingEnvironment.getTypeUtils();
-        this.abstractIdMirror =
-                processingEnvironment
-                        .getElementUtils()
-                        .getTypeElement(INTERFACE.getName())
-                        .asType();
+        this.abstractIdMirror = processingEnvironment
+                .getElementUtils()
+                .getTypeElement(INTERFACE.getName())
+                .asType();
     }
 
-    public boolean process(
-            final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnvironment) {
-        final Set<? extends Element> elements =
-                roundEnvironment.getElementsAnnotatedWith(JmapEntity.class);
+    public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnvironment) {
+        final Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith(JmapEntity.class);
         final List<TypeElement> classes = new ArrayList<>();
         for (final Element element : elements) {
             if (element instanceof TypeElement) {
@@ -72,10 +68,7 @@ public class JmapEntityProcessor extends AbstractProcessor {
                 if (typeUtils.isAssignable(element.asType(), abstractIdMirror)) {
                     classes.add(typeElement);
                 } else {
-                    System.err.println(
-                            typeElement.getQualifiedName()
-                                    + " does not implement "
-                                    + abstractIdMirror);
+                    System.err.println(typeElement.getQualifiedName() + " does not implement " + abstractIdMirror);
                 }
             }
         }
@@ -94,11 +87,8 @@ public class JmapEntityProcessor extends AbstractProcessor {
     }
 
     private void writeEntities(final List<TypeElement> classes) throws IOException {
-        final FileObject resourceFile =
-                filer.createResource(
-                        StandardLocation.CLASS_OUTPUT,
-                        "",
-                        Utils.getFilenameFor(AbstractIdentifiableEntity.class));
+        final FileObject resourceFile = filer.createResource(
+                StandardLocation.CLASS_OUTPUT, "", Utils.getFilenameFor(AbstractIdentifiableEntity.class));
         final PrintWriter printWriter = new PrintWriter(resourceFile.openOutputStream());
         for (final TypeElement typeElement : classes) {
             final JmapEntity annotation = typeElement.getAnnotation(JmapEntity.class);
@@ -108,8 +98,7 @@ public class JmapEntityProcessor extends AbstractProcessor {
             } else {
                 name = annotation.name();
             }
-            printWriter.format(
-                    "%s %s%n", processingEnv.getElementUtils().getBinaryName(typeElement), name);
+            printWriter.format("%s %s%n", processingEnv.getElementUtils().getBinaryName(typeElement), name);
         }
         printWriter.flush();
         printWriter.close();
@@ -118,23 +107,16 @@ public class JmapEntityProcessor extends AbstractProcessor {
 
     private void writeFilterConditions(final List<TypeElement> classes) throws IOException {
         final FileObject resourceFile =
-                filer.createResource(
-                        StandardLocation.CLASS_OUTPUT,
-                        "",
-                        Utils.getFilenameFor(FilterCondition.class));
+                filer.createResource(StandardLocation.CLASS_OUTPUT, "", Utils.getFilenameFor(FilterCondition.class));
         final PrintWriter printWriter = new PrintWriter(resourceFile.openOutputStream());
         for (final TypeElement typeElement : classes) {
             final TypeMirror typeMirror = getFilterCondition(typeElement);
-            if (typeMirror
-                    .toString()
-                    .equals(JmapEntity.NoFilterCondition.class.getCanonicalName())) {
+            if (typeMirror.toString().equals(JmapEntity.NoFilterCondition.class.getCanonicalName())) {
                 System.out.println("skipping " + typeMirror);
                 continue;
             }
             System.out.println(typeMirror);
-            printWriter.format(
-                    "%s %s%n",
-                    processingEnv.getElementUtils().getBinaryName(typeElement), typeMirror);
+            printWriter.format("%s %s%n", processingEnv.getElementUtils().getBinaryName(typeElement), typeMirror);
         }
         printWriter.flush();
         printWriter.close();
@@ -147,8 +129,7 @@ public class JmapEntityProcessor extends AbstractProcessor {
             final Class<? extends FilterCondition<? extends AbstractIdentifiableEntity>> fc =
                     annotation.filterCondition();
             System.err.format("FilterCondition %s is not throwing as expected", fc.getSimpleName());
-            throw new IllegalStateException(
-                    "Getting Filter condition from annotation did not throw");
+            throw new IllegalStateException("Getting Filter condition from annotation did not throw");
         } catch (MirroredTypeException e) {
             return e.getTypeMirror();
         }

@@ -27,10 +27,7 @@ public class GetIdentityMethodCall extends GetMethodCall<Identity> {
 
     @Builder
     public GetIdentityMethodCall(
-            String accountId,
-            String[] ids,
-            String[] properties,
-            Request.Invocation.ResultReference idsReference) {
+            String accountId, String[] ids, String[] properties, Request.Invocation.ResultReference idsReference) {
         super(accountId, ids, properties, idsReference);
     }
 }

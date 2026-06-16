@@ -35,18 +35,16 @@ public class MapperLoggingUtils {
     private static final Map<Class<?>, Class<?>> WELL_KNOWN_MAPPINGS;
 
     static {
-        WELL_KNOWN_MAPPINGS =
-                new ImmutableMap.Builder<Class<?>, Class<?>>()
-                        .put(MethodCall.class, EchoMethodCall.class)
-                        .put(MethodResponse.class, EchoMethodResponse.class)
-                        .put(MethodErrorResponse.class, UnknownMethodMethodErrorResponse.class)
-                        .put(Capability.class, CoreCapability.class)
-                        .put(AccountCapability.class, MailAccountCapability.class)
-                        .build();
+        WELL_KNOWN_MAPPINGS = new ImmutableMap.Builder<Class<?>, Class<?>>()
+                .put(MethodCall.class, EchoMethodCall.class)
+                .put(MethodResponse.class, EchoMethodResponse.class)
+                .put(MethodErrorResponse.class, UnknownMethodMethodErrorResponse.class)
+                .put(Capability.class, CoreCapability.class)
+                .put(AccountCapability.class, MailAccountCapability.class)
+                .build();
     }
 
-    public static <T> boolean isMissingWellKnown(
-            ImmutableBiMap<String, Class<? extends T>> map, Class<T> type) {
+    public static <T> boolean isMissingWellKnown(ImmutableBiMap<String, Class<? extends T>> map, Class<T> type) {
         final Class<?> wellKnownMapping = WELL_KNOWN_MAPPINGS.get(type);
         return wellKnownMapping != null && !map.containsValue(wellKnownMapping);
     }

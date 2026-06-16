@@ -30,14 +30,11 @@ public class PushMessageDeserializer implements JsonDeserializer<PushMessage> {
 
     @Override
     public PushMessage deserialize(
-            final JsonElement jsonElement,
-            final Type type,
-            final JsonDeserializationContext context)
+            final JsonElement jsonElement, final Type type, final JsonDeserializationContext context)
             throws JsonParseException {
         if (!jsonElement.isJsonObject()) {
-            throw new JsonParseException(
-                    "Expected JSON object for PushMessage. Got "
-                            + jsonElement.getClass().getSimpleName());
+            throw new JsonParseException("Expected JSON object for PushMessage. Got "
+                    + jsonElement.getClass().getSimpleName());
         }
         final JsonObject jsonObject = jsonElement.getAsJsonObject();
         if (!jsonObject.has("@type")) {

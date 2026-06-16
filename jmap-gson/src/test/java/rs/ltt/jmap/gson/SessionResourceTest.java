@@ -33,8 +33,7 @@ public class SessionResourceTest extends AbstractGsonTest {
 
     @Test
     public void deserializeBasicRfcExample() throws IOException {
-        final SessionResource session =
-                parseFromResource("rfc-example/session.json", SessionResource.class);
+        final SessionResource session = parseFromResource("rfc-example/session.json", SessionResource.class);
         assertNotNull(session.getCapability(MailCapability.class));
         assertNotNull(session.getCapability(ContactsCapability.class));
         assertNull(session.getCapability(VacationResponseCapability.class));
@@ -64,8 +63,7 @@ public class SessionResourceTest extends AbstractGsonTest {
 
     @Test
     public void missingRequiredPropertyInMailCapability() throws IOException {
-        final SessionResource session =
-                parseFromResource("rfc-example/session.json", SessionResource.class);
+        final SessionResource session = parseFromResource("rfc-example/session.json", SessionResource.class);
 
         Map<String, Account> accounts = session.getAccounts();
         assertNotNull(accounts);
@@ -73,45 +71,44 @@ public class SessionResourceTest extends AbstractGsonTest {
         Account account = accounts.get("A13824");
         assertNotNull(account);
 
-        MailAccountCapability mailAccountCapability =
-                account.getCapability(MailAccountCapability.class);
+        MailAccountCapability mailAccountCapability = account.getCapability(MailAccountCapability.class);
 
         // this property is missing in the example but is required
-        assertThrows(
-                IllegalStateException.class, mailAccountCapability::maxSizeAttachmentsPerEmail);
+        assertThrows(IllegalStateException.class, mailAccountCapability::maxSizeAttachmentsPerEmail);
     }
 
     @Test
     public void serialization() throws IOException {
-        Map<Class<? extends Capability>, Capability> caps =
-                new ImmutableMap.Builder<Class<? extends Capability>, Capability>()
-                        .put(MailCapability.class, MailCapability.builder().build())
-                        .put(
-                                CoreCapability.class,
-                                CoreCapability.builder()
-                                        .maxSizeUpload(5000L)
-                                        .maxCallsInRequest(2L)
-                                        .build())
-                        .build();
-        Map<Class<? extends AccountCapability>, AccountCapability> accountCaps =
-                new ImmutableMap.Builder<Class<? extends AccountCapability>, AccountCapability>()
-                        .put(MailAccountCapability.class, MailAccountCapability.builder().build())
-                        .build();
+        Map<Class<? extends Capability>, Capability> caps = new ImmutableMap.Builder<
+                        Class<? extends Capability>, Capability>()
+                .put(MailCapability.class, MailCapability.builder().build())
+                .put(
+                        CoreCapability.class,
+                        CoreCapability.builder()
+                                .maxSizeUpload(5000L)
+                                .maxCallsInRequest(2L)
+                                .build())
+                .build();
+        Map<Class<? extends AccountCapability>, AccountCapability> accountCaps = new ImmutableMap.Builder<
+                        Class<? extends AccountCapability>, AccountCapability>()
+                .put(
+                        MailAccountCapability.class,
+                        MailAccountCapability.builder().build())
+                .build();
 
-        Map<Class<? extends AccountCapability>, String> primary =
-                new ImmutableMap.Builder<Class<? extends AccountCapability>, String>()
-                        .put(MailAccountCapability.class, "foo@example.com")
-                        .build();
+        Map<Class<? extends AccountCapability>, String> primary = new ImmutableMap.Builder<
+                        Class<? extends AccountCapability>, String>()
+                .put(MailAccountCapability.class, "foo@example.com")
+                .build();
 
-        SessionResource resource =
-                SessionResource.builder()
-                        .apiUrl("/jmap/")
-                        .capabilities(caps)
-                        .account(
-                                "foo@example.com",
-                                Account.builder().accountCapabilities(accountCaps).build())
-                        .primaryAccounts(primary)
-                        .build();
+        SessionResource resource = SessionResource.builder()
+                .apiUrl("/jmap/")
+                .capabilities(caps)
+                .account(
+                        "foo@example.com",
+                        Account.builder().accountCapabilities(accountCaps).build())
+                .primaryAccounts(primary)
+                .build();
         Gson gson = getGson();
         assertEquals(readResourceAsString("session/basic.json"), gson.toJson(resource));
     }

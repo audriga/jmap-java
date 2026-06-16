@@ -27,13 +27,11 @@ import rs.ltt.jmap.common.util.Mapper;
 public class AccountCapabilitiesSerializer
         implements JsonSerializer<Map<Class<? extends AccountCapability>, AccountCapability>> {
 
-    private static final ImmutableMap<Class<? extends AccountCapability>, String>
-            ACCOUNT_CAPABILITIES = Mapper.ACCOUNT_CAPABILITIES.inverse();
+    private static final ImmutableMap<Class<? extends AccountCapability>, String> ACCOUNT_CAPABILITIES =
+            Mapper.ACCOUNT_CAPABILITIES.inverse();
 
     public static void register(final GsonBuilder builder) {
-        Type type =
-                new TypeToken<
-                        Map<Class<? extends AccountCapability>, AccountCapability>>() {}.getType();
+        Type type = new TypeToken<Map<Class<? extends AccountCapability>, AccountCapability>>() {}.getType();
         builder.registerTypeAdapter(type, new AccountCapabilitiesSerializer());
     }
 
@@ -43,13 +41,10 @@ public class AccountCapabilitiesSerializer
             Type type,
             JsonSerializationContext context) {
         final JsonObject jsonObject = new JsonObject();
-        for (Map.Entry<Class<? extends AccountCapability>, AccountCapability> entry :
-                map.entrySet()) {
+        for (Map.Entry<Class<? extends AccountCapability>, AccountCapability> entry : map.entrySet()) {
             final Class<? extends AccountCapability> clazz = entry.getKey();
             final String name = ACCOUNT_CAPABILITIES.get(clazz);
-            jsonObject.add(
-                    name != null ? name : clazz.getSimpleName(),
-                    context.serialize(entry.getValue()));
+            jsonObject.add(name != null ? name : clazz.getSimpleName(), context.serialize(entry.getValue()));
         }
         return jsonObject;
     }

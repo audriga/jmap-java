@@ -241,58 +241,53 @@ public class Email extends AbstractIdentifiableEntity
         public static final String USER_AGENT = "header:User-Agent:asText";
         public static final String AUTOCRYPT = "header:Autocrypt:asText:all";
         public static final String AUTOCRYPT_DRAFT_STATE = "header:Autocrypt-Draft-State:asText";
-        public static final String AUTOCRYPT_SETUP_MESSAGE =
-                "header:Autocrypt-Setup-Message:asText";
+        public static final String AUTOCRYPT_SETUP_MESSAGE = "header:Autocrypt-Setup-Message:asText";
 
         private Property() {}
     }
 
     public static final class Properties {
         public static final String[] THREAD_ID = new String[] {Property.THREAD_ID};
-        public static final String[] MUTABLE =
-                new String[] {Property.KEYWORDS, Property.MAILBOX_IDS};
-        private static final String[] BASE =
-                new String[] {
-                    Property.ID,
-                    Property.BLOB_ID,
-                    Property.THREAD_ID,
-                    Property.MAILBOX_IDS,
-                    Property.KEYWORDS,
-                    Property.SIZE,
-                    Property.RECEIVED_AT,
-                    Property.MESSAGE_ID,
-                    Property.IN_REPLY_TO,
-                    Property.REFERENCES,
-                    Property.SENDER,
-                    Property.FROM,
-                    Property.TO,
-                    Property.CC,
-                    Property.BCC,
-                    Property.REPLY_TO,
-                    Property.SUBJECT,
-                    Property.BODY_VALUES,
-                    Property.TEXT_BODY,
-                    Property.HTML_BODY,
-                    Property.ATTACHMENTS
-                };
-        public static final String[] RFC_8621_DEFAULT =
-                new ImmutableList.Builder<String>()
-                        .addAll(Arrays.asList(BASE))
-                        .add(Property.HAS_ATTACHMENT)
-                        .add(Property.PREVIEW)
-                        .build()
-                        .toArray(new String[0]);
-        public static final String[] LTTRS_DEFAULT =
-                new ImmutableList.Builder<String>()
-                        .addAll(Arrays.asList(BASE))
-                        .add(Property.SENT_AT)
-                        .add(Property.BODY_STRUCTURE)
-                        .add(Property.USER_AGENT)
-                        .add(Property.AUTOCRYPT)
-                        .add(Property.AUTOCRYPT_DRAFT_STATE)
-                        .add(Property.AUTOCRYPT_SETUP_MESSAGE)
-                        .build()
-                        .toArray(new String[0]);
+        public static final String[] MUTABLE = new String[] {Property.KEYWORDS, Property.MAILBOX_IDS};
+        private static final String[] BASE = new String[] {
+            Property.ID,
+            Property.BLOB_ID,
+            Property.THREAD_ID,
+            Property.MAILBOX_IDS,
+            Property.KEYWORDS,
+            Property.SIZE,
+            Property.RECEIVED_AT,
+            Property.MESSAGE_ID,
+            Property.IN_REPLY_TO,
+            Property.REFERENCES,
+            Property.SENDER,
+            Property.FROM,
+            Property.TO,
+            Property.CC,
+            Property.BCC,
+            Property.REPLY_TO,
+            Property.SUBJECT,
+            Property.BODY_VALUES,
+            Property.TEXT_BODY,
+            Property.HTML_BODY,
+            Property.ATTACHMENTS
+        };
+        public static final String[] RFC_8621_DEFAULT = new ImmutableList.Builder<String>()
+                .addAll(Arrays.asList(BASE))
+                .add(Property.HAS_ATTACHMENT)
+                .add(Property.PREVIEW)
+                .build()
+                .toArray(new String[0]);
+        public static final String[] LTTRS_DEFAULT = new ImmutableList.Builder<String>()
+                .addAll(Arrays.asList(BASE))
+                .add(Property.SENT_AT)
+                .add(Property.BODY_STRUCTURE)
+                .add(Property.USER_AGENT)
+                .add(Property.AUTOCRYPT)
+                .add(Property.AUTOCRYPT_DRAFT_STATE)
+                .add(Property.AUTOCRYPT_SETUP_MESSAGE)
+                .build()
+                .toArray(new String[0]);
 
         private Properties() {}
     }

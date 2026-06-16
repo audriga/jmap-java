@@ -41,8 +41,7 @@ public class IdentityService extends AbstractMuaService {
     }
 
     public ListenableFuture<Status> refreshIdentities() {
-        final ListenableFuture<String> identityStateFuture =
-                ioExecutorService.submit(cache::getIdentityState);
+        final ListenableFuture<String> identityStateFuture = ioExecutorService.submit(cache::getIdentityState);
         return Futures.transformAsync(
                 identityStateFuture,
                 state -> {
@@ -63,15 +62,13 @@ public class IdentityService extends AbstractMuaService {
     }
 
     private ListenableFuture<Status> loadIdentities(final JmapClient.MultiCall multiCall) {
-        final ListenableFuture<MethodResponses> responseFuture =
-                multiCall
-                        .call(GetIdentityMethodCall.builder().accountId(accountId).build())
-                        .getMethodResponses();
+        final ListenableFuture<MethodResponses> responseFuture = multiCall
+                .call(GetIdentityMethodCall.builder().accountId(accountId).build())
+                .getMethodResponses();
         return Futures.transformAsync(
                 responseFuture,
                 methodResponses -> {
-                    final GetIdentityMethodResponse response =
-                            methodResponses.getMain(GetIdentityMethodResponse.class);
+                    final GetIdentityMethodResponse response = methodResponses.getMain(GetIdentityMethodResponse.class);
                     final Identity[] identities = response.getList();
                     cache.setIdentities(response.getTypedState(), identities);
                     return Futures.immediateFuture(Status.of(identities.length > 0));
@@ -86,8 +83,7 @@ public class IdentityService extends AbstractMuaService {
         return future;
     }
 
-    private ListenableFuture<Status> updateIdentities(
-            final String state, final JmapClient.MultiCall multiCall) {
+    private ListenableFuture<Status> updateIdentities(final String state, final JmapClient.MultiCall multiCall) {
         Preconditions.checkNotNull(state, "State can not be null when updating identities");
         final UpdateUtil.MethodResponsesFuture methodResponsesFuture =
                 UpdateUtil.identities(multiCall, accountId, state);
@@ -100,8 +96,7 @@ public class IdentityService extends AbstractMuaService {
                             methodResponsesFuture.created(GetIdentityMethodResponse.class);
                     GetIdentityMethodResponse updatedResponse =
                             methodResponsesFuture.updated(GetIdentityMethodResponse.class);
-                    final Update<Identity> update =
-                            Update.of(changesResponse, createdResponse, updatedResponse);
+                    final Update<Identity> update = Update.of(changesResponse, createdResponse, updatedResponse);
                     if (update.hasChanges()) {
                         cache.updateIdentities(update);
                     }

@@ -32,8 +32,7 @@ public class RefreshService extends AbstractMuaService {
     }
 
     public ListenableFuture<Status> refresh() {
-        return Futures.transformAsync(
-                getObjectsState(), this::refresh, MoreExecutors.directExecutor());
+        return Futures.transformAsync(getObjectsState(), this::refresh, MoreExecutors.directExecutor());
     }
 
     public ListenableFuture<Status> refresh(ObjectsState objectsState) {
@@ -43,14 +42,11 @@ public class RefreshService extends AbstractMuaService {
         return transform(futuresList);
     }
 
-    public List<ListenableFuture<Status>> refresh(
-            ObjectsState objectsState, JmapClient.MultiCall multiCall) {
-        ImmutableList.Builder<ListenableFuture<Status>> futuresListBuilder =
-                new ImmutableList.Builder<>();
+    public List<ListenableFuture<Status>> refresh(ObjectsState objectsState, JmapClient.MultiCall multiCall) {
+        ImmutableList.Builder<ListenableFuture<Status>> futuresListBuilder = new ImmutableList.Builder<>();
         if (objectsState.mailboxState != null) {
             futuresListBuilder.add(
-                    getService(MailboxService.class)
-                            .updateMailboxes(objectsState.mailboxState, multiCall));
+                    getService(MailboxService.class).updateMailboxes(objectsState.mailboxState, multiCall));
         } else {
             futuresListBuilder.add(getService(MailboxService.class).loadMailboxes(multiCall));
         }
@@ -59,12 +55,8 @@ public class RefreshService extends AbstractMuaService {
         // when mua queries threads the corresponding emails should already be in the cache
 
         if (objectsState.emailState != null && objectsState.threadState != null) {
-            futuresListBuilder.add(
-                    getService(EmailService.class)
-                            .updateEmails(objectsState.emailState, multiCall));
-            futuresListBuilder.add(
-                    getService(ThreadService.class)
-                            .updateThreads(objectsState.threadState, multiCall));
+            futuresListBuilder.add(getService(EmailService.class).updateEmails(objectsState.emailState, multiCall));
+            futuresListBuilder.add(getService(ThreadService.class).updateThreads(objectsState.threadState, multiCall));
         }
         return futuresListBuilder.build();
     }

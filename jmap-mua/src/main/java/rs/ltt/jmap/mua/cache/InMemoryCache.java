@@ -60,8 +60,7 @@ public class InMemoryCache implements Cache {
             final String mailboxState = this.mailboxState;
             final String threadState = this.threadState;
             final String emailState = this.emailState;
-            final ObjectsState objectsState =
-                    new ObjectsState(mailboxState, threadState, emailState);
+            final ObjectsState objectsState = new ObjectsState(mailboxState, threadState, emailState);
             final InMemoryQueryResult queryResult = queryResults.get(query);
             if (queryResult == null) {
                 return new QueryStateWrapper(null, false, null, objectsState);
@@ -76,10 +75,7 @@ public class InMemoryCache implements Cache {
                     upTo = null;
                 }
                 return new QueryStateWrapper(
-                        queryResult.queryState,
-                        queryResult.canCalculateChanges,
-                        upTo,
-                        objectsState);
+                        queryResult.queryState, queryResult.canCalculateChanges, upTo, objectsState);
             }
         }
     }
@@ -112,9 +108,7 @@ public class InMemoryCache implements Cache {
                 Mailbox target = mailboxes.get(mailbox.getId());
                 if (target == null) {
                     throw new CacheWriteException(
-                            String.format(
-                                    "Unable to update Mailbox(%s). Can not find in cache",
-                                    mailbox.getId()));
+                            String.format("Unable to update Mailbox(%s). Can not find in cache", mailbox.getId()));
                 }
                 if (updatedProperties != null) {
                     for (String property : updatedProperties) { // can be null
@@ -143,34 +137,28 @@ public class InMemoryCache implements Cache {
     public Collection<Mailbox> getSpecialMailboxes() throws NotSynchronizedException {
         synchronized (this.mailboxes) {
             if (this.mailboxState == null) {
-                throw new NotSynchronizedException(
-                        "Mailboxes have not been synchronized yet. Run refresh() first.");
+                throw new NotSynchronizedException("Mailboxes have not been synchronized yet. Run refresh() first.");
             }
             return this.mailboxes.values();
         }
     }
 
     @Override
-    public IdentifiableMailboxWithRoleAndName getMailboxByNameAndParent(
-            String name, String parentId) throws NotSynchronizedException {
+    public IdentifiableMailboxWithRoleAndName getMailboxByNameAndParent(String name, String parentId)
+            throws NotSynchronizedException {
         synchronized (this.mailboxes) {
             if (this.mailboxState == null) {
-                throw new NotSynchronizedException(
-                        "Mailboxes have not been synchronized yet. Run refresh() first.");
+                throw new NotSynchronizedException("Mailboxes have not been synchronized yet. Run refresh() first.");
             }
             return this.mailboxes.values().stream()
-                    .filter(
-                            mailbox ->
-                                    mailbox.getName().equals(name)
-                                            && matches(mailbox.getParentId(), parentId))
+                    .filter(mailbox -> mailbox.getName().equals(name) && matches(mailbox.getParentId(), parentId))
                     .findFirst()
                     .orElse(null);
         }
     }
 
     @Override
-    public Collection<IdentifiableMailboxWithRoleAndName> getMailboxesByNames(
-            final String[] names) {
+    public Collection<IdentifiableMailboxWithRoleAndName> getMailboxesByNames(final String[] names) {
         final List<String> filter = Arrays.asList(names);
         return this.mailboxes.values().stream()
                 .filter(mailbox -> filter.contains(mailbox.getName()))
@@ -183,20 +171,14 @@ public class InMemoryCache implements Cache {
 
     @Override
     public void setThreadsAndEmails(
-            TypedState<Thread> threadState,
-            Thread[] threads,
-            TypedState<Email> emailState,
-            Email[] emails) {
+            TypedState<Thread> threadState, Thread[] threads, TypedState<Email> emailState, Email[] emails) {
         setThreads(threadState, threads);
         setEmails(emailState, emails);
     }
 
     @Override
     public void addThreadsAndEmail(
-            TypedState<Thread> threadState,
-            Thread[] threads,
-            TypedState<Email> emailState,
-            Email[] emails) {
+            TypedState<Thread> threadState, Thread[] threads, TypedState<Email> emailState, Email[] emails) {
         addThreads(threadState, threads);
         addEmails(emailState, emails);
     }
@@ -211,15 +193,13 @@ public class InMemoryCache implements Cache {
         }
     }
 
-    private void addThreads(final TypedState<Thread> typedState, final Thread[] threads)
-            throws CacheConflictException {
+    private void addThreads(final TypedState<Thread> typedState, final Thread[] threads) throws CacheConflictException {
         synchronized (this.threads) {
             if (typedState.getState() == null || !typedState.getState().equals(this.threadState)) {
-                throw new CacheConflictException(
-                        String.format(
-                                "Trying to add threads with an outdated state. Run update first."
-                                        + " Cached state=%s. Your state=%s",
-                                this.threadState, typedState.getState()));
+                throw new CacheConflictException(String.format(
+                        "Trying to add threads with an outdated state. Run update first."
+                                + " Cached state=%s. Your state=%s",
+                        this.threadState, typedState.getState()));
             }
             for (Thread thread : threads) {
                 this.threads.put(thread.getId(), thread);
@@ -236,9 +216,7 @@ public class InMemoryCache implements Cache {
             for (Thread thread : threadUpdate.getCreated()) {
                 if (threads.containsKey(thread.getId())) {
                     throw new CacheWriteException(
-                            String.format(
-                                    "Unable to create Thread(%s). Thread already exists",
-                                    thread.getId()));
+                            String.format("Unable to create Thread(%s). Thread already exists", thread.getId()));
                 } else {
                     this.threads.put(thread.getId(), thread);
                 }
@@ -246,9 +224,7 @@ public class InMemoryCache implements Cache {
             for (Thread thread : threadUpdate.getUpdated()) {
                 if (!this.threads.containsKey(thread.getId())) {
                     throw new CacheWriteException(
-                            String.format(
-                                    "Unable to update Thread(%s). Thread doesnt exists",
-                                    thread.getId()));
+                            String.format("Unable to update Thread(%s). Thread doesnt exists", thread.getId()));
                 }
                 this.threads.put(thread.getId(), thread);
             }
@@ -269,15 +245,13 @@ public class InMemoryCache implements Cache {
         }
     }
 
-    private void addEmails(TypedState<Email> typedState, Email[] emails)
-            throws CacheConflictException {
+    private void addEmails(TypedState<Email> typedState, Email[] emails) throws CacheConflictException {
         synchronized (this.emails) {
             if (typedState.getState() == null || !typedState.getState().equals(this.emailState)) {
-                throw new CacheConflictException(
-                        String.format(
-                                "Trying to add emails with an outdated state. Run update first."
-                                        + " Cached state=%s. Your state=%s",
-                                this.emailState, typedState.getState()));
+                throw new CacheConflictException(String.format(
+                        "Trying to add emails with an outdated state. Run update first."
+                                + " Cached state=%s. Your state=%s",
+                        this.emailState, typedState.getState()));
             }
             for (Email email : emails) {
                 this.emails.put(email.getId(), email);
@@ -286,8 +260,7 @@ public class InMemoryCache implements Cache {
     }
 
     @Override
-    public void updateEmails(Update<Email> emailUpdate, String[] updatedProperties)
-            throws CacheWriteException {
+    public void updateEmails(Update<Email> emailUpdate, String[] updatedProperties) throws CacheWriteException {
         synchronized (this.emails) {
 
             // TODO check state
@@ -299,9 +272,7 @@ public class InMemoryCache implements Cache {
                 Email target = emails.get(email.getId());
                 if (target == null) {
                     throw new CacheWriteException(
-                            String.format(
-                                    "Unable to update Email(%s). Can not find in cache",
-                                    email.getId()));
+                            String.format("Unable to update Email(%s). Can not find in cache", email.getId()));
                 }
                 for (String property : updatedProperties) {
                     try {
@@ -343,9 +314,7 @@ public class InMemoryCache implements Cache {
             for (Identity identity : identityUpdate.getCreated()) {
                 if (this.identities.containsKey(identity.getId())) {
                     throw new CacheWriteException(
-                            String.format(
-                                    "Unable to create Identity(%s). Identity already exists",
-                                    identity.getId()));
+                            String.format("Unable to create Identity(%s). Identity already exists", identity.getId()));
                 } else {
                     this.identities.put(identity.getId(), identity);
                 }
@@ -353,9 +322,7 @@ public class InMemoryCache implements Cache {
             for (Identity identity : identityUpdate.getUpdated()) {
                 if (!this.identities.containsKey(identity.getId())) {
                     throw new CacheWriteException(
-                            String.format(
-                                    "Unable to update Identity(%s). Identity doesnt exists",
-                                    identity.getId()));
+                            String.format("Unable to update Identity(%s). Identity doesnt exists", identity.getId()));
                 }
                 this.identities.put(identity.getId(), identity);
             }
@@ -379,18 +346,14 @@ public class InMemoryCache implements Cache {
         synchronized (this.queryResults) {
             final String emailState = queryResult.objectState.getState();
             if (emailState == null || !emailState.equals(this.emailState)) {
-                throw new CacheConflictException(
-                        String.format(
-                                "Email state must match when updating query results. Cached"
-                                        + " state=%s. Your state=%s",
-                                this.emailState, emailState));
+                throw new CacheConflictException(String.format(
+                        "Email state must match when updating query results. Cached" + " state=%s. Your state=%s",
+                        this.emailState, emailState));
             }
             this.queryResults.put(
                     query,
                     new InMemoryQueryResult(
-                            queryResult.queryState.getState(),
-                            queryResult.canCalculateChanges,
-                            queryResult.items));
+                            queryResult.queryState.getState(), queryResult.canCalculateChanges, queryResult.items));
         }
     }
 
@@ -404,11 +367,9 @@ public class InMemoryCache implements Cache {
             // TODO simply ignore if already applied
 
             if (emailState == null || !emailState.equals(this.emailState)) {
-                throw new CacheConflictException(
-                        String.format(
-                                "Email state must match when updating query results. Cached"
-                                        + " state=%s. Your state=%s",
-                                this.emailState, emailState));
+                throw new CacheConflictException(String.format(
+                        "Email state must match when updating query results. Cached" + " state=%s. Your state=%s",
+                        this.emailState, emailState));
             }
             final InMemoryQueryResult inMemoryQueryResult = this.queryResults.get(queryString);
             if (inMemoryQueryResult == null) {
@@ -423,19 +384,15 @@ public class InMemoryCache implements Cache {
                     inMemoryQueryResult.items.get(currentItemCount - 1).getEmailId();
 
             if (!currentLastItemId.equals(afterEmailId)) {
-                throw new CacheConflictException(
-                        String.format(
-                                "Current last email id (%s) doesn't match afterId (%s) from"
-                                        + " request",
-                                currentLastItemId, afterEmailId));
+                throw new CacheConflictException(String.format(
+                        "Current last email id (%s) doesn't match afterId (%s) from" + " request",
+                        currentLastItemId, afterEmailId));
             }
 
             if (currentItemCount != queryResult.position) {
-                throw new CorruptCacheException(
-                        String.format(
-                                "Unexpected QueryPage. Cache has %d items. Page starts at position"
-                                        + " %d",
-                                currentItemCount, queryResult.position));
+                throw new CorruptCacheException(String.format(
+                        "Unexpected QueryPage. Cache has %d items. Page starts at position" + " %d",
+                        currentItemCount, queryResult.position));
             }
             inMemoryQueryResult.items.addAll(Arrays.asList(queryResult.items));
         }
@@ -448,22 +405,18 @@ public class InMemoryCache implements Cache {
         synchronized (this.queryResults) {
             final InMemoryQueryResult queryResult = this.queryResults.get(query);
             if (queryResult == null) {
-                throw new CacheWriteException(
-                        "Unable to update query. Can not find cached version");
+                throw new CacheWriteException("Unable to update query. Can not find cached version");
             }
             if (emailState.getState() == null || !emailState.getState().equals(this.emailState)) {
-                throw new CacheConflictException(
-                        String.format(
-                                "Email state must match when updating query results. Cached"
-                                        + " state=%s. Your state=%s",
-                                this.emailState, emailState.getState()));
+                throw new CacheConflictException(String.format(
+                        "Email state must match when updating query results. Cached" + " state=%s. Your state=%s",
+                        this.emailState, emailState.getState()));
             }
             if (update.getOldTypedState().getState() == null
                     || !update.getOldTypedState().getState().equals(queryResult.queryState)) {
-                throw new CacheConflictException(
-                        String.format(
-                                "OldState (%s) did not match our expectation ",
-                                update.getOldTypedState().getState()));
+                throw new CacheConflictException(String.format(
+                        "OldState (%s) did not match our expectation ",
+                        update.getOldTypedState().getState()));
             }
             for (String removed : update.getRemoved()) {
                 LOGGER.info("no removing id " + removed);
@@ -472,11 +425,7 @@ public class InMemoryCache implements Cache {
             for (AddedItem<QueryResultItem> addedItem : update.getAdded()) {
                 // TODO it is probably save to just not add an item that exceeds the range (position
                 // > length) but this indicates a broken uper layer
-                LOGGER.info(
-                        "now adding "
-                                + addedItem.getItem().getEmailId()
-                                + " on index "
-                                + addedItem.getIndex());
+                LOGGER.info("now adding " + addedItem.getItem().getEmailId() + " on index " + addedItem.getIndex());
                 queryResult.items.add((int) addedItem.getIndex(), addedItem.getItem());
             }
             queryResult.queryState = update.getNewTypedState().getState();
@@ -532,8 +481,7 @@ public class InMemoryCache implements Cache {
     }
 
     private static <T extends AbstractIdentifiableEntity> void copyProperty(
-            T target, T source, String property, Class<T> clazz)
-            throws NoSuchFieldException, IllegalAccessException {
+            T target, T source, String property, Class<T> clazz) throws NoSuchFieldException, IllegalAccessException {
         Field field = clazz.getDeclaredField(property);
         field.setAccessible(true);
         field.set(target, field.get(source));
@@ -545,8 +493,7 @@ public class InMemoryCache implements Cache {
         private final boolean canCalculateChanges;
         private final ArrayList<QueryResultItem> items;
 
-        InMemoryQueryResult(
-                String queryState, boolean canCalculateChanges, QueryResultItem[] items) {
+        InMemoryQueryResult(String queryState, boolean canCalculateChanges, QueryResultItem[] items) {
             this.queryState = queryState;
             this.canCalculateChanges = canCalculateChanges;
             this.items = new ArrayList<>(Arrays.asList(items));

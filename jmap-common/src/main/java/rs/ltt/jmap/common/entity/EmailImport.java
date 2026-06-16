@@ -24,9 +24,11 @@ import lombok.NonNull;
 @Builder
 public class EmailImport {
 
-    @NonNull private String blobId;
+    @NonNull
+    private String blobId;
 
-    @NonNull private Map<String, Boolean> mailboxIds;
+    @NonNull
+    private Map<String, Boolean> mailboxIds;
 
     private Map<String, Boolean> keywords;
 

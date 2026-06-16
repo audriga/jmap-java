@@ -56,18 +56,13 @@ public class JmapDispatcherTest {
 
         final OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
 
-        final Response response =
-                okHttpClient
-                        .newCall(
-                                new Request.Builder()
-                                        .url(mockWebServer.url("/jmap/"))
-                                        .addHeader(
-                                                "Authorization",
-                                                Credentials.basic(
-                                                        INDEX_0_USERNAME, StubMailServer.PASSWORD))
-                                        .post(RequestBody.create("{}", MediaType.get("text/plain")))
-                                        .build())
-                        .execute();
+        final Response response = okHttpClient
+                .newCall(new Request.Builder()
+                        .url(mockWebServer.url("/jmap/"))
+                        .addHeader("Authorization", Credentials.basic(INDEX_0_USERNAME, StubMailServer.PASSWORD))
+                        .post(RequestBody.create("{}", MediaType.get("text/plain")))
+                        .build())
+                .execute();
 
         Assertions.assertEquals(400, response.code());
 
@@ -92,19 +87,13 @@ public class JmapDispatcherTest {
 
         final OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
 
-        final Response response =
-                okHttpClient
-                        .newCall(
-                                new Request.Builder()
-                                        .url(mockWebServer.url("/jmap/"))
-                                        .addHeader(
-                                                "Authorization",
-                                                Credentials.basic(INDEX_0_USERNAME, "wrong!"))
-                                        .post(
-                                                RequestBody.create(
-                                                        "{}", MediaType.get("application/json")))
-                                        .build())
-                        .execute();
+        final Response response = okHttpClient
+                .newCall(new Request.Builder()
+                        .url(mockWebServer.url("/jmap/"))
+                        .addHeader("Authorization", Credentials.basic(INDEX_0_USERNAME, "wrong!"))
+                        .post(RequestBody.create("{}", MediaType.get("application/json")))
+                        .build())
+                .execute();
 
         Assertions.assertEquals(401, response.code());
 
@@ -118,20 +107,13 @@ public class JmapDispatcherTest {
 
         final OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
 
-        final Response response =
-                okHttpClient
-                        .newCall(
-                                new Request.Builder()
-                                        .url(mockWebServer.url("/jmap/"))
-                                        .addHeader(
-                                                "Authorization",
-                                                Credentials.basic(
-                                                        INDEX_0_USERNAME, StubMailServer.PASSWORD))
-                                        .post(
-                                                RequestBody.create(
-                                                        "{}", MediaType.get("application/json")))
-                                        .build())
-                        .execute();
+        final Response response = okHttpClient
+                .newCall(new Request.Builder()
+                        .url(mockWebServer.url("/jmap/"))
+                        .addHeader("Authorization", Credentials.basic(INDEX_0_USERNAME, StubMailServer.PASSWORD))
+                        .post(RequestBody.create("{}", MediaType.get("application/json")))
+                        .build())
+                .execute();
 
         Assertions.assertEquals(400, response.code());
 
@@ -156,20 +138,13 @@ public class JmapDispatcherTest {
 
         final OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
 
-        final Response response =
-                okHttpClient
-                        .newCall(
-                                new Request.Builder()
-                                        .url(mockWebServer.url("/jmap/"))
-                                        .addHeader(
-                                                "Authorization",
-                                                Credentials.basic(
-                                                        INDEX_0_USERNAME, StubMailServer.PASSWORD))
-                                        .post(
-                                                RequestBody.create(
-                                                        "{}}", MediaType.get("application/json")))
-                                        .build())
-                        .execute();
+        final Response response = okHttpClient
+                .newCall(new Request.Builder()
+                        .url(mockWebServer.url("/jmap/"))
+                        .addHeader("Authorization", Credentials.basic(INDEX_0_USERNAME, StubMailServer.PASSWORD))
+                        .post(RequestBody.create("{}}", MediaType.get("application/json")))
+                        .build())
+                .execute();
 
         Assertions.assertEquals(400, response.code());
 
@@ -192,17 +167,15 @@ public class JmapDispatcherTest {
         final MockWebServer mockWebServer = new MockWebServer();
         mockWebServer.setDispatcher(new StubMailServer());
 
-        final JmapClient jmapClient =
-                new JmapClient(
-                        INDEX_0_USERNAME,
-                        StubMailServer.PASSWORD,
-                        mockWebServer.url(StubMailServer.WELL_KNOWN_PATH));
+        final JmapClient jmapClient = new JmapClient(
+                INDEX_0_USERNAME, StubMailServer.PASSWORD, mockWebServer.url(StubMailServer.WELL_KNOWN_PATH));
 
-        final EchoMethodResponse response =
-                jmapClient
-                        .call(EchoMethodCall.builder().libraryName(Version.getUserAgent()).build())
-                        .get()
-                        .getMain(EchoMethodResponse.class);
+        final EchoMethodResponse response = jmapClient
+                .call(EchoMethodCall.builder()
+                        .libraryName(Version.getUserAgent())
+                        .build())
+                .get()
+                .getMain(EchoMethodResponse.class);
         Assertions.assertEquals(Version.getUserAgent(), response.getLibraryName());
         mockWebServer.shutdown();
     }
@@ -213,17 +186,15 @@ public class JmapDispatcherTest {
         final StubMailServer stubMailServer = new StubMailServer(1);
         mockWebServer.setDispatcher(stubMailServer);
 
-        final JmapClient jmapClient =
-                new JmapClient(
-                        INDEX_1_USERNAME,
-                        StubMailServer.PASSWORD,
-                        mockWebServer.url(StubMailServer.WELL_KNOWN_PATH));
+        final JmapClient jmapClient = new JmapClient(
+                INDEX_1_USERNAME, StubMailServer.PASSWORD, mockWebServer.url(StubMailServer.WELL_KNOWN_PATH));
 
-        final EchoMethodResponse response =
-                jmapClient
-                        .call(EchoMethodCall.builder().libraryName(Version.getUserAgent()).build())
-                        .get()
-                        .getMain(EchoMethodResponse.class);
+        final EchoMethodResponse response = jmapClient
+                .call(EchoMethodCall.builder()
+                        .libraryName(Version.getUserAgent())
+                        .build())
+                .get()
+                .getMain(EchoMethodResponse.class);
         Assertions.assertEquals(Version.getUserAgent(), response.getLibraryName());
         mockWebServer.shutdown();
     }

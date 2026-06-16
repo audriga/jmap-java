@@ -22,10 +22,7 @@ public class MaxUploadSizeExceededException extends RuntimeException {
     private final long maxFileSize;
 
     public MaxUploadSizeExceededException(final long fileSize, final long maxFileSize) {
-        super(
-                String.format(
-                        "An upload size of %d exceeds the maximum upload size %d",
-                        fileSize, maxFileSize));
+        super(String.format("An upload size of %d exceeds the maximum upload size %d", fileSize, maxFileSize));
         this.fileSize = fileSize;
         this.maxFileSize = maxFileSize;
     }

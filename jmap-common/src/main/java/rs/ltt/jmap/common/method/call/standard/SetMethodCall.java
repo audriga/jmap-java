@@ -28,7 +28,8 @@ import rs.ltt.jmap.common.method.MethodCall;
 @Getter
 public abstract class SetMethodCall<T extends AbstractIdentifiableEntity> implements MethodCall {
 
-    @NonNull private String accountId;
+    @NonNull
+    private String accountId;
 
     private String ifInState;
 
@@ -49,8 +50,7 @@ public abstract class SetMethodCall<T extends AbstractIdentifiableEntity> implem
             String[] destroy,
             Request.Invocation.ResultReference destroyReference) {
         Preconditions.checkArgument(
-                destroy == null || destroyReference == null,
-                "Can't set both 'destroy' and 'destroyReference'");
+                destroy == null || destroyReference == null, "Can't set both 'destroy' and 'destroyReference'");
         this.accountId = accountId;
         this.ifInState = ifInState;
         this.create = create;

@@ -31,14 +31,11 @@ public class WebSocketMessageDeserializer implements JsonDeserializer<WebSocketM
 
     @Override
     public WebSocketMessage deserialize(
-            final JsonElement jsonElement,
-            final Type type,
-            final JsonDeserializationContext context)
+            final JsonElement jsonElement, final Type type, final JsonDeserializationContext context)
             throws JsonParseException {
         if (!jsonElement.isJsonObject()) {
-            throw new JsonParseException(
-                    "Expected JSON object for WebSocketMessage. Got "
-                            + jsonElement.getClass().getSimpleName());
+            throw new JsonParseException("Expected JSON object for WebSocketMessage. Got "
+                    + jsonElement.getClass().getSimpleName());
         }
         final JsonObject jsonObject = jsonElement.getAsJsonObject();
         if (!jsonObject.has("@type")) {
@@ -55,8 +52,7 @@ public class WebSocketMessageDeserializer implements JsonDeserializer<WebSocketM
                     .build();
         }
         if ("ErrorResponse".equals(messageType)) {
-            final ErrorResponse errorResponse =
-                    context.deserialize(jsonElement, ErrorResponse.class);
+            final ErrorResponse errorResponse = context.deserialize(jsonElement, ErrorResponse.class);
             return ErrorResponseWebSocketMessage.builder()
                     .requestId(requestId)
                     .response(errorResponse)
@@ -75,8 +71,7 @@ public class WebSocketMessageDeserializer implements JsonDeserializer<WebSocketM
         if ("WebSocketPushDisable".equals(messageType)) {
             return context.deserialize(jsonElement, PushDisableWebSocketMessage.class);
         }
-        throw new JsonParseException(
-                String.format("Unknown WebSocketMessage type %s", messageType));
+        throw new JsonParseException(String.format("Unknown WebSocketMessage type %s", messageType));
     }
 
     private static String getAsString(final JsonObject jsonObject, final String name) {

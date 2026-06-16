@@ -26,23 +26,19 @@ import rs.ltt.jmap.common.util.Mapper;
 public class ResponseInvocationDeserializer implements JsonDeserializer<Response.Invocation> {
 
     public static void register(final GsonBuilder builder) {
-        builder.registerTypeAdapter(
-                Response.Invocation.class, new ResponseInvocationDeserializer());
+        builder.registerTypeAdapter(Response.Invocation.class, new ResponseInvocationDeserializer());
     }
 
     @Override
-    public Response.Invocation deserialize(
-            JsonElement jsonElement, Type type, JsonDeserializationContext context)
+    public Response.Invocation deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context)
             throws JsonParseException {
         if (!jsonElement.isJsonArray()) {
-            throw new JsonParseException(
-                    "Expected JSON array for invocation. Got "
-                            + jsonElement.getClass().getSimpleName());
+            throw new JsonParseException("Expected JSON array for invocation. Got "
+                    + jsonElement.getClass().getSimpleName());
         }
         final JsonArray jsonArray = jsonElement.getAsJsonArray();
         if (jsonArray.size() != 3) {
-            throw new JsonParseException(
-                    "Invocation array has " + jsonArray.size() + " values. Expected 3");
+            throw new JsonParseException("Invocation array has " + jsonArray.size() + " values. Expected 3");
         }
         final String name;
         if (jsonArray.get(0).isJsonPrimitive()) {
@@ -61,8 +57,7 @@ public class ResponseInvocationDeserializer implements JsonDeserializer<Response
         if ("error".equals(name)) {
             final JsonObject jsonObject = parameter.getAsJsonObject();
             final String errorType = jsonObject.get("type").getAsString();
-            Class<? extends MethodErrorResponse> customErrorClazz =
-                    Mapper.METHOD_ERROR_RESPONSES.get(errorType);
+            Class<? extends MethodErrorResponse> customErrorClazz = Mapper.METHOD_ERROR_RESPONSES.get(errorType);
             clazz = customErrorClazz != null ? customErrorClazz : MethodErrorResponse.class;
         } else {
             clazz = Mapper.METHOD_RESPONSES.get(name);

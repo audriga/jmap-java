@@ -26,14 +26,11 @@ import rs.ltt.jmap.common.entity.EmailBodyValue;
 public class StringMapSerializer implements JsonSerializer<Map<String, ?>> {
 
     public static void register(final GsonBuilder builder) {
+        builder.registerTypeAdapter(new TypeToken<Map<String, Boolean>>() {}.getType(), new StringMapSerializer());
         builder.registerTypeAdapter(
-                new TypeToken<Map<String, Boolean>>() {}.getType(), new StringMapSerializer());
+                new TypeToken<Map<String, EmailBodyValue>>() {}.getType(), new StringMapSerializer());
         builder.registerTypeAdapter(
-                new TypeToken<Map<String, EmailBodyValue>>() {}.getType(),
-                new StringMapSerializer());
-        builder.registerTypeAdapter(
-                new TypeToken<Map<String, DeliveryStatus>>() {}.getType(),
-                new StringMapSerializer());
+                new TypeToken<Map<String, DeliveryStatus>>() {}.getType(), new StringMapSerializer());
     }
 
     @Override

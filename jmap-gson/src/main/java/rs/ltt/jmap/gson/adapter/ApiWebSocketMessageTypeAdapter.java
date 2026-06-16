@@ -47,8 +47,7 @@ public class ApiWebSocketMessageTypeAdapter extends TypeAdapter<AbstractApiWebSo
     }
 
     @Override
-    public void write(final JsonWriter jsonWriter, final AbstractApiWebSocketMessage message)
-            throws IOException {
+    public void write(final JsonWriter jsonWriter, final AbstractApiWebSocketMessage message) throws IOException {
         jsonWriter.beginObject();
 
         jsonWriter.name("@type");
@@ -62,7 +61,8 @@ public class ApiWebSocketMessageTypeAdapter extends TypeAdapter<AbstractApiWebSo
         jsonWriter.value(message.getRequestId());
         final JsonElement payload = REGULAR_GSON.toJsonTree(message.getPayload());
         if (payload.isJsonObject()) {
-            for (Map.Entry<String, JsonElement> entry : payload.getAsJsonObject().entrySet()) {
+            for (Map.Entry<String, JsonElement> entry :
+                    payload.getAsJsonObject().entrySet()) {
                 jsonWriter.name(entry.getKey());
                 NULL_SERIALIZING_GSON.toJson(entry.getValue(), jsonWriter);
             }
@@ -78,7 +78,7 @@ public class ApiWebSocketMessageTypeAdapter extends TypeAdapter<AbstractApiWebSo
         if (message instanceof AbstractApiWebSocketMessage) {
             return (AbstractApiWebSocketMessage) message;
         }
-        throw new IOException(
-                String.format("WebSocketMessage was of type %s", message.getClass().getName()));
+        throw new IOException(String.format(
+                "WebSocketMessage was of type %s", message.getClass().getName()));
     }
 }

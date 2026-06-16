@@ -40,10 +40,8 @@ public class Request {
             }
             final String namespace = Namespace.get(clazz);
             if (namespace == null) {
-                throw new IllegalArgumentException(
-                        String.format(
-                                "%s is missing a namespace. Annotate package with @JmapNamespace",
-                                clazz.getSimpleName()));
+                throw new IllegalArgumentException(String.format(
+                        "%s is missing a namespace. Annotate package with @JmapNamespace", clazz.getSimpleName()));
             }
             NAMESPACE_CACHE.put(clazz, namespace);
             return namespace;
@@ -151,8 +149,7 @@ public class Request {
         }
 
         public Request build() {
-            return new Request(
-                    using.toArray(new String[0]), invocations.toArray(new Invocation[0]));
+            return new Request(using.toArray(new String[0]), invocations.toArray(new Invocation[0]));
         }
     }
 }

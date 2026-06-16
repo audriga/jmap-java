@@ -50,18 +50,17 @@ public class FileSessionCache implements SessionCache {
 
     @Override
     public void store(String username, HttpUrl sessionResource, Session session) {
-        EXECUTOR_SERVICE.execute(
-                () -> {
-                    final File file = getFile(getFilename(username, sessionResource));
-                    try {
-                        final FileWriter fileWriter = new FileWriter(file);
-                        GSON.toJson(session, fileWriter);
-                        fileWriter.flush();
-                        fileWriter.close();
-                    } catch (IOException e) {
-                        LOGGER.error("Unable to cache session in {}", file.getAbsolutePath());
-                    }
-                });
+        EXECUTOR_SERVICE.execute(() -> {
+            final File file = getFile(getFilename(username, sessionResource));
+            try {
+                final FileWriter fileWriter = new FileWriter(file);
+                GSON.toJson(session, fileWriter);
+                fileWriter.flush();
+                fileWriter.close();
+            } catch (IOException e) {
+                LOGGER.error("Unable to cache session in {}", file.getAbsolutePath());
+            }
+        });
     }
 
     @Override
@@ -93,8 +92,7 @@ public class FileSessionCache implements SessionCache {
     }
 
     private static String getFilename(String username, HttpUrl sessionResource) {
-        final String name =
-                username + ':' + (sessionResource == null ? '\00' : sessionResource.toString());
+        final String name = username + ':' + (sessionResource == null ? '\00' : sessionResource.toString());
         return "session-cache-" + Hashing.sha256().hashString(name, StandardCharsets.UTF_8);
     }
 }

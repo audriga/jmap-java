@@ -28,27 +28,22 @@ public class AccountCapabilitiesDeserializer
         implements JsonDeserializer<Map<Class<? extends AccountCapability>, AccountCapability>> {
 
     public static void register(final GsonBuilder builder) {
-        Type type =
-                new TypeToken<
-                        Map<Class<? extends AccountCapability>, AccountCapability>>() {}.getType();
+        Type type = new TypeToken<Map<Class<? extends AccountCapability>, AccountCapability>>() {}.getType();
         builder.registerTypeAdapter(type, new AccountCapabilitiesDeserializer());
     }
 
     public Map<Class<? extends AccountCapability>, AccountCapability> deserialize(
-            JsonElement jsonElement, Type type, JsonDeserializationContext context)
-            throws JsonParseException {
+            JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
         final JsonObject jsonObject = jsonElement.getAsJsonObject();
         ImmutableMap.Builder<Class<? extends AccountCapability>, AccountCapability> builder =
                 new ImmutableMap.Builder<>();
         for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
             final String namespace = entry.getKey();
-            final Class<? extends AccountCapability> clazz =
-                    Mapper.ACCOUNT_CAPABILITIES.get(namespace);
+            final Class<? extends AccountCapability> clazz = Mapper.ACCOUNT_CAPABILITIES.get(namespace);
             if (clazz == null) {
                 continue;
             }
-            final AccountCapability accountCapability =
-                    context.deserialize(entry.getValue(), clazz);
+            final AccountCapability accountCapability = context.deserialize(entry.getValue(), clazz);
             builder.put(clazz, accountCapability);
         }
         return builder.build();

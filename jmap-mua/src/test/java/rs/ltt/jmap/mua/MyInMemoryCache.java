@@ -36,9 +36,7 @@ class MyInMemoryCache extends InMemoryCache {
 
     public List<CachedEmail> getEmails(final String threadId) {
         List<String> emailIds = this.threads.get(threadId).getEmailIds();
-        return emailIds.stream()
-                .map(id -> new CachedEmail(emails.get(id)))
-                .collect(Collectors.toList());
+        return emailIds.stream().map(id -> new CachedEmail(emails.get(id))).collect(Collectors.toList());
     }
 
     public Mailbox getMailbox(final Role role) {

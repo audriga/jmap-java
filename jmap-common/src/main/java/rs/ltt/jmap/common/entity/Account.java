@@ -64,8 +64,7 @@ public class Account {
                 final AccountCapability value = entry.getValue();
                 if (key != value.getClass()) {
                     throw new IllegalArgumentException(
-                            String.format(
-                                    "key %s does not match value type %s", key, value.getClass()));
+                            String.format("key %s does not match value type %s", key, value.getClass()));
                 }
             }
             this.accountCapabilities = accountCapabilities;

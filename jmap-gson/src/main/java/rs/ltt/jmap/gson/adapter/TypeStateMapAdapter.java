@@ -29,30 +29,24 @@ import java.util.Map;
 import rs.ltt.jmap.common.entity.AbstractIdentifiableEntity;
 import rs.ltt.jmap.common.util.Mapper;
 
-public class TypeStateMapAdapter
-        extends TypeAdapter<Map<Class<? extends AbstractIdentifiableEntity>, String>> {
+public class TypeStateMapAdapter extends TypeAdapter<Map<Class<? extends AbstractIdentifiableEntity>, String>> {
 
     public static void register(final GsonBuilder builder) {
-        final Type type =
-                new TypeToken<
-                        Map<Class<? extends AbstractIdentifiableEntity>, String>>() {}.getType();
+        final Type type = new TypeToken<Map<Class<? extends AbstractIdentifiableEntity>, String>>() {}.getType();
         builder.registerTypeAdapter(type, new TypeStateMapAdapter());
     }
 
     @Override
     public void write(
-            final JsonWriter jsonWriter,
-            final Map<Class<? extends AbstractIdentifiableEntity>, String> typeStateMap)
+            final JsonWriter jsonWriter, final Map<Class<? extends AbstractIdentifiableEntity>, String> typeStateMap)
             throws IOException {
         jsonWriter.beginObject();
-        for (final Map.Entry<Class<? extends AbstractIdentifiableEntity>, String> entry :
-                typeStateMap.entrySet()) {
+        for (final Map.Entry<Class<? extends AbstractIdentifiableEntity>, String> entry : typeStateMap.entrySet()) {
             final Class<? extends AbstractIdentifiableEntity> entityClazz = entry.getKey();
             final String entityType = Mapper.ENTITIES.inverse().get(entityClazz);
             if (entityType == null) {
                 throw new JsonIOException(
-                        String.format(
-                                "%s is not a registered @JmapEntity", entityClazz.getSimpleName()));
+                        String.format("%s is not a registered @JmapEntity", entityClazz.getSimpleName()));
             }
             final String state = entry.getValue();
             jsonWriter.name(entityType);
@@ -62,16 +56,15 @@ public class TypeStateMapAdapter
     }
 
     @Override
-    public Map<Class<? extends AbstractIdentifiableEntity>, String> read(
-            final JsonReader jsonReader) throws IOException {
+    public Map<Class<? extends AbstractIdentifiableEntity>, String> read(final JsonReader jsonReader)
+            throws IOException {
         final ImmutableMap.Builder<Class<? extends AbstractIdentifiableEntity>, String> mapBuilder =
                 new ImmutableMap.Builder<>();
         jsonReader.beginObject();
         while (jsonReader.hasNext()) {
             final String entityType = jsonReader.nextName();
             final String state = jsonReader.nextString();
-            final Class<? extends AbstractIdentifiableEntity> entityClazz =
-                    Mapper.ENTITIES.get(entityType);
+            final Class<? extends AbstractIdentifiableEntity> entityClazz = Mapper.ENTITIES.get(entityType);
             if (entityClazz == null) {
                 // TODO do we want to log this?
                 continue;

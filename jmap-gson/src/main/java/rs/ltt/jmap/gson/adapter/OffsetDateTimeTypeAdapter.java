@@ -32,8 +32,7 @@ public class OffsetDateTimeTypeAdapter extends TypeAdapter<OffsetDateTime> {
     }
 
     @Override
-    public void write(final JsonWriter jsonWriter, final OffsetDateTime offsetDateTime)
-            throws IOException {
+    public void write(final JsonWriter jsonWriter, final OffsetDateTime offsetDateTime) throws IOException {
         if (offsetDateTime == null) {
             jsonWriter.nullValue();
         } else {

@@ -221,10 +221,10 @@
                 <artifactId>spotless-maven-plugin</artifactId>
                 <configuration>
                     <java>
-                        <googleJavaFormat>
-                            <style>AOSP</style>
-                            <reflowLongStrings>true</reflowLongStrings>
-                        </googleJavaFormat>
+                        <palantirJavaFormat>
+                            <version>2.93.0</version>
+                            <formatJavadoc>true</formatJavadoc>
+                        </palantirJavaFormat>
                     </java>
                     <pom>
                         <sortPom>

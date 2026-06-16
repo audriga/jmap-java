@@ -50,12 +50,9 @@ public class ResponseAnalyzer {
             } else if (methodResponseList.size() == 1) {
                 methodResponses = new MethodResponses(methodResponseList.get(0));
             } else {
-                methodResponses =
-                        new MethodResponses(
-                                methodResponseList.get(0),
-                                methodResponseList
-                                        .subList(1, methodResponseList.size())
-                                        .toArray(new MethodResponse[0]));
+                methodResponses = new MethodResponses(
+                        methodResponseList.get(0),
+                        methodResponseList.subList(1, methodResponseList.size()).toArray(new MethodResponse[0]));
             }
             actualMap.put(id, methodResponses);
         }

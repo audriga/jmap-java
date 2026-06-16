@@ -45,8 +45,7 @@ public class OutputStreamUpload implements Uploadable {
     public InputStream getInputStream() {
         if (this.inputStream.closed) {
             throw new IllegalStateException(
-                    "PipedInputStream has already been closed. Are you using a network"
-                            + " interceptor/logger?");
+                    "PipedInputStream has already been closed. Are you using a network" + " interceptor/logger?");
         }
         return inputStream;
     }

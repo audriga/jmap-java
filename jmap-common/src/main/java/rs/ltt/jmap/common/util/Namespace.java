@@ -39,8 +39,7 @@ public final class Namespace {
         final Class<? extends MethodCall> clazz = methodCall.getClass();
         final ImmutableList.Builder<String> listBuilder = new ImmutableList.Builder<>();
         for (final Field field : clazz.getDeclaredFields()) {
-            final JmapImplicitNamespace implicitNamespace =
-                    field.getAnnotation(JmapImplicitNamespace.class);
+            final JmapImplicitNamespace implicitNamespace = field.getAnnotation(JmapImplicitNamespace.class);
             final String namespace = implicitNamespace == null ? null : implicitNamespace.value();
             if (namespace == null) {
                 continue;

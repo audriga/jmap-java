@@ -23,14 +23,11 @@ import rs.ltt.jmap.common.method.response.submission.SetEmailSubmissionMethodRes
 public class SetEmailSubmissionException extends SetException {
 
     private SetEmailSubmissionException(
-            Map<String, SetError> notCreated,
-            Map<String, SetError> notUpdated,
-            Map<String, SetError> notDestroyed) {
+            Map<String, SetError> notCreated, Map<String, SetError> notUpdated, Map<String, SetError> notDestroyed) {
         super(notCreated, notUpdated, notDestroyed);
     }
 
-    public static void throwIfFailed(SetEmailSubmissionMethodResponse response)
-            throws SetEmailSubmissionException {
+    public static void throwIfFailed(SetEmailSubmissionMethodResponse response) throws SetEmailSubmissionException {
         Map<String, SetError> notCreated = response.getNotCreated();
         Map<String, SetError> notUpdated = response.getNotUpdated();
         Map<String, SetError> notDestroyed = response.getNotDestroyed();

@@ -26,7 +26,8 @@ import rs.ltt.jmap.common.method.MethodCall;
 @Getter
 public abstract class QueryMethodCall<T extends AbstractIdentifiableEntity> implements MethodCall {
 
-    @NonNull private String accountId;
+    @NonNull
+    private String accountId;
 
     private Filter<T> filter;
 

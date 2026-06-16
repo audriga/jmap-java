@@ -24,8 +24,7 @@ import java.util.Map;
 import rs.ltt.jmap.common.entity.Capability;
 import rs.ltt.jmap.common.util.Mapper;
 
-public class CapabilitiesDeserializer
-        implements JsonDeserializer<Map<Class<? extends Capability>, Capability>> {
+public class CapabilitiesDeserializer implements JsonDeserializer<Map<Class<? extends Capability>, Capability>> {
 
     public static void register(final GsonBuilder builder) {
         Type type = new TypeToken<Map<Class<? extends Capability>, Capability>>() {}.getType();
@@ -33,11 +32,9 @@ public class CapabilitiesDeserializer
     }
 
     public Map<Class<? extends Capability>, Capability> deserialize(
-            JsonElement jsonElement, Type type, JsonDeserializationContext context)
-            throws JsonParseException {
+            JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
         final JsonObject jsonObject = jsonElement.getAsJsonObject();
-        ImmutableMap.Builder<Class<? extends Capability>, Capability> builder =
-                new ImmutableMap.Builder<>();
+        ImmutableMap.Builder<Class<? extends Capability>, Capability> builder = new ImmutableMap.Builder<>();
         for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
             final String namespace = entry.getKey();
             final Class<? extends Capability> clazz = Mapper.CAPABILITIES.get(namespace);

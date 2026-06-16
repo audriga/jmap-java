@@ -51,18 +51,15 @@ public class JmapMethodProcessor extends AbstractProcessor {
         this.types = processingEnvironment.getTypeUtils();
         this.typeMirrors = new TypeMirror[INTERFACES.length];
         for (int i = 0; i < INTERFACES.length; ++i) {
-            this.typeMirrors[i] =
-                    processingEnvironment
-                            .getElementUtils()
-                            .getTypeElement(INTERFACES[i].getName())
-                            .asType();
+            this.typeMirrors[i] = processingEnvironment
+                    .getElementUtils()
+                    .getTypeElement(INTERFACES[i].getName())
+                    .asType();
         }
     }
 
-    public boolean process(
-            Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
-        Set<? extends Element> elements =
-                roundEnvironment.getElementsAnnotatedWith(JmapMethod.class);
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
+        Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith(JmapMethod.class);
         boolean emptyPass = true;
         for (final Element element : elements) {
             if (element instanceof TypeElement typeElement) {
@@ -90,15 +87,12 @@ public class JmapMethodProcessor extends AbstractProcessor {
 
         try {
             FileObject resourceFile =
-                    filer.createResource(
-                            StandardLocation.CLASS_OUTPUT, "", Utils.getFilenameFor(clazz));
+                    filer.createResource(StandardLocation.CLASS_OUTPUT, "", Utils.getFilenameFor(clazz));
             PrintWriter printWriter = new PrintWriter(resourceFile.openOutputStream());
             for (TypeElement typeElement : classes) {
                 JmapMethod annotation = typeElement.getAnnotation(JmapMethod.class);
                 printWriter.format(
-                        "%s %s%n",
-                        processingEnv.getElementUtils().getBinaryName(typeElement),
-                        annotation.value());
+                        "%s %s%n", processingEnv.getElementUtils().getBinaryName(typeElement), annotation.value());
             }
             printWriter.flush();
             printWriter.close();

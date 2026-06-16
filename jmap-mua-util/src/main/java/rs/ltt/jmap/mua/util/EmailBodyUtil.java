@@ -92,12 +92,10 @@ public class EmailBodyUtil {
                 String firstWord = words.length == 0 ? "" : words[0];
                 if (stringBuilder.length() != 0) {
 
-                    boolean listItem =
-                            (firstWord.length() <= 3
-                                            && (firstWord.endsWith(")") || firstWord.endsWith(":")))
-                                    || line.startsWith("* ")
-                                    || line.startsWith("- ")
-                                    || (firstWord.matches("\\[[0-9]+]:"));
+                    boolean listItem = (firstWord.length() <= 3 && (firstWord.endsWith(")") || firstWord.endsWith(":")))
+                            || line.startsWith("* ")
+                            || line.startsWith("- ")
+                            || (firstWord.matches("\\[[0-9]+]:"));
                     if (skipNextBreak) {
                         // do nothing
                     } else if (breakNextBlockUnderscore || breakNextBlockHyphen) {
@@ -121,12 +119,10 @@ public class EmailBodyUtil {
                 skipNextBreak |= line.endsWith(" ");
                 final boolean blockBoundaryUnderscore = line.matches("_{2,}");
                 final boolean blockBoundaryHypen = line.matches("-{2,}");
-                breakNextBlockUnderscore =
-                        (breakNextBlockUnderscore && !line.isEmpty() && !blockBoundaryUnderscore)
-                                || (blockBoundaryUnderscore && !breakNextBlockUnderscore);
-                breakNextBlockHyphen =
-                        (breakNextBlockHyphen && !line.isEmpty() && !blockBoundaryHypen)
-                                || (blockBoundaryHypen && !breakNextBlockHyphen);
+                breakNextBlockUnderscore = (breakNextBlockUnderscore && !line.isEmpty() && !blockBoundaryUnderscore)
+                        || (blockBoundaryUnderscore && !breakNextBlockUnderscore);
+                breakNextBlockHyphen = (breakNextBlockHyphen && !line.isEmpty() && !blockBoundaryHypen)
+                        || (blockBoundaryHypen && !breakNextBlockHyphen);
                 stringBuilder.append(line);
             }
             return stringBuilder.toString();
@@ -147,8 +143,7 @@ public class EmailBodyUtil {
             }
             // get the top x% of line length
             List<Integer> topXPercent =
-                    lineLengths.subList(
-                            (int) ((1.0 - X) * lineLengths.size()) - 1, lineLengths.size());
+                    lineLengths.subList((int) ((1.0 - X) * lineLengths.size()) - 1, lineLengths.size());
 
             double sum = 0.0;
             int top = lineLengths.get(lineLengths.size() - 1);
@@ -168,9 +163,7 @@ public class EmailBodyUtil {
                 // return median of those top x%
                 return topXPercent.size() % 2 == 1
                         ? topXPercent.get(topXPercent.size() / 2)
-                        : ((topXPercent.get(topXPercent.size() / 2 - 1)
-                                        + topXPercent.get(topXPercent.size() / 2))
-                                / 2);
+                        : ((topXPercent.get(topXPercent.size() / 2 - 1) + topXPercent.get(topXPercent.size() / 2)) / 2);
             }
             return max;
         }

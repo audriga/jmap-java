@@ -37,15 +37,6 @@ public class SetIdentityMethodResponse extends SetMethodResponse<Identity> {
             Map<String, SetError> notCreated,
             Map<String, SetError> notUpdated,
             Map<String, SetError> notDestroyed) {
-        super(
-                accountId,
-                oldState,
-                newState,
-                created,
-                updated,
-                destroyed,
-                notCreated,
-                notUpdated,
-                notDestroyed);
+        super(accountId, oldState, newState, created, updated, destroyed, notCreated, notUpdated, notDestroyed);
     }
 }

@@ -41,8 +41,7 @@ import rs.ltt.jmap.mua.util.QueryResultItem;
 public class CacheInvalidationTest {
 
     @Test
-    public void canNotCalculateChangesQueryRepeat()
-            throws IOException, InterruptedException, ExecutionException {
+    public void canNotCalculateChangesQueryRepeat() throws IOException, InterruptedException, ExecutionException {
         final MyMockMailServer myMockMailServer = new MyMockMailServer(2);
         myMockMailServer.setReportCanCalculateQueryChanges(true);
         final MockWebServer server = new MockWebServer();
@@ -50,46 +49,35 @@ public class CacheInvalidationTest {
 
         final MyInMemoryCache myInMemoryCache = new MyInMemoryCache();
 
-        try (final Mua mua =
-                Mua.builder()
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .cache(myInMemoryCache)
-                        .username(myMockMailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(myMockMailServer.getAccountId())
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .cache(myInMemoryCache)
+                .username(myMockMailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(myMockMailServer.getAccountId())
+                .build()) {
             mua.query(EmailQuery.unfiltered()).get();
             myMockMailServer.bumpVersion();
-            final ExecutionException exception =
-                    Assertions.assertThrows(
-                            ExecutionException.class,
-                            () -> mua.query(EmailQuery.unfiltered()).get());
-            MatcherAssert.assertThat(
-                    exception.getCause(),
-                    CoreMatchers.instanceOf(MethodErrorResponseException.class));
+            final ExecutionException exception = Assertions.assertThrows(
+                    ExecutionException.class,
+                    () -> mua.query(EmailQuery.unfiltered()).get());
+            MatcherAssert.assertThat(exception.getCause(), CoreMatchers.instanceOf(MethodErrorResponseException.class));
         }
         Assertions.assertEquals(
-                3,
-                myInMemoryCache.queryCacheInvalidationTriggered.get(),
-                "Query Cache has not been invalidated");
+                3, myInMemoryCache.queryCacheInvalidationTriggered.get(), "Query Cache has not been invalidated");
         Assertions.assertTrue(
-                myInMemoryCache.queryCacheInvalidationProper.get(),
-                "Query Cache has not been invalidated");
+                myInMemoryCache.queryCacheInvalidationProper.get(), "Query Cache has not been invalidated");
         Assertions.assertTrue(
-                myInMemoryCache.emailCacheInvalidationTriggered.get(),
-                "Email cache has not been invalidated");
+                myInMemoryCache.emailCacheInvalidationTriggered.get(), "Email cache has not been invalidated");
         Assertions.assertTrue(
-                myInMemoryCache.threadCacheInvalidationTriggered.get(),
-                "Thread cache has not been invalidated");
+                myInMemoryCache.threadCacheInvalidationTriggered.get(), "Thread cache has not been invalidated");
         Assertions.assertTrue(
-                myInMemoryCache.mailboxCacheInvalidationTriggered.get(),
-                "Mailbox cache has not been invalidated");
+                myInMemoryCache.mailboxCacheInvalidationTriggered.get(), "Mailbox cache has not been invalidated");
         server.shutdown();
     }
 
     @Test
-    public void canNotCalculateChangesQueryPaged()
-            throws IOException, InterruptedException, ExecutionException {
+    public void canNotCalculateChangesQueryPaged() throws IOException, InterruptedException, ExecutionException {
         final MyMockMailServer myMockMailServer = new MyMockMailServer(128);
         myMockMailServer.setReportCanCalculateQueryChanges(true);
         final MockWebServer server = new MockWebServer();
@@ -99,15 +87,14 @@ public class CacheInvalidationTest {
 
         final EmailQuery emailQuery = EmailQuery.unfiltered(true);
 
-        try (final Mua mua =
-                Mua.builder()
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .cache(myInMemoryCache)
-                        .username(myMockMailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(myMockMailServer.getAccountId())
-                        .queryPageSize(5)
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .cache(myInMemoryCache)
+                .username(myMockMailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(myMockMailServer.getAccountId())
+                .queryPageSize(5)
+                .build()) {
             mua.query(emailQuery).get();
             final List<String> threadIds = myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash());
             Assertions.assertEquals(Arrays.asList("T0", "T1", "T2", "T3", "T4"), threadIds);
@@ -115,77 +102,62 @@ public class CacheInvalidationTest {
             final String lastEmailId =
                     myInMemoryCache.getItems(emailQuery.asHash()).get(4).getEmailId();
             Assertions.assertEquals("M10", lastEmailId);
-            final ExecutionException exception =
-                    Assertions.assertThrows(
-                            ExecutionException.class,
-                            () -> mua.query(emailQuery, lastEmailId).get());
-            MatcherAssert.assertThat(
-                    exception.getCause(),
-                    CoreMatchers.instanceOf(MethodErrorResponseException.class));
+            final ExecutionException exception = Assertions.assertThrows(
+                    ExecutionException.class,
+                    () -> mua.query(emailQuery, lastEmailId).get());
+            MatcherAssert.assertThat(exception.getCause(), CoreMatchers.instanceOf(MethodErrorResponseException.class));
         }
         Assertions.assertEquals(
-                3,
-                myInMemoryCache.queryCacheInvalidationTriggered.get(),
-                "Query Cache has not been invalidated");
+                3, myInMemoryCache.queryCacheInvalidationTriggered.get(), "Query Cache has not been invalidated");
         Assertions.assertTrue(
-                myInMemoryCache.queryCacheInvalidationProper.get(),
-                "Query Cache has not been invalidated");
+                myInMemoryCache.queryCacheInvalidationProper.get(), "Query Cache has not been invalidated");
         Assertions.assertTrue(
-                myInMemoryCache.emailCacheInvalidationTriggered.get(),
-                "Email cache has not been invalidated");
+                myInMemoryCache.emailCacheInvalidationTriggered.get(), "Email cache has not been invalidated");
         Assertions.assertTrue(
-                myInMemoryCache.threadCacheInvalidationTriggered.get(),
-                "Thread cache has not been invalidated");
+                myInMemoryCache.threadCacheInvalidationTriggered.get(), "Thread cache has not been invalidated");
         Assertions.assertTrue(
-                myInMemoryCache.mailboxCacheInvalidationTriggered.get(),
-                "Mailbox cache has not been invalidated");
+                myInMemoryCache.mailboxCacheInvalidationTriggered.get(), "Mailbox cache has not been invalidated");
         server.shutdown();
     }
 
     // TODO write variant that has queryChanges at the same time and *NOT* invalidates cache
     @Test
-    public void invalidationOnAnchorNotFound()
-            throws IOException, InterruptedException, ExecutionException {
+    public void invalidationOnAnchorNotFound() throws IOException, InterruptedException, ExecutionException {
         final MyMockMailServer myMockMailServer = new MyMockMailServer(128);
         myMockMailServer.setReportCanCalculateQueryChanges(true);
         final MockWebServer server = new MockWebServer();
         server.setDispatcher(myMockMailServer);
 
-        final MyInMemoryCache myInMemoryCache =
-                new MyInMemoryCache() {
-                    @Override
-                    @NonNull
-                    public QueryStateWrapper getQueryState(String query) {
-                        final QueryStateWrapper queryStateWrapper = super.getQueryState(query);
-                        return new QueryStateWrapper(
-                                queryStateWrapper.queryState,
-                                queryStateWrapper.canCalculateChanges,
-                                new QueryStateWrapper.UpTo("not-existent", 4),
-                                queryStateWrapper.objectsState);
-                    }
-                };
+        final MyInMemoryCache myInMemoryCache = new MyInMemoryCache() {
+            @Override
+            @NonNull
+            public QueryStateWrapper getQueryState(String query) {
+                final QueryStateWrapper queryStateWrapper = super.getQueryState(query);
+                return new QueryStateWrapper(
+                        queryStateWrapper.queryState,
+                        queryStateWrapper.canCalculateChanges,
+                        new QueryStateWrapper.UpTo("not-existent", 4),
+                        queryStateWrapper.objectsState);
+            }
+        };
 
         final EmailQuery emailQuery = EmailQuery.unfiltered(true);
 
-        try (final Mua mua =
-                Mua.builder()
-                        .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                        .cache(myInMemoryCache)
-                        .username(myMockMailServer.getUsername())
-                        .password(JmapDispatcher.PASSWORD)
-                        .accountId(myMockMailServer.getAccountId())
-                        .queryPageSize(5)
-                        .build()) {
+        try (final Mua mua = Mua.builder()
+                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                .cache(myInMemoryCache)
+                .username(myMockMailServer.getUsername())
+                .password(JmapDispatcher.PASSWORD)
+                .accountId(myMockMailServer.getAccountId())
+                .queryPageSize(5)
+                .build()) {
             mua.query(emailQuery).get();
             final List<String> threadIds = myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash());
             Assertions.assertEquals(Arrays.asList("T0", "T1", "T2", "T3", "T4"), threadIds);
-            final ExecutionException exception =
-                    Assertions.assertThrows(
-                            ExecutionException.class,
-                            () -> mua.query(emailQuery, "not-existent").get());
-            MatcherAssert.assertThat(
-                    exception.getCause(),
-                    CoreMatchers.instanceOf(MethodErrorResponseException.class));
+            final ExecutionException exception = Assertions.assertThrows(
+                    ExecutionException.class,
+                    () -> mua.query(emailQuery, "not-existent").get());
+            MatcherAssert.assertThat(exception.getCause(), CoreMatchers.instanceOf(MethodErrorResponseException.class));
             MethodErrorResponseException methodErrorResponseException =
                     (MethodErrorResponseException) exception.getCause();
             MatcherAssert.assertThat(
@@ -193,18 +165,13 @@ public class CacheInvalidationTest {
                     CoreMatchers.instanceOf(AnchorNotFoundMethodErrorResponse.class));
         }
         Assertions.assertEquals(
-                1,
-                myInMemoryCache.queryCacheInvalidationTriggered.get(),
-                "Query Cache has not been invalidated");
+                1, myInMemoryCache.queryCacheInvalidationTriggered.get(), "Query Cache has not been invalidated");
         Assertions.assertFalse(
-                myInMemoryCache.emailCacheInvalidationTriggered.get(),
-                "Email cache should not have been invalidated");
+                myInMemoryCache.emailCacheInvalidationTriggered.get(), "Email cache should not have been invalidated");
         Assertions.assertFalse(
-                myInMemoryCache.threadCacheInvalidationTriggered.get(),
-                "Thread cache should not have invalidated");
+                myInMemoryCache.threadCacheInvalidationTriggered.get(), "Thread cache should not have invalidated");
         Assertions.assertFalse(
-                myInMemoryCache.mailboxCacheInvalidationTriggered.get(),
-                "Mailbox cache should not have invalidated");
+                myInMemoryCache.mailboxCacheInvalidationTriggered.get(), "Mailbox cache should not have invalidated");
         server.shutdown();
     }
 

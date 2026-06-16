@@ -49,17 +49,14 @@ public class JmapAccountCapabilityProcessor extends AbstractProcessor {
         super.init(processingEnvironment);
         this.filer = processingEnvironment.getFiler();
         this.typeUtils = processingEnvironment.getTypeUtils();
-        this.accountCapability =
-                processingEnvironment
-                        .getElementUtils()
-                        .getTypeElement(INTERFACE.getName())
-                        .asType();
+        this.accountCapability = processingEnvironment
+                .getElementUtils()
+                .getTypeElement(INTERFACE.getName())
+                .asType();
     }
 
-    public boolean process(
-            Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
-        Set<? extends Element> elements =
-                roundEnvironment.getElementsAnnotatedWith(JmapAccountCapability.class);
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnvironment) {
+        Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith(JmapAccountCapability.class);
         final List<TypeElement> classes = new ArrayList<>();
         for (Element element : elements) {
             if (element instanceof TypeElement) {
@@ -67,12 +64,11 @@ public class JmapAccountCapabilityProcessor extends AbstractProcessor {
                 if (typeUtils.isAssignable(element.asType(), accountCapability)) {
                     classes.add(typeElement);
                 } else {
-                    System.out.println(
-                            typeElement.getQualifiedName()
-                                    + " does not implement "
-                                    + accountCapability
-                                    + " but "
-                                    + typeElement.getInterfaces());
+                    System.out.println(typeElement.getQualifiedName()
+                            + " does not implement "
+                            + accountCapability
+                            + " but "
+                            + typeElement.getInterfaces());
                 }
             }
         }
@@ -87,16 +83,12 @@ public class JmapAccountCapabilityProcessor extends AbstractProcessor {
 
         try {
             FileObject resourceFile =
-                    filer.createResource(
-                            StandardLocation.CLASS_OUTPUT, "", Utils.getFilenameFor(INTERFACE));
+                    filer.createResource(StandardLocation.CLASS_OUTPUT, "", Utils.getFilenameFor(INTERFACE));
             PrintWriter printWriter = new PrintWriter(resourceFile.openOutputStream());
             for (TypeElement typeElement : classes) {
-                JmapAccountCapability annotation =
-                        typeElement.getAnnotation(JmapAccountCapability.class);
+                JmapAccountCapability annotation = typeElement.getAnnotation(JmapAccountCapability.class);
                 printWriter.format(
-                        "%s %s%n",
-                        processingEnv.getElementUtils().getBinaryName(typeElement),
-                        annotation.namespace());
+                        "%s %s%n", processingEnv.getElementUtils().getBinaryName(typeElement), annotation.namespace());
             }
             printWriter.flush();
             printWriter.close();

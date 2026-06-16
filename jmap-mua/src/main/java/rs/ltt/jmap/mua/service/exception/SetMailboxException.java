@@ -23,9 +23,7 @@ import rs.ltt.jmap.common.method.response.mailbox.SetMailboxMethodResponse;
 public class SetMailboxException extends SetException {
 
     private SetMailboxException(
-            Map<String, SetError> notCreated,
-            Map<String, SetError> notUpdated,
-            Map<String, SetError> notDestroyed) {
+            Map<String, SetError> notCreated, Map<String, SetError> notUpdated, Map<String, SetError> notDestroyed) {
         super(notCreated, notUpdated, notDestroyed);
     }
 
