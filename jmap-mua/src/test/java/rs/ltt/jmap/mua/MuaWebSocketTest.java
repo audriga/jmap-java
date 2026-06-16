@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
-import okhttp3.mockwebserver.MockWebServer;
+import mockwebserver3.MockWebServer;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
@@ -46,60 +46,61 @@ import rs.ltt.jmap.mock.server.JmapDispatcher;
 import rs.ltt.jmap.mock.server.MockMailServer;
 
 public class MuaWebSocketTest {
-
     @Test
     public void simpleQuery() throws ExecutionException, InterruptedException, IOException {
         final MyInMemoryCache cache = new MyInMemoryCache();
-        final MockWebServer server = new MockWebServer();
-        final MockMailServer mailServer = new MockMailServer(128);
-        server.setDispatcher(mailServer);
+        try (var server = new MockWebServer()) {
+            final MockMailServer mailServer = new MockMailServer(128);
+            server.setDispatcher(mailServer);
+            server.start();
 
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .username(mailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .cache(cache)
-                .useWebSocket(true)
-                .accountId(mailServer.getAccountId())
-                .build()) {
-            final EmailQuery query = EmailQuery.of(
-                    FilterOperator.or(
-                            EmailFilterCondition.builder().inMailbox("0").build(),
-                            EmailFilterCondition.builder().inMailbox("1").build()),
-                    true);
-            mua.query(query).get();
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .username(mailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .cache(cache)
+                    .useWebSocket(true)
+                    .accountId(mailServer.getAccountId())
+                    .build()) {
+                final EmailQuery query = EmailQuery.of(
+                        FilterOperator.or(
+                                EmailFilterCondition.builder().inMailbox("0").build(),
+                                EmailFilterCondition.builder().inMailbox("1").build()),
+                        true);
+                mua.query(query).get();
 
-            final List<CachedEmail> threadT1 = cache.getEmails("T1");
+                final List<CachedEmail> threadT1 = cache.getEmails("T1");
 
-            Assertions.assertEquals(2, threadT1.size());
+                Assertions.assertEquals(2, threadT1.size());
+            }
         }
-        server.shutdown();
     }
 
     @Test
     public void autoClose() throws ExecutionException, InterruptedException, IOException {
         final MyInMemoryCache cache = new MyInMemoryCache();
-        final MockWebServer server = new MockWebServer();
-        final MockMailServer mailServer = new MockMailServer(2);
-        server.setDispatcher(mailServer);
+        try (var server = new MockWebServer()) {
+            final MockMailServer mailServer = new MockMailServer(2);
+            server.setDispatcher(mailServer);
+            server.start();
 
-        final ListenableFuture<MethodResponses> future;
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .username(mailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .cache(cache)
-                .useWebSocket(true)
-                .accountId(mailServer.getAccountId())
-                .build()) {
-            awaitRoundTrip(mua); // this fetches the session
-            mailServer.setFailureTrigger(JmapDispatcher.FailureTrigger.IGNORE);
-            future = mua.getJmapClient().call(new EchoMethodCall("jmap-mua"));
+            final ListenableFuture<MethodResponses> future;
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .username(mailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .cache(cache)
+                    .useWebSocket(true)
+                    .accountId(mailServer.getAccountId())
+                    .build()) {
+                awaitRoundTrip(mua); // this fetches the session
+                mailServer.setFailureTrigger(JmapDispatcher.FailureTrigger.IGNORE);
+                future = mua.getJmapClient().call(new EchoMethodCall("jmap-mua"));
+            }
+            final ExecutionException executionException =
+                    Assertions.assertThrows(ExecutionException.class, () -> future.get(5, TimeUnit.SECONDS));
+            MatcherAssert.assertThat(executionException.getCause(), CoreMatchers.instanceOf(SocketException.class));
         }
-        final ExecutionException executionException =
-                Assertions.assertThrows(ExecutionException.class, () -> future.get(5, TimeUnit.SECONDS));
-        MatcherAssert.assertThat(executionException.getCause(), CoreMatchers.instanceOf(SocketException.class));
-        server.shutdown();
     }
 
     private static void awaitRoundTrip(final Mua mua) throws ExecutionException, InterruptedException {
@@ -116,23 +117,24 @@ public class MuaWebSocketTest {
     @Test
     public void serverShutdown() throws ExecutionException, InterruptedException, IOException {
         final MyInMemoryCache cache = new MyInMemoryCache();
-        final MockWebServer server = new MockWebServer();
-        final MockMailServer mailServer = new MockMailServer(2);
-        server.setDispatcher(mailServer);
-
         final ListenableFuture<MethodResponses> future;
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .username(mailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .cache(cache)
-                .useWebSocket(true)
-                .accountId(mailServer.getAccountId())
-                .build()) {
-            awaitRoundTrip(mua); // this fetches the session
-            mailServer.setFailureTrigger(JmapDispatcher.FailureTrigger.IGNORE);
-            future = mua.getJmapClient().call(new EchoMethodCall("jmap-mua"));
-            server.shutdown();
+        try (var server = new MockWebServer()) {
+            final MockMailServer mailServer = new MockMailServer(2);
+            server.setDispatcher(mailServer);
+            server.start();
+
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .username(mailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .cache(cache)
+                    .useWebSocket(true)
+                    .accountId(mailServer.getAccountId())
+                    .build()) {
+                awaitRoundTrip(mua); // this fetches the session
+                mailServer.setFailureTrigger(JmapDispatcher.FailureTrigger.IGNORE);
+                future = mua.getJmapClient().call(new EchoMethodCall("jmap-mua"));
+            }
         }
         final ExecutionException executionException =
                 Assertions.assertThrows(ExecutionException.class, () -> future.get(5, TimeUnit.SECONDS));
@@ -149,41 +151,41 @@ public class MuaWebSocketTest {
             JmapDispatcher.FailureTrigger failureTrigger, Class<? extends Exception> exception)
             throws IOException, InterruptedException, ExecutionException, TimeoutException {
         final MyInMemoryCache cache = new MyInMemoryCache();
-        final MockWebServer server = new MockWebServer();
-        final MockMailServer mailServer = new MockMailServer(2);
-        server.setDispatcher(mailServer);
-        mailServer.setFailureTrigger(failureTrigger);
+        try (var server = new MockWebServer()) {
+            final MockMailServer mailServer = new MockMailServer(2);
+            server.setDispatcher(mailServer);
+            mailServer.setFailureTrigger(failureTrigger);
+            server.start();
 
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .username(mailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .cache(cache)
-                .useWebSocket(true)
-                .accountId(mailServer.getAccountId())
-                .build()) {
-            final EmailQuery query = EmailQuery.of(
-                    FilterOperator.or(
-                            EmailFilterCondition.builder().inMailbox("0").build(),
-                            EmailFilterCondition.builder().inMailbox("1").build()),
-                    true);
-            final ExecutionException executionException = Assertions.assertThrows(
-                    ExecutionException.class, () -> mua.query(query).get(5, TimeUnit.SECONDS));
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .username(mailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .cache(cache)
+                    .useWebSocket(true)
+                    .accountId(mailServer.getAccountId())
+                    .build()) {
+                final EmailQuery query = EmailQuery.of(
+                        FilterOperator.or(
+                                EmailFilterCondition.builder().inMailbox("0").build(),
+                                EmailFilterCondition.builder().inMailbox("1").build()),
+                        true);
+                final ExecutionException executionException = Assertions.assertThrows(
+                        ExecutionException.class, () -> mua.query(query).get(5, TimeUnit.SECONDS));
 
-            MatcherAssert.assertThat(executionException.getCause(), CoreMatchers.instanceOf(exception));
+                MatcherAssert.assertThat(executionException.getCause(), CoreMatchers.instanceOf(exception));
 
-            mailServer.setFailureTrigger(JmapDispatcher.FailureTrigger.NONE);
+                mailServer.setFailureTrigger(JmapDispatcher.FailureTrigger.NONE);
 
-            Thread.sleep(1000);
+                Thread.sleep(1000);
 
-            mua.query(query).get(5, TimeUnit.SECONDS);
+                mua.query(query).get(5, TimeUnit.SECONDS);
 
-            final List<CachedEmail> threadT1 = cache.getEmails("T1");
+                final List<CachedEmail> threadT1 = cache.getEmails("T1");
 
-            Assertions.assertEquals(2, threadT1.size());
+                Assertions.assertEquals(2, threadT1.size());
+            }
         }
-
-        server.shutdown();
     }
 
     @Test
@@ -195,74 +197,80 @@ public class MuaWebSocketTest {
     @Test
     public void pushNotifications() throws IOException, ExecutionException, InterruptedException {
         final MyInMemoryCache cache = new MyInMemoryCache();
-        final MockWebServer server = new MockWebServer();
-        final MockMailServer mailServer = new MockMailServer(2);
-        server.setDispatcher(mailServer);
+        try (var server = new MockWebServer()) {
+            final MockMailServer mailServer = new MockMailServer(2);
+            server.setDispatcher(mailServer);
+            server.start();
 
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .username(mailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .cache(cache)
-                .useWebSocket(true)
-                .accountId(mailServer.getAccountId())
-                .build()) {
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .username(mailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .cache(cache)
+                    .useWebSocket(true)
+                    .accountId(mailServer.getAccountId())
+                    .build()) {
 
-            // fetches session. starts WebSocket
-            // If we don’t do that the next round trip call might race the push enable message
-            awaitRoundTrip(mua);
+                // fetches session. starts WebSocket
+                // If we don’t do that the next round trip call might race the push enable message
+                awaitRoundTrip(mua);
 
-            final AtomicInteger stateChangeCount = new AtomicInteger();
+                final AtomicInteger stateChangeCount = new AtomicInteger();
 
-            final OnStateChangeListener changeListener = stateChange -> {
-                stateChangeCount.incrementAndGet();
-                return true;
-            };
+                final OnStateChangeListener changeListener = stateChange -> {
+                    stateChangeCount.incrementAndGet();
+                    return true;
+                };
 
-            final ListenableFuture<PushService> pushService =
-                    mua.getJmapClient().monitorEvents(changeListener);
+                final ListenableFuture<PushService> pushService =
+                        mua.getJmapClient().monitorEvents(changeListener);
 
-            MatcherAssert.assertThat(pushService.get(), CoreMatchers.instanceOf(WebSocketPushService.class));
+                MatcherAssert.assertThat(pushService.get(), CoreMatchers.instanceOf(WebSocketPushService.class));
 
-            awaitRoundTrip(mua);
+                awaitRoundTrip(mua);
 
-            Assertions.assertTrue(mailServer.hasPushEnabledWebSockets(), "No WebSockets have been enabled for push");
+                Assertions.assertTrue(
+                        mailServer.hasPushEnabledWebSockets(), "No WebSockets have been enabled for push");
 
-            final Email email = mailServer.generateEmailOnTop();
+                final Email email = mailServer.generateEmailOnTop();
 
-            awaitRoundTrip(mua);
+                awaitRoundTrip(mua);
 
-            Assertions.assertEquals(1, stateChangeCount.get());
+                Assertions.assertEquals(1, stateChangeCount.get());
 
-            pushService.get().removeOnStateChangeListener(changeListener);
+                pushService.get().removeOnStateChangeListener(changeListener);
 
-            awaitRoundTrip(mua);
+                awaitRoundTrip(mua);
 
-            Assertions.assertFalse(mailServer.hasPushEnabledWebSockets(), "Some WebSockets have been enabled for push");
+                Assertions.assertFalse(
+                        mailServer.hasPushEnabledWebSockets(), "Some WebSockets have been enabled for push");
+            }
         }
-
-        server.shutdown();
     }
 
     @Test
     public void setPingInterval() throws ExecutionException, InterruptedException, IOException {
         final MyInMemoryCache cache = new MyInMemoryCache();
-        final MockWebServer server = new MockWebServer();
-        final MockMailServer mailServer = new MockMailServer(2);
-        server.setDispatcher(mailServer);
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .username(mailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .cache(cache)
-                .useWebSocket(true)
-                .accountId(mailServer.getAccountId())
-                .build()) {
-            final PushService pushService = mua.getJmapClient().monitorEvents().get();
-            MatcherAssert.assertThat(pushService, CoreMatchers.instanceOf(WebSocketPushService.class));
-            Assertions.assertThrows(
-                    IllegalArgumentException.class, () -> pushService.setPingInterval(Duration.ofMinutes(-1)));
-            pushService.setPingInterval(Duration.ofSeconds(10));
+        try (var server = new MockWebServer()) {
+            final MockMailServer mailServer = new MockMailServer(2);
+            server.setDispatcher(mailServer);
+            server.start();
+
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .username(mailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .cache(cache)
+                    .useWebSocket(true)
+                    .accountId(mailServer.getAccountId())
+                    .build()) {
+                final PushService pushService =
+                        mua.getJmapClient().monitorEvents().get();
+                MatcherAssert.assertThat(pushService, CoreMatchers.instanceOf(WebSocketPushService.class));
+                Assertions.assertThrows(
+                        IllegalArgumentException.class, () -> pushService.setPingInterval(Duration.ofMinutes(-1)));
+                pushService.setPingInterval(Duration.ofSeconds(10));
+            }
         }
     }
 }

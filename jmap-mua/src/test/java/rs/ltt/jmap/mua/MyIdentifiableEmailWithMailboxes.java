@@ -23,7 +23,6 @@ import java.util.Set;
 import rs.ltt.jmap.common.entity.IdentifiableEmailWithMailboxIds;
 
 class MyIdentifiableEmailWithMailboxes implements IdentifiableEmailWithMailboxIds {
-
     private final String id;
     private final Set<String> mailboxIds;
 

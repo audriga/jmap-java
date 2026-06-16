@@ -20,7 +20,7 @@ import com.google.common.io.ByteStreams;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import okhttp3.mockwebserver.MockWebServer;
+import mockwebserver3.MockWebServer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import rs.ltt.jmap.client.blob.Download;
@@ -31,26 +31,27 @@ import rs.ltt.jmap.mock.server.MockMailServer;
 import rs.ltt.jmap.mua.cache.InMemoryCache;
 
 public class MuaDownloadTest {
-
     @Test
     public void downloadResource() throws ExecutionException, InterruptedException, IOException {
-        final MockWebServer server = new MockWebServer();
-        final MockMailServer mailServer = new MockMailServer(2);
-        server.setDispatcher(mailServer);
+        try (var server = new MockWebServer()) {
+            final MockMailServer mailServer = new MockMailServer(2);
+            server.setDispatcher(mailServer);
+            server.start();
 
-        final Mua mua = Mua.builder()
-                .cache(new InMemoryCache())
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .username(mailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .accountId(mailServer.getAccountId())
-                .build();
-        final Downloadable downloadable = EmailBodyPart.builder()
-                .blobId("d3d9da72-eff2-4e7c-b682-25efa6972dee")
-                .build();
-        final Download download = mua.download(downloadable).get();
-        final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ByteStreams.copy(download.getInputStream(), byteArrayOutputStream);
-        Assertions.assertEquals("Hello World!\n", byteArrayOutputStream.toString());
+            final Mua mua = Mua.builder()
+                    .cache(new InMemoryCache())
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .username(mailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .accountId(mailServer.getAccountId())
+                    .build();
+            final Downloadable downloadable = EmailBodyPart.builder()
+                    .blobId("d3d9da72-eff2-4e7c-b682-25efa6972dee")
+                    .build();
+            final Download download = mua.download(downloadable).get();
+            final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ByteStreams.copy(download.getInputStream(), byteArrayOutputStream);
+            Assertions.assertEquals("Hello World!\n", byteArrayOutputStream.toString());
+        }
     }
 }

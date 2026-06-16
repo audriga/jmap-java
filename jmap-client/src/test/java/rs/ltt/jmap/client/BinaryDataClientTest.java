@@ -23,8 +23,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
+import mockwebserver3.MockResponse;
+import mockwebserver3.MockWebServer;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -41,45 +41,47 @@ public class BinaryDataClientTest {
 
     @Test
     public void invalidUploadResponse() throws IOException {
-
         final Path textFileLocation = tempDir.resolve("test.txt");
         Files.write(textFileLocation, "hello world".getBytes(StandardCharsets.UTF_8));
 
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setBody("{}"));
-        server.start();
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder().body("{}").build());
+            server.start();
 
-        final var connectionConfig = new ConnectionConfig(new BasicAuthHttpAuthentication("foo", "bar"), null, null);
+            final var connectionConfig =
+                    new ConnectionConfig(new BasicAuthHttpAuthentication("foo", "bar"), null, null);
 
-        final BinaryDataClient binaryDataClient = new BinaryDataClient(connectionConfig);
+            final BinaryDataClient binaryDataClient = new BinaryDataClient(connectionConfig);
 
-        ExecutionException ee = Assertions.assertThrows(
-                ExecutionException.class,
-                () -> binaryDataClient
-                        .upload(server.url("/upload"), FileUpload.of(textFileLocation), null)
-                        .get());
-        MatcherAssert.assertThat(ee.getCause(), instanceOf(IllegalStateException.class));
+            ExecutionException ee = Assertions.assertThrows(
+                    ExecutionException.class,
+                    () -> binaryDataClient
+                            .upload(server.url("/upload"), FileUpload.of(textFileLocation), null)
+                            .get());
+            MatcherAssert.assertThat(ee.getCause(), instanceOf(IllegalStateException.class));
+        }
     }
 
     @Test
     public void unauthenticated() throws IOException {
-
         final Path textFileLocation = tempDir.resolve("test.txt");
-        Files.write(textFileLocation, "hello world".getBytes(StandardCharsets.UTF_8));
+        Files.writeString(textFileLocation, "hello world");
 
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setResponseCode(401).setBody("{}"));
-        server.start();
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder().code(401).body("{}").build());
+            server.start();
 
-        final var connectionConfig = new ConnectionConfig(new BasicAuthHttpAuthentication("foo", "bar"), null, null);
+            final var connectionConfig =
+                    new ConnectionConfig(new BasicAuthHttpAuthentication("foo", "bar"), null, null);
 
-        final BinaryDataClient binaryDataClient = new BinaryDataClient(connectionConfig);
+            final BinaryDataClient binaryDataClient = new BinaryDataClient(connectionConfig);
 
-        ExecutionException ee = Assertions.assertThrows(
-                ExecutionException.class,
-                () -> binaryDataClient
-                        .upload(server.url("/upload"), FileUpload.of(textFileLocation), null)
-                        .get());
-        MatcherAssert.assertThat(ee.getCause(), instanceOf(BlobTransferException.class));
+            ExecutionException ee = Assertions.assertThrows(
+                    ExecutionException.class,
+                    () -> binaryDataClient
+                            .upload(server.url("/upload"), FileUpload.of(textFileLocation), null)
+                            .get());
+            MatcherAssert.assertThat(ee.getCause(), instanceOf(BlobTransferException.class));
+        }
     }
 }

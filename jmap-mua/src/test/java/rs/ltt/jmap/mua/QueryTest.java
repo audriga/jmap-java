@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-import okhttp3.mockwebserver.MockWebServer;
+import mockwebserver3.MockWebServer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import rs.ltt.jmap.common.entity.query.EmailQuery;
@@ -33,212 +33,197 @@ import rs.ltt.jmap.mua.util.QueryResult;
 import rs.ltt.jmap.mua.util.QueryResultItem;
 
 public class QueryTest {
-
     @Test
     public void queryRefresh() throws IOException, InterruptedException, ExecutionException {
         final MockMailServer mockMailServer = new MockMailServer(128);
-        final MockWebServer server = new MockWebServer();
-        server.setDispatcher(mockMailServer);
+        try (var server = new MockWebServer()) {
+            server.setDispatcher(mockMailServer);
+            server.start();
 
-        final MyInMemoryCache myInMemoryCache = new MyInMemoryCache();
+            final MyInMemoryCache myInMemoryCache = new MyInMemoryCache();
+            final EmailQuery emailQuery = EmailQuery.unfiltered(true);
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .cache(myInMemoryCache)
+                    .username(mockMailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .accountId(mockMailServer.getAccountId())
+                    .queryPageSize(5)
+                    .build()) {
 
-        final EmailQuery emailQuery = EmailQuery.unfiltered(true);
+                mua.query(emailQuery).get();
 
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .cache(myInMemoryCache)
-                .username(mockMailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .accountId(mockMailServer.getAccountId())
-                .queryPageSize(5)
-                .build()) {
+                Assertions.assertEquals(
+                        Arrays.asList("T0", "T1", "T2", "T3", "T4"),
+                        myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash()));
 
-            mua.query(emailQuery).get();
+                mockMailServer.generateEmailOnTop();
 
-            Assertions.assertEquals(
-                    Arrays.asList("T0", "T1", "T2", "T3", "T4"),
-                    myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash()));
+                mua.query(emailQuery).get();
 
-            mockMailServer.generateEmailOnTop();
+                final List<String> threadsAfterRefresh = myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash());
 
-            mua.query(emailQuery).get();
+                Assertions.assertEquals(5, threadsAfterRefresh.size());
 
-            final List<String> threadsAfterRefresh = myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash());
-
-            Assertions.assertEquals(5, threadsAfterRefresh.size());
-
-            Assertions.assertEquals("T0", threadsAfterRefresh.get(1));
-            Assertions.assertEquals("T3", threadsAfterRefresh.get(4));
+                Assertions.assertEquals("T0", threadsAfterRefresh.get(1));
+                Assertions.assertEquals("T3", threadsAfterRefresh.get(4));
+            }
+            Assertions.assertFalse(myInMemoryCache.hadTotal.get(), "QueryResult had total count");
         }
-
-        Assertions.assertFalse(myInMemoryCache.hadTotal.get(), "QueryResult had total count");
-
-        server.shutdown();
     }
 
     @Test
     public void queryCalculateTotal() throws IOException, InterruptedException, ExecutionException {
         final MockMailServer mockMailServer = new MockMailServer(128);
-        final MockWebServer server = new MockWebServer();
-        server.setDispatcher(mockMailServer);
+        try (var server = new MockWebServer()) {
+            server.setDispatcher(mockMailServer);
+            server.start();
 
-        final MyInMemoryCache myInMemoryCache = new MyInMemoryCache();
+            final MyInMemoryCache myInMemoryCache = new MyInMemoryCache();
+            final EmailQuery emailQuery = EmailQuery.unfiltered(true);
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .cache(myInMemoryCache)
+                    .username(mockMailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .accountId(mockMailServer.getAccountId())
+                    .build()) {
 
-        final EmailQuery emailQuery = EmailQuery.unfiltered(true);
-
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .cache(myInMemoryCache)
-                .username(mockMailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .accountId(mockMailServer.getAccountId())
-                .build()) {
-
-            mua.query(emailQuery, true).get();
+                mua.query(emailQuery, true).get();
+            }
+            Assertions.assertTrue(myInMemoryCache.hadTotal.get(), "QueryResult did not have total");
         }
-
-        Assertions.assertTrue(myInMemoryCache.hadTotal.get(), "QueryResult did not have total");
-
-        server.shutdown();
     }
 
     @Test
     public void queryPagination() throws IOException, InterruptedException, ExecutionException {
         final MockMailServer mockMailServer = new MockMailServer(128);
-        final MockWebServer server = new MockWebServer();
-        server.setDispatcher(mockMailServer);
+        try (var server = new MockWebServer()) {
+            server.setDispatcher(mockMailServer);
+            server.start();
 
-        final MyInMemoryCache myInMemoryCache = new MyInMemoryCache();
+            final MyInMemoryCache myInMemoryCache = new MyInMemoryCache();
+            final EmailQuery emailQuery = EmailQuery.unfiltered(true);
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .cache(myInMemoryCache)
+                    .username(mockMailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .accountId(mockMailServer.getAccountId())
+                    .queryPageSize(5)
+                    .build()) {
 
-        final EmailQuery emailQuery = EmailQuery.unfiltered(true);
+                mua.query(emailQuery).get();
 
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .cache(myInMemoryCache)
-                .username(mockMailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .accountId(mockMailServer.getAccountId())
-                .queryPageSize(5)
-                .build()) {
+                Assertions.assertEquals(
+                        Arrays.asList("T0", "T1", "T2", "T3", "T4"),
+                        myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash()));
 
-            mua.query(emailQuery).get();
+                final String lastEmailId =
+                        myInMemoryCache.getItems(emailQuery.asHash()).get(4).getEmailId();
 
-            Assertions.assertEquals(
-                    Arrays.asList("T0", "T1", "T2", "T3", "T4"),
-                    myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash()));
+                Assertions.assertEquals("M10", lastEmailId);
 
-            final String lastEmailId =
-                    myInMemoryCache.getItems(emailQuery.asHash()).get(4).getEmailId();
+                mua.query(emailQuery, lastEmailId).get();
 
-            Assertions.assertEquals("M10", lastEmailId);
-
-            mua.query(emailQuery, lastEmailId).get();
-
-            Assertions.assertEquals(
-                    Arrays.asList("T0", "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9"),
-                    myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash()));
+                Assertions.assertEquals(
+                        Arrays.asList("T0", "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9"),
+                        myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash()));
+            }
+            Assertions.assertFalse(myInMemoryCache.hadTotal.get(), "QueryResult had total count");
         }
-
-        Assertions.assertFalse(myInMemoryCache.hadTotal.get(), "QueryResult had total count");
-
-        server.shutdown();
     }
 
     @Test
     public void queryRefreshMoreThanPageSize() throws IOException, InterruptedException, ExecutionException {
         final MockMailServer mockMailServer = new MockMailServer(128);
-        final MockWebServer server = new MockWebServer();
-        server.setDispatcher(mockMailServer);
+        try (var server = new MockWebServer()) {
+            server.setDispatcher(mockMailServer);
+            server.start();
 
-        final MyInMemoryCache myInMemoryCache = new MyInMemoryCache();
+            final MyInMemoryCache myInMemoryCache = new MyInMemoryCache();
+            final EmailQuery emailQuery = EmailQuery.unfiltered(true);
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .cache(myInMemoryCache)
+                    .username(mockMailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .accountId(mockMailServer.getAccountId())
+                    .queryPageSize(5)
+                    .build()) {
 
-        final EmailQuery emailQuery = EmailQuery.unfiltered(true);
+                mua.query(emailQuery).get();
 
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .cache(myInMemoryCache)
-                .username(mockMailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .accountId(mockMailServer.getAccountId())
-                .queryPageSize(5)
-                .build()) {
+                Assertions.assertEquals(
+                        Arrays.asList("T0", "T1", "T2", "T3", "T4"),
+                        myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash()));
 
-            mua.query(emailQuery).get();
+                final String lastEmailId =
+                        myInMemoryCache.getItems(emailQuery.asHash()).get(4).getEmailId();
 
-            Assertions.assertEquals(
-                    Arrays.asList("T0", "T1", "T2", "T3", "T4"),
-                    myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash()));
+                Assertions.assertEquals("M10", lastEmailId);
 
-            final String lastEmailId =
-                    myInMemoryCache.getItems(emailQuery.asHash()).get(4).getEmailId();
+                mua.query(emailQuery, lastEmailId).get();
 
-            Assertions.assertEquals("M10", lastEmailId);
+                mockMailServer.generateEmailOnTop();
 
-            mua.query(emailQuery, lastEmailId).get();
+                mua.query(emailQuery).get();
 
-            mockMailServer.generateEmailOnTop();
+                final List<String> threadIds = myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash());
 
-            mua.query(emailQuery).get();
+                Assertions.assertEquals(10, threadIds.size());
 
-            final List<String> threadIds = myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash());
-
-            Assertions.assertEquals(10, threadIds.size());
-
-            Assertions.assertEquals("T8", threadIds.get(9));
+                Assertions.assertEquals("T8", threadIds.get(9));
+            }
         }
-
-        server.shutdown();
     }
 
     @Test
     public void queryRefreshMoreThanPageSizeAndGetLimit() throws IOException, InterruptedException, ExecutionException {
         final MockMailServer mockMailServer = new MockMailServer(128);
         mockMailServer.setMaxObjectsInGet(8);
-        final MockWebServer server = new MockWebServer();
-        server.setDispatcher(mockMailServer);
+        try (var server = new MockWebServer()) {
+            server.setDispatcher(mockMailServer);
+            server.start();
 
-        final MyInMemoryCache myInMemoryCache = new MyInMemoryCache();
+            final MyInMemoryCache myInMemoryCache = new MyInMemoryCache();
+            final EmailQuery emailQuery = EmailQuery.unfiltered(true);
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .cache(myInMemoryCache)
+                    .username(mockMailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .accountId(mockMailServer.getAccountId())
+                    .queryPageSize(5)
+                    .build()) {
 
-        final EmailQuery emailQuery = EmailQuery.unfiltered(true);
+                mua.query(emailQuery).get();
 
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .cache(myInMemoryCache)
-                .username(mockMailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .accountId(mockMailServer.getAccountId())
-                .queryPageSize(5)
-                .build()) {
+                Assertions.assertEquals(
+                        Arrays.asList("T0", "T1", "T2", "T3", "T4"),
+                        myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash()));
 
-            mua.query(emailQuery).get();
+                final String lastEmailId =
+                        myInMemoryCache.getItems(emailQuery.asHash()).get(4).getEmailId();
 
-            Assertions.assertEquals(
-                    Arrays.asList("T0", "T1", "T2", "T3", "T4"),
-                    myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash()));
+                Assertions.assertEquals("M10", lastEmailId);
 
-            final String lastEmailId =
-                    myInMemoryCache.getItems(emailQuery.asHash()).get(4).getEmailId();
+                mua.query(emailQuery, lastEmailId).get();
 
-            Assertions.assertEquals("M10", lastEmailId);
+                mockMailServer.generateEmailOnTop();
 
-            mua.query(emailQuery, lastEmailId).get();
+                mua.query(emailQuery).get();
 
-            mockMailServer.generateEmailOnTop();
+                final List<String> threadIds = myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash());
 
-            mua.query(emailQuery).get();
+                Assertions.assertEquals(8, threadIds.size());
 
-            final List<String> threadIds = myInMemoryCache.getThreadIdsInQuery(emailQuery.asHash());
-
-            Assertions.assertEquals(8, threadIds.size());
-
-            Assertions.assertEquals("T6", threadIds.get(7));
+                Assertions.assertEquals("T6", threadIds.get(7));
+            }
         }
-
-        server.shutdown();
     }
 
     private static class MyInMemoryCache extends InMemoryCache {
-
         private final AtomicBoolean hadTotal = new AtomicBoolean(false);
 
         public List<String> getThreadIdsInQuery(final String queryHash) {

@@ -20,8 +20,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import mockwebserver3.MockWebServer;
 import okhttp3.*;
-import okhttp3.mockwebserver.MockWebServer;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
@@ -36,7 +36,6 @@ import rs.ltt.jmap.common.method.response.core.EchoMethodResponse;
 import rs.ltt.jmap.gson.JmapAdapters;
 
 public class JmapDispatcherTest {
-
     private static final Gson GSON;
 
     private static final String INDEX_0_USERNAME = "dorothy.williams@localhost";
@@ -50,152 +49,154 @@ public class JmapDispatcherTest {
 
     @Test
     public void wrongContentType() throws IOException {
-        final MockWebServer mockWebServer = new MockWebServer();
-        final StubMailServer stubMailServer = new StubMailServer();
-        mockWebServer.setDispatcher(stubMailServer);
+        try (var mockWebServer = new MockWebServer()) {
+            final StubMailServer stubMailServer = new StubMailServer();
+            mockWebServer.setDispatcher(stubMailServer);
+            mockWebServer.start();
 
-        final OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
+            final OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
 
-        final Response response = okHttpClient
-                .newCall(new Request.Builder()
-                        .url(mockWebServer.url("/jmap/"))
-                        .addHeader("Authorization", Credentials.basic(INDEX_0_USERNAME, StubMailServer.PASSWORD))
-                        .post(RequestBody.create("{}", MediaType.get("text/plain")))
-                        .build())
-                .execute();
+            final Response response = okHttpClient
+                    .newCall(new Request.Builder()
+                            .url(mockWebServer.url("/jmap/"))
+                            .addHeader("Authorization", Credentials.basic(INDEX_0_USERNAME, StubMailServer.PASSWORD))
+                            .post(RequestBody.create("{}", MediaType.get("text/plain")))
+                            .build())
+                    .execute();
 
-        Assertions.assertEquals(400, response.code());
+            Assertions.assertEquals(400, response.code());
 
-        final ResponseBody body = response.body();
+            final ResponseBody body = response.body();
 
-        Assertions.assertNotNull(body);
+            Assertions.assertNotNull(body);
 
-        final GenericResponse genericResponse = GSON.fromJson(body.string(), GenericResponse.class);
+            final GenericResponse genericResponse = GSON.fromJson(body.string(), GenericResponse.class);
 
-        MatcherAssert.assertThat(genericResponse, CoreMatchers.instanceOf(ErrorResponse.class));
+            MatcherAssert.assertThat(genericResponse, CoreMatchers.instanceOf(ErrorResponse.class));
 
-        ErrorResponse errorResponse = (ErrorResponse) genericResponse;
-        Assertions.assertEquals(ErrorType.NOT_JSON, errorResponse.getType());
-
-        mockWebServer.shutdown();
+            ErrorResponse errorResponse = (ErrorResponse) genericResponse;
+            Assertions.assertEquals(ErrorType.NOT_JSON, errorResponse.getType());
+        }
     }
 
     @Test
     public void unauthorized() throws IOException {
-        final MockWebServer mockWebServer = new MockWebServer();
-        mockWebServer.setDispatcher(new StubMailServer());
+        try (var mockWebServer = new MockWebServer()) {
+            mockWebServer.setDispatcher(new StubMailServer());
+            mockWebServer.start();
 
-        final OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
+            final OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
 
-        final Response response = okHttpClient
-                .newCall(new Request.Builder()
-                        .url(mockWebServer.url("/jmap/"))
-                        .addHeader("Authorization", Credentials.basic(INDEX_0_USERNAME, "wrong!"))
-                        .post(RequestBody.create("{}", MediaType.get("application/json")))
-                        .build())
-                .execute();
+            final Response response = okHttpClient
+                    .newCall(new Request.Builder()
+                            .url(mockWebServer.url("/jmap/"))
+                            .addHeader("Authorization", Credentials.basic(INDEX_0_USERNAME, "wrong!"))
+                            .post(RequestBody.create("{}", MediaType.get("application/json")))
+                            .build())
+                    .execute();
 
-        Assertions.assertEquals(401, response.code());
-
-        mockWebServer.shutdown();
+            Assertions.assertEquals(401, response.code());
+        }
     }
 
     @Test
     public void notRequest() throws IOException {
-        final MockWebServer mockWebServer = new MockWebServer();
-        mockWebServer.setDispatcher(new StubMailServer());
+        try (var mockWebServer = new MockWebServer()) {
+            mockWebServer.setDispatcher(new StubMailServer());
+            mockWebServer.start();
 
-        final OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
+            final OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
 
-        final Response response = okHttpClient
-                .newCall(new Request.Builder()
-                        .url(mockWebServer.url("/jmap/"))
-                        .addHeader("Authorization", Credentials.basic(INDEX_0_USERNAME, StubMailServer.PASSWORD))
-                        .post(RequestBody.create("{}", MediaType.get("application/json")))
-                        .build())
-                .execute();
+            final Response response = okHttpClient
+                    .newCall(new Request.Builder()
+                            .url(mockWebServer.url("/jmap/"))
+                            .addHeader("Authorization", Credentials.basic(INDEX_0_USERNAME, StubMailServer.PASSWORD))
+                            .post(RequestBody.create("{}", MediaType.get("application/json")))
+                            .build())
+                    .execute();
 
-        Assertions.assertEquals(400, response.code());
+            Assertions.assertEquals(400, response.code());
 
-        final ResponseBody body = response.body();
+            final ResponseBody body = response.body();
 
-        Assertions.assertNotNull(body);
+            Assertions.assertNotNull(body);
 
-        final GenericResponse genericResponse = GSON.fromJson(body.string(), GenericResponse.class);
+            final GenericResponse genericResponse = GSON.fromJson(body.string(), GenericResponse.class);
 
-        MatcherAssert.assertThat(genericResponse, CoreMatchers.instanceOf(ErrorResponse.class));
+            MatcherAssert.assertThat(genericResponse, CoreMatchers.instanceOf(ErrorResponse.class));
 
-        ErrorResponse errorResponse = (ErrorResponse) genericResponse;
-        Assertions.assertEquals(ErrorType.NOT_REQUEST, errorResponse.getType());
-
-        mockWebServer.shutdown();
+            ErrorResponse errorResponse = (ErrorResponse) genericResponse;
+            Assertions.assertEquals(ErrorType.NOT_REQUEST, errorResponse.getType());
+        }
     }
 
     @Test
     public void invalidJson() throws IOException {
-        final MockWebServer mockWebServer = new MockWebServer();
-        mockWebServer.setDispatcher(new StubMailServer());
+        try (var mockWebServer = new MockWebServer()) {
+            mockWebServer.setDispatcher(new StubMailServer());
+            mockWebServer.start();
 
-        final OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
+            final OkHttpClient okHttpClient = new OkHttpClient.Builder().build();
 
-        final Response response = okHttpClient
-                .newCall(new Request.Builder()
-                        .url(mockWebServer.url("/jmap/"))
-                        .addHeader("Authorization", Credentials.basic(INDEX_0_USERNAME, StubMailServer.PASSWORD))
-                        .post(RequestBody.create("{}}", MediaType.get("application/json")))
-                        .build())
-                .execute();
+            final Response response = okHttpClient
+                    .newCall(new Request.Builder()
+                            .url(mockWebServer.url("/jmap/"))
+                            .addHeader("Authorization", Credentials.basic(INDEX_0_USERNAME, StubMailServer.PASSWORD))
+                            .post(RequestBody.create("{}}", MediaType.get("application/json")))
+                            .build())
+                    .execute();
 
-        Assertions.assertEquals(400, response.code());
+            Assertions.assertEquals(400, response.code());
 
-        final ResponseBody body = response.body();
+            final ResponseBody body = response.body();
 
-        Assertions.assertNotNull(body);
+            Assertions.assertNotNull(body);
 
-        final GenericResponse genericResponse = GSON.fromJson(body.string(), GenericResponse.class);
+            final GenericResponse genericResponse = GSON.fromJson(body.string(), GenericResponse.class);
 
-        MatcherAssert.assertThat(genericResponse, CoreMatchers.instanceOf(ErrorResponse.class));
+            MatcherAssert.assertThat(genericResponse, CoreMatchers.instanceOf(ErrorResponse.class));
 
-        ErrorResponse errorResponse = (ErrorResponse) genericResponse;
-        Assertions.assertEquals(ErrorType.NOT_JSON, errorResponse.getType());
-
-        mockWebServer.shutdown();
+            ErrorResponse errorResponse = (ErrorResponse) genericResponse;
+            Assertions.assertEquals(ErrorType.NOT_JSON, errorResponse.getType());
+        }
     }
 
     @Test
     public void echo() throws IOException, ExecutionException, InterruptedException {
-        final MockWebServer mockWebServer = new MockWebServer();
-        mockWebServer.setDispatcher(new StubMailServer());
+        try (var mockWebServer = new MockWebServer()) {
+            mockWebServer.setDispatcher(new StubMailServer());
+            mockWebServer.start();
 
-        final JmapClient jmapClient = new JmapClient(
-                INDEX_0_USERNAME, StubMailServer.PASSWORD, mockWebServer.url(StubMailServer.WELL_KNOWN_PATH));
+            final JmapClient jmapClient = new JmapClient(
+                    INDEX_0_USERNAME, StubMailServer.PASSWORD, mockWebServer.url(StubMailServer.WELL_KNOWN_PATH));
 
-        final EchoMethodResponse response = jmapClient
-                .call(EchoMethodCall.builder()
-                        .libraryName(Version.getUserAgent())
-                        .build())
-                .get()
-                .getMain(EchoMethodResponse.class);
-        Assertions.assertEquals(Version.getUserAgent(), response.getLibraryName());
-        mockWebServer.shutdown();
+            final EchoMethodResponse response = jmapClient
+                    .call(EchoMethodCall.builder()
+                            .libraryName(Version.getUserAgent())
+                            .build())
+                    .get()
+                    .getMain(EchoMethodResponse.class);
+            Assertions.assertEquals(Version.getUserAgent(), response.getLibraryName());
+        }
     }
 
     @Test
     public void secondAccountEcho() throws IOException, ExecutionException, InterruptedException {
-        final MockWebServer mockWebServer = new MockWebServer();
-        final StubMailServer stubMailServer = new StubMailServer(1);
-        mockWebServer.setDispatcher(stubMailServer);
+        try (var mockWebServer = new MockWebServer()) {
+            final StubMailServer stubMailServer = new StubMailServer(1);
+            mockWebServer.setDispatcher(stubMailServer);
+            mockWebServer.start();
 
-        final JmapClient jmapClient = new JmapClient(
-                INDEX_1_USERNAME, StubMailServer.PASSWORD, mockWebServer.url(StubMailServer.WELL_KNOWN_PATH));
+            final JmapClient jmapClient = new JmapClient(
+                    INDEX_1_USERNAME, StubMailServer.PASSWORD, mockWebServer.url(StubMailServer.WELL_KNOWN_PATH));
 
-        final EchoMethodResponse response = jmapClient
-                .call(EchoMethodCall.builder()
-                        .libraryName(Version.getUserAgent())
-                        .build())
-                .get()
-                .getMain(EchoMethodResponse.class);
-        Assertions.assertEquals(Version.getUserAgent(), response.getLibraryName());
-        mockWebServer.shutdown();
+            final EchoMethodResponse response = jmapClient
+                    .call(EchoMethodCall.builder()
+                            .libraryName(Version.getUserAgent())
+                            .build())
+                    .get()
+                    .getMain(EchoMethodResponse.class);
+            Assertions.assertEquals(Version.getUserAgent(), response.getLibraryName());
+        }
     }
 }

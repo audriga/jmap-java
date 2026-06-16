@@ -18,10 +18,11 @@ package rs.ltt.jmap.mua;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
-import okhttp3.mockwebserver.MockWebServer;
+import mockwebserver3.MockWebServer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import rs.ltt.jmap.common.entity.Email;
@@ -38,43 +39,44 @@ import rs.ltt.jmap.mua.service.PluginService;
 public class PluginTest {
 
     @Test
-    public void emailCreationPluginTest() throws ExecutionException, InterruptedException {
+    public void emailCreationPluginTest() throws ExecutionException, InterruptedException, IOException {
+        try (var server = new MockWebServer()) {
+            final MockMailServer mailServer = new MockMailServer(2);
+            server.setDispatcher(mailServer);
+            server.start();
 
-        final MockWebServer server = new MockWebServer();
-        final MockMailServer mailServer = new MockMailServer(2);
-        server.setDispatcher(mailServer);
-        final CountEmailCreationPlugin plugin = new CountEmailCreationPlugin();
-        final Identity identity = Identity.builder().name("Stub Identity").build();
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .username(mailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .accountId(mailServer.getAccountId())
-                .plugin(CountEmailCreationPlugin.class, plugin)
-                .build()) {
-            mua.query(EmailQuery.unfiltered(true)).get();
-            Assertions.assertEquals(3, plugin.cacheCounter.get());
-            final Email email = Email.builder().subject("Stub Email").build();
-            mua.draft(email).get();
-            mua.query(EmailQuery.unfiltered(true)).get();
-            Assertions.assertEquals(1, plugin.buildCounter.get());
+            final CountEmailCreationPlugin plugin = new CountEmailCreationPlugin();
+            final Identity identity = Identity.builder().name("Stub Identity").build();
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .username(mailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .accountId(mailServer.getAccountId())
+                    .plugin(CountEmailCreationPlugin.class, plugin)
+                    .build()) {
+                mua.query(EmailQuery.unfiltered(true)).get();
+                Assertions.assertEquals(3, plugin.cacheCounter.get());
+                final Email email = Email.builder().subject("Stub Email").build();
+                mua.draft(email).get();
+                mua.query(EmailQuery.unfiltered(true)).get();
+                Assertions.assertEquals(1, plugin.buildCounter.get());
 
-            final Email anotherEmail =
-                    Email.builder().subject("Another Stub Email").build();
+                final Email anotherEmail =
+                        Email.builder().subject("Another Stub Email").build();
 
-            Assertions.assertThrows(
-                    ExecutionException.class,
-                    () -> mua.send(anotherEmail, identity).get());
-            Assertions.assertEquals(2, plugin.buildCounter.get());
+                Assertions.assertThrows(
+                        ExecutionException.class,
+                        () -> mua.send(anotherEmail, identity).get());
+                Assertions.assertEquals(2, plugin.buildCounter.get());
 
-            mua.query(EmailQuery.unfiltered(true)).get();
+                mua.query(EmailQuery.unfiltered(true)).get();
 
-            Assertions.assertEquals(5, plugin.cacheCounter.get());
+                Assertions.assertEquals(5, plugin.cacheCounter.get());
+            }
         }
     }
 
     private static class CountEmailCreationPlugin extends PluginService.Plugin {
-
         private final AtomicInteger buildCounter = new AtomicInteger();
         private final AtomicInteger cacheCounter = new AtomicInteger();
 

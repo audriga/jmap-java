@@ -23,7 +23,6 @@ import rs.ltt.jmap.common.entity.IdentifiableEmailWithKeywords;
 import rs.ltt.jmap.common.entity.IdentifiableEmailWithMailboxIds;
 
 class CachedEmail implements IdentifiableEmailWithKeywords, IdentifiableEmailWithMailboxIds {
-
     private final Email inner;
 
     public CachedEmail(Email inner) {

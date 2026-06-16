@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import okhttp3.mockwebserver.MockWebServer;
+import mockwebserver3.MockWebServer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import rs.ltt.jmap.common.Response;
@@ -38,34 +38,35 @@ import rs.ltt.jmap.mock.server.JmapDispatcher;
 import rs.ltt.jmap.mock.server.MockMailServer;
 
 public class GetEmailsOutOfOrderTest {
-
     @Test
     public void emailGetIsOutOfOrder() throws IOException, ExecutionException, InterruptedException {
-        final MockWebServer server = new MockWebServer();
-        final MockMailServer mailServer = new GetEmailOutOfOrder(2);
-        server.setDispatcher(mailServer);
-        final MyInMemoryCache cache = new MyInMemoryCache();
-        try (final Mua mua = Mua.builder()
-                .cache(cache)
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .username(mailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .accountId(mailServer.getUsername())
-                .build()) {
-            mua.query(EmailQuery.unfiltered()).get();
-            final Mailbox mailboxBeforeModification = cache.getMailbox(Role.INBOX);
-            Assertions.assertEquals(2, mailboxBeforeModification.getUnreadThreads(), "Miss match in unread threads");
-            Assertions.assertEquals(3, mailboxBeforeModification.getUnreadEmails(), "Miss match in unread emails");
-            final List<CachedEmail> emails = cache.getEmails("T1");
-            mua.setKeyword(emails, Keyword.SEEN).get();
+        try (var server = new MockWebServer()) {
+            final MockMailServer mailServer = new GetEmailOutOfOrder(2);
+            server.setDispatcher(mailServer);
+            server.start();
 
-            mua.refresh().get();
+            final MyInMemoryCache cache = new MyInMemoryCache();
+            try (final Mua mua = Mua.builder()
+                    .cache(cache)
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .username(mailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .accountId(mailServer.getUsername())
+                    .build()) {
+                mua.query(EmailQuery.unfiltered()).get();
+                final Mailbox mailboxBeforeModification = cache.getMailbox(Role.INBOX);
+                Assertions.assertEquals(
+                        2, mailboxBeforeModification.getUnreadThreads(), "Miss match in unread threads");
+                Assertions.assertEquals(3, mailboxBeforeModification.getUnreadEmails(), "Miss match in unread emails");
+                final List<CachedEmail> emails = cache.getEmails("T1");
+                mua.setKeyword(emails, Keyword.SEEN).get();
+
+                mua.refresh().get();
+            }
         }
-        server.shutdown();
     }
 
     private static class GetEmailOutOfOrder extends MockMailServer {
-
         public GetEmailOutOfOrder(int numThreads) {
             super(numThreads);
         }

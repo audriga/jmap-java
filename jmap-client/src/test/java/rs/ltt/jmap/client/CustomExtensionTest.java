@@ -24,8 +24,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonIOException;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
+import mockwebserver3.MockResponse;
+import mockwebserver3.MockWebServer;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
@@ -37,7 +37,6 @@ import rs.ltt.jmap.common.util.Mapper;
 import rs.ltt.jmap.gson.JmapAdapters;
 
 public class CustomExtensionTest {
-
     private static final String ACCOUNT_ID = "test@example.com";
     private static final String USERNAME = "test@example.com";
     private static final String PASSWORD = "secret";
@@ -67,16 +66,19 @@ public class CustomExtensionTest {
 
     @Test
     public void notAnnotatedSet() throws IOException {
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setBody(readResourceAsString("fetch-mailboxes/01-session.json")));
-        server.start();
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/01-session.json"))
+                    .build());
+            server.start();
 
-        final JmapClient client = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
-        final ExecutionException executionException = Assertions.assertThrows(ExecutionException.class, () -> {
-            client.call(new SetDummyMethodCall(ACCOUNT_ID, null, null, null, null, null))
-                    .get();
-        });
-        MatcherAssert.assertThat(executionException.getCause(), CoreMatchers.instanceOf(JsonIOException.class));
+            final JmapClient client = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+            final ExecutionException executionException = Assertions.assertThrows(ExecutionException.class, () -> {
+                client.call(new SetDummyMethodCall(ACCOUNT_ID, null, null, null, null, null))
+                        .get();
+            });
+            MatcherAssert.assertThat(executionException.getCause(), CoreMatchers.instanceOf(JsonIOException.class));
+        }
     }
 
     @Test

@@ -16,52 +16,54 @@
 
 package rs.ltt.jmap.mua;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Resources;
 import java.io.IOException;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
+import java.nio.charset.StandardCharsets;
+import mockwebserver3.MockResponse;
+import mockwebserver3.MockWebServer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class MoveToTrashTest {
-
-    private static String ACCOUNT_ID = "test@example.com";
-    private static String USERNAME = "test@example.com";
-    private static String PASSWORD = "secret";
-    private static String WELL_KNOWN_PATH = ".well-known/jmap";
+    private static final String ACCOUNT_ID = "test@example.com";
+    private static final String USERNAME = "test@example.com";
+    private static final String PASSWORD = "secret";
+    private static final String WELL_KNOWN_PATH = ".well-known/jmap";
 
     @Test
     public void emailAlreadyInTrash() throws Exception {
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("common/01-session.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("common/02-mailboxes.json"))
+                    .build());
+            server.start();
 
-        final MockWebServer server = new MockWebServer();
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(WELL_KNOWN_PATH))
+                    .username(USERNAME)
+                    .password(PASSWORD)
+                    .accountId(ACCOUNT_ID)
+                    .build()) {
+                mua.refreshMailboxes().get();
 
-        server.enqueue(new MockResponse().setBody(readResourceAsString("common/01-session.json")));
-        server.enqueue(new MockResponse().setBody(readResourceAsString("common/02-mailboxes.json")));
+                Assertions.assertFalse(
+                        mua.moveToTrash(ImmutableSet.of(new MyIdentifiableEmailWithMailboxes("e0", "mb4")))
+                                .get());
 
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(WELL_KNOWN_PATH))
-                .username(USERNAME)
-                .password(PASSWORD)
-                .accountId(ACCOUNT_ID)
-                .build()) {
-            mua.refreshMailboxes().get();
-
-            Assertions.assertFalse(mua.moveToTrash(ImmutableSet.of(new MyIdentifiableEmailWithMailboxes("e0", "mb4")))
-                    .get());
-
-            Assertions.assertFalse(mua.moveToTrash(ImmutableSet.of(
-                            new MyIdentifiableEmailWithMailboxes("e0", "mb4"),
-                            new MyIdentifiableEmailWithMailboxes("e1", "mb4")))
-                    .get());
+                Assertions.assertFalse(mua.moveToTrash(ImmutableSet.of(
+                                new MyIdentifiableEmailWithMailboxes("e0", "mb4"),
+                                new MyIdentifiableEmailWithMailboxes("e1", "mb4")))
+                        .get());
+            }
         }
-
-        server.shutdown();
     }
 
     private static String readResourceAsString(String filename) throws IOException {
-        return Resources.asCharSource(Resources.getResource(filename), Charsets.UTF_8)
+        return Resources.asCharSource(Resources.getResource(filename), StandardCharsets.UTF_8)
                 .read()
                 .trim();
     }

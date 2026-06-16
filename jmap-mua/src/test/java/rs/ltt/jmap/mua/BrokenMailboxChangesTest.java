@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import okhttp3.mockwebserver.MockWebServer;
+import mockwebserver3.MockWebServer;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
@@ -49,48 +49,37 @@ public class BrokenMailboxChangesTest {
     @Test
     public void errorInSubsequentGetCallsToChangesTriggerIllegalState()
             throws IOException, ExecutionException, InterruptedException {
-        final MockWebServer server = new MockWebServer();
-        final MyMockMailServer myMockMailServer = new MyMockMailServer(2);
-        server.setDispatcher(myMockMailServer);
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .username(myMockMailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .accountId(myMockMailServer.getAccountId())
-                .build()) {
-            mua.query(EmailQuery.unfiltered()).get();
-            final List<IdentifiableEmailWithKeywords> emails =
-                    Arrays.asList(new MyIdentifiableEmailWithKeywords("M1"), new MyIdentifiableEmailWithKeywords("M2"));
-            mua.setKeyword(emails, Keyword.SEEN).get();
+        try (var server = new MockWebServer()) {
+            final MyMockMailServer myMockMailServer = new MyMockMailServer(2);
+            server.setDispatcher(myMockMailServer);
+            server.start();
 
-            final ExecutionException exception = Assertions.assertThrows(
-                    ExecutionException.class, () -> mua.refresh().get());
-            MatcherAssert.assertThat(exception.getCause(), CoreMatchers.instanceOf(IllegalStateException.class));
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .username(myMockMailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .accountId(myMockMailServer.getAccountId())
+                    .build()) {
+                mua.query(EmailQuery.unfiltered()).get();
+                final List<IdentifiableEmailWithKeywords> emails = Arrays.asList(
+                        new MyIdentifiableEmailWithKeywords("M1"), new MyIdentifiableEmailWithKeywords("M2"));
+                mua.setKeyword(emails, Keyword.SEEN).get();
+
+                final ExecutionException exception = Assertions.assertThrows(
+                        ExecutionException.class, () -> mua.refresh().get());
+                MatcherAssert.assertThat(exception.getCause(), CoreMatchers.instanceOf(IllegalStateException.class));
+            }
         }
-        server.shutdown();
     }
 
-    private static class MyIdentifiableEmailWithKeywords implements IdentifiableEmailWithKeywords {
-
-        private final String id;
-
-        private MyIdentifiableEmailWithKeywords(String id) {
-            this.id = id;
-        }
-
+    private record MyIdentifiableEmailWithKeywords(String getId) implements IdentifiableEmailWithKeywords {
         @Override
         public Map<String, Boolean> getKeywords() {
             return Collections.emptyMap();
         }
-
-        @Override
-        public String getId() {
-            return id;
-        }
     }
 
     private static class MyMockMailServer extends MockMailServer {
-
         public MyMockMailServer(int numThreads) {
             super(numThreads);
         }

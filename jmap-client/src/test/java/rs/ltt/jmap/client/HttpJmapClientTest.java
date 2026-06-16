@@ -28,12 +28,12 @@ import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import mockwebserver3.MockResponse;
+import mockwebserver3.MockWebServer;
+import mockwebserver3.SocketEffect;
 import okhttp3.Challenge;
 import okhttp3.Dispatcher;
 import okhttp3.HttpUrl;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.SocketPolicy;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
@@ -69,21 +69,24 @@ public class HttpJmapClientTest {
 
     @Test
     public void fetchMailboxes() throws Exception {
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setBody(readResourceAsString("fetch-mailboxes/01-session.json")));
-        server.enqueue(new MockResponse().setBody(readResourceAsString("fetch-mailboxes/02-mailboxes.json")));
-        server.start();
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/01-session.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/02-mailboxes.json"))
+                    .build());
+            server.start();
 
-        final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
 
-        final ListenableFuture<MethodResponses> future = jmapClient.call(
-                GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
+            final ListenableFuture<MethodResponses> future = jmapClient.call(
+                    GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
 
-        final GetMailboxMethodResponse mailboxResponse = future.get().getMain(GetMailboxMethodResponse.class);
+            final GetMailboxMethodResponse mailboxResponse = future.get().getMain(GetMailboxMethodResponse.class);
 
-        Assertions.assertEquals(7, mailboxResponse.getList().length);
-
-        server.shutdown();
+            Assertions.assertEquals(7, mailboxResponse.getList().length);
+        }
     }
 
     public static String readResourceAsString(String filename) throws IOException {
@@ -94,181 +97,209 @@ public class HttpJmapClientTest {
 
     @Test
     public void repeatedSessionFetches() throws Exception {
-        final MockWebServer server = new MockWebServer();
-        server.start();
+        try (var server = new MockWebServer()) {
+            server.start();
 
-        final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
 
-        final ListenableFuture<Session> firstSessionFuture = jmapClient.getSession();
-        final ListenableFuture<Session> secondSessionFuture = jmapClient.getSession();
+            final ListenableFuture<Session> firstSessionFuture = jmapClient.getSession();
+            final ListenableFuture<Session> secondSessionFuture = jmapClient.getSession();
 
-        server.enqueue(new MockResponse().setBody(readResourceAsString("fetch-mailboxes/01-session.json")));
-        server.enqueue(new MockResponse().setResponseCode(404));
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/01-session.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder().code(404).build());
 
-        final Session firstSession = firstSessionFuture.get();
-        final Session secondSession = secondSessionFuture.get();
-        Assertions.assertEquals("/jmap/", firstSession.getApiUrl().encodedPath());
-        Assertions.assertEquals("/jmap/", secondSession.getApiUrl().encodedPath());
+            final Session firstSession = firstSessionFuture.get();
+            final Session secondSession = secondSessionFuture.get();
+            Assertions.assertEquals("/jmap/", firstSession.getApiUrl().encodedPath());
+            Assertions.assertEquals("/jmap/", secondSession.getApiUrl().encodedPath());
 
-        final ListenableFuture<Session> thirdSessionFuture = jmapClient.getSession();
-        Assertions.assertEquals("/jmap/", thirdSessionFuture.get().getApiUrl().encodedPath());
-
-        server.shutdown();
+            final ListenableFuture<Session> thirdSessionFuture = jmapClient.getSession();
+            Assertions.assertEquals(
+                    "/jmap/", thirdSessionFuture.get().getApiUrl().encodedPath());
+        }
     }
 
     @Test
     public void fileSessionCache() throws Exception {
-        final MockWebServer server = new MockWebServer();
-        server.start();
+        try (var server = new MockWebServer()) {
+            server.start();
 
-        server.enqueue(new MockResponse().setBody(readResourceAsString("fetch-mailboxes/01-session.json")));
-        server.enqueue(new MockResponse().setResponseCode(404));
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/01-session.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder().code(404).build());
 
-        final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
-        jmapClient.setSessionCache(new FileSessionCache(tempDir));
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+            jmapClient.setSessionCache(new FileSessionCache(tempDir));
 
-        final ListenableFuture<Session> firstSessionFuture = jmapClient.getSession();
-        final Session firstSession = firstSessionFuture.get();
-        Assertions.assertEquals("/jmap/", firstSession.getApiUrl().encodedPath());
+            final ListenableFuture<Session> firstSessionFuture = jmapClient.getSession();
+            final Session firstSession = firstSessionFuture.get();
+            Assertions.assertEquals("/jmap/", firstSession.getApiUrl().encodedPath());
 
-        final JmapClient jmapClient2 = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
-        jmapClient2.setSessionCache(new FileSessionCache(tempDir));
+            final JmapClient jmapClient2 = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+            jmapClient2.setSessionCache(new FileSessionCache(tempDir));
 
-        final ListenableFuture<Session> secondSessionFuture = jmapClient2.getSession();
+            final ListenableFuture<Session> secondSessionFuture = jmapClient2.getSession();
 
-        final Session secondSession = secondSessionFuture.get();
-        Assertions.assertEquals("/jmap/", secondSession.getApiUrl().encodedPath());
+            final Session secondSession = secondSessionFuture.get();
+            Assertions.assertEquals("/jmap/", secondSession.getApiUrl().encodedPath());
 
-        final ListenableFuture<Session> thirdSessionFuture = jmapClient2.getSession();
-        Assertions.assertEquals("/jmap/", thirdSessionFuture.get().getApiUrl().encodedPath());
-
-        server.shutdown();
+            final ListenableFuture<Session> thirdSessionFuture = jmapClient2.getSession();
+            Assertions.assertEquals(
+                    "/jmap/", thirdSessionFuture.get().getApiUrl().encodedPath());
+        }
     }
 
     @Test
     public void fetchMailboxesWithMethodError() throws IOException {
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setBody(readResourceAsString("fetch-mailboxes/01-session.json")));
-        server.enqueue(new MockResponse().setBody(readResourceAsString("fetch-mailboxes/unknown-method.json")));
-        server.start();
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/01-session.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/unknown-method.json"))
+                    .build());
+            server.start();
 
-        final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
 
-        ListenableFuture<MethodResponses> future = jmapClient.call(
-                GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
+            ListenableFuture<MethodResponses> future = jmapClient.call(
+                    GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
 
-        final ExecutionException exception = Assertions.assertThrows(ExecutionException.class, future::get);
-        final Throwable cause = exception.getCause();
-        MatcherAssert.assertThat(cause, CoreMatchers.instanceOf(MethodErrorResponseException.class));
-        final MethodErrorResponseException methodErrorResponseException = (MethodErrorResponseException) cause;
-        MatcherAssert.assertThat(
-                methodErrorResponseException.getMethodErrorResponse(),
-                CoreMatchers.instanceOf(UnknownMethodMethodErrorResponse.class));
-        Assertions.assertEquals("unknownMethod in response to Mailbox/get", methodErrorResponseException.getMessage());
-        Assertions.assertEquals(0, methodErrorResponseException.getAdditional().length);
-        server.shutdown();
+            final ExecutionException exception = Assertions.assertThrows(ExecutionException.class, future::get);
+            final Throwable cause = exception.getCause();
+            MatcherAssert.assertThat(cause, CoreMatchers.instanceOf(MethodErrorResponseException.class));
+            final MethodErrorResponseException methodErrorResponseException = (MethodErrorResponseException) cause;
+            MatcherAssert.assertThat(
+                    methodErrorResponseException.getMethodErrorResponse(),
+                    CoreMatchers.instanceOf(UnknownMethodMethodErrorResponse.class));
+            Assertions.assertEquals(
+                    "unknownMethod in response to Mailbox/get", methodErrorResponseException.getMessage());
+            Assertions.assertEquals(0, methodErrorResponseException.getAdditional().length);
+        }
     }
 
     @Test
     public void invalidArgumentsMethodError() throws IOException {
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setBody(readResourceAsString("fetch-mailboxes/01-session.json")));
-        server.enqueue(new MockResponse().setBody(readResourceAsString("fetch-mailboxes/invalid-arguments.json")));
-        server.start();
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/01-session.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/invalid-arguments.json"))
+                    .build());
+            server.start();
 
-        final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
 
-        final ExecutionException exception = Assertions.assertThrows(
-                ExecutionException.class,
-                () -> jmapClient
-                        .call(GetMailboxMethodCall.builder()
-                                .accountId(ACCOUNT_ID)
-                                .build())
-                        .get());
-        final Throwable cause = exception.getCause();
-        MatcherAssert.assertThat(cause, CoreMatchers.instanceOf(MethodErrorResponseException.class));
-        final MethodErrorResponseException methodErrorResponseException = (MethodErrorResponseException) cause;
-        MatcherAssert.assertThat(
-                methodErrorResponseException.getMethodErrorResponse(),
-                CoreMatchers.instanceOf(InvalidArgumentsMethodErrorResponse.class));
-        Assertions.assertEquals(
-                "invalidArguments in response to Mailbox/get (I provide more details)",
-                methodErrorResponseException.getMessage());
-        server.shutdown();
+            final ExecutionException exception = Assertions.assertThrows(
+                    ExecutionException.class,
+                    () -> jmapClient
+                            .call(GetMailboxMethodCall.builder()
+                                    .accountId(ACCOUNT_ID)
+                                    .build())
+                            .get());
+            final Throwable cause = exception.getCause();
+            MatcherAssert.assertThat(cause, CoreMatchers.instanceOf(MethodErrorResponseException.class));
+            final MethodErrorResponseException methodErrorResponseException = (MethodErrorResponseException) cause;
+            MatcherAssert.assertThat(
+                    methodErrorResponseException.getMethodErrorResponse(),
+                    CoreMatchers.instanceOf(InvalidArgumentsMethodErrorResponse.class));
+            Assertions.assertEquals(
+                    "invalidArguments in response to Mailbox/get (I provide more details)",
+                    methodErrorResponseException.getMessage());
+        }
     }
 
     @Test
     public void fetchMailboxesException() throws IOException {
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setBody(readResourceAsString("fetch-mailboxes/01-session.json")));
-        server.enqueue(new MockResponse().setBody(readResourceAsString("fetch-mailboxes/unknown-method-call-id.json")));
-        server.start();
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/01-session.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/unknown-method-call-id.json"))
+                    .build());
+            server.start();
 
-        final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
 
-        final ExecutionException exception = Assertions.assertThrows(ExecutionException.class, () -> {
-            jmapClient
-                    .call(GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build())
-                    .get();
-        });
-        MatcherAssert.assertThat(exception.getCause(), CoreMatchers.instanceOf(MethodResponseNotFoundException.class));
-        server.shutdown();
+            final ExecutionException exception = Assertions.assertThrows(ExecutionException.class, () -> {
+                jmapClient
+                        .call(GetMailboxMethodCall.builder()
+                                .accountId(ACCOUNT_ID)
+                                .build())
+                        .get();
+            });
+            MatcherAssert.assertThat(
+                    exception.getCause(), CoreMatchers.instanceOf(MethodResponseNotFoundException.class));
+        }
     }
 
     @Test
     public void endpointNotFound() throws IOException {
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setResponseCode(404));
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder().code(404).build());
+            server.start();
 
-        final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
 
-        final ExecutionException exception = Assertions.assertThrows(
-                ExecutionException.class,
-                () -> jmapClient
-                        .call(EchoMethodCall.builder()
-                                .libraryName(Version.getUserAgent())
-                                .build())
-                        .get());
+            final ExecutionException exception = Assertions.assertThrows(
+                    ExecutionException.class,
+                    () -> jmapClient
+                            .call(EchoMethodCall.builder()
+                                    .libraryName(Version.getUserAgent())
+                                    .build())
+                            .get());
 
-        MatcherAssert.assertThat(exception.getCause(), CoreMatchers.instanceOf(EndpointNotFoundException.class));
-
-        server.shutdown();
+            MatcherAssert.assertThat(exception.getCause(), CoreMatchers.instanceOf(EndpointNotFoundException.class));
+        }
     }
 
     @Test
     public void updateSessionResourceIfNecessary() throws IOException, InterruptedException, ExecutionException {
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setBody(readResourceAsString("update-session-resource/01-session.json")));
-        server.enqueue(new MockResponse().setBody(readResourceAsString("update-session-resource/02-mailboxes.json")));
-        server.enqueue(new MockResponse().setBody(readResourceAsString("update-session-resource/03-session.json")));
-        server.enqueue(new MockResponse().setBody(readResourceAsString("update-session-resource/04-echo.json")));
-        server.start();
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("update-session-resource/01-session.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("update-session-resource/02-mailboxes.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("update-session-resource/03-session.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("update-session-resource/04-echo.json"))
+                    .build());
+            server.start();
 
-        final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
 
-        final ListenableFuture<MethodResponses> mailboxFuture = jmapClient.call(
-                GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
+            final ListenableFuture<MethodResponses> mailboxFuture = jmapClient.call(
+                    GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
 
-        // Wait for result
-        mailboxFuture.get();
+            // Wait for result
+            mailboxFuture.get();
 
-        // Skip session request
-        server.takeRequest();
+            // Skip session request
+            server.takeRequest();
 
-        Assertions.assertEquals(server.url("/jmap/"), server.takeRequest().getRequestUrl());
+            Assertions.assertEquals(server.url("/jmap/"), server.takeRequest().getUrl());
 
-        final ListenableFuture<MethodResponses> echoFuture =
-                jmapClient.call(EchoMethodCall.builder().build());
+            final ListenableFuture<MethodResponses> echoFuture =
+                    jmapClient.call(EchoMethodCall.builder().build());
 
-        // Wait for result
-        echoFuture.get();
+            // Wait for result
+            echoFuture.get();
 
-        // Skip session request
-        server.takeRequest();
+            // Skip session request
+            server.takeRequest();
 
-        Assertions.assertEquals(server.url("/api/jmap/"), server.takeRequest().getRequestUrl());
-
-        server.shutdown();
+            Assertions.assertEquals(
+                    server.url("/api/jmap/"), server.takeRequest().getUrl());
+        }
     }
 
     @Test
@@ -290,198 +321,225 @@ public class HttpJmapClientTest {
                 return future;
             }
         };
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setBody(readResourceAsString("fetch-mailboxes/01-session.json")));
-        server.enqueue(new MockResponse().setBody(readResourceAsString("fetch-mailboxes/02-mailboxes.json")));
-        server.enqueue(new MockResponse().setBody(readResourceAsString("fetch-mailboxes/02-mailboxes.json")));
-        server.start();
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/01-session.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/02-mailboxes.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/02-mailboxes.json"))
+                    .build());
+            server.start();
 
-        final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
-        jmapClient.setSessionCache(sessionCache);
-        jmapClient.getSession().get();
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+            jmapClient.setSessionCache(sessionCache);
+            jmapClient.getSession().get();
 
-        final JmapClient secondJmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
-        secondJmapClient.setSessionCache(sessionCache);
+            final JmapClient secondJmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+            secondJmapClient.setSessionCache(sessionCache);
 
-        final ListenableFuture<MethodResponses> firstFuture = secondJmapClient.call(
-                GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
+            final ListenableFuture<MethodResponses> firstFuture = secondJmapClient.call(
+                    GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
 
-        final GetMailboxMethodResponse firstMailboxResponse = firstFuture.get().getMain(GetMailboxMethodResponse.class);
+            final GetMailboxMethodResponse firstMailboxResponse =
+                    firstFuture.get().getMain(GetMailboxMethodResponse.class);
 
-        Assertions.assertEquals(7, firstMailboxResponse.getList().length);
+            Assertions.assertEquals(7, firstMailboxResponse.getList().length);
 
-        final ListenableFuture<MethodResponses> secondFuture = secondJmapClient.call(
-                GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
+            final ListenableFuture<MethodResponses> secondFuture = secondJmapClient.call(
+                    GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
 
-        final GetMailboxMethodResponse secondMailboxResponse =
-                secondFuture.get().getMain(GetMailboxMethodResponse.class);
+            final GetMailboxMethodResponse secondMailboxResponse =
+                    secondFuture.get().getMain(GetMailboxMethodResponse.class);
 
-        Assertions.assertEquals(7, secondMailboxResponse.getList().length);
+            Assertions.assertEquals(7, secondMailboxResponse.getList().length);
 
-        Assertions.assertEquals(2, cacheReadAttempts.get(), "Unexpected number of session cache read attempts");
+            Assertions.assertEquals(2, cacheReadAttempts.get(), "Unexpected number of session cache read attempts");
 
-        Assertions.assertEquals(1, cacheHits.get(), "Unexpected number of session cache read attempts");
-
-        server.shutdown();
+            Assertions.assertEquals(1, cacheHits.get(), "Unexpected number of session cache read attempts");
+        }
     }
 
     @Test
     public void redirectFromWellKnown() throws IOException, ExecutionException, InterruptedException {
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setResponseCode(301).addHeader("Location", "/jmap"));
-        server.enqueue(new MockResponse().setResponseCode(301).addHeader("Location", "/jmap/"));
-        server.enqueue(new MockResponse().setBody(readResourceAsString("redirect/01-session.json")));
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .code(301)
+                    .addHeader("Location", "/jmap")
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .code(301)
+                    .addHeader("Location", "/jmap/")
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("redirect/01-session.json"))
+                    .build());
 
-        server.start();
+            server.start();
 
-        final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
 
-        Session session = jmapClient.getSession().get();
+            Session session = jmapClient.getSession().get();
 
-        Assertions.assertEquals(server.url("/jmap/"), session.getBase());
-
-        server.shutdown();
+            Assertions.assertEquals(server.url("/jmap/"), session.getBase());
+        }
     }
 
     @Test
     public void downloadUploadAndEventSourceUrlTest() throws IOException, ExecutionException, InterruptedException {
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setBody(readResourceAsString("session-urls/01-session.json")));
-        server.start();
-        final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("session-urls/01-session.json"))
+                    .build());
+            server.start();
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
 
-        final Session session = jmapClient.getSession().get();
+            final Session session = jmapClient.getSession().get();
 
-        HttpUrl download = session.getDownloadUrl(USERNAME, "B10B1D", "lttrs", "text/plain");
-        HttpUrl upload = session.getUploadUrl(USERNAME);
-        HttpUrl eventSource =
-                session.getEventSourceUrl(Arrays.asList(Email.class, Mailbox.class), CloseAfter.STATE, 300L);
+            HttpUrl download = session.getDownloadUrl(USERNAME, "B10B1D", "lttrs", "text/plain");
+            HttpUrl upload = session.getUploadUrl(USERNAME);
+            HttpUrl eventSource =
+                    session.getEventSourceUrl(Arrays.asList(Email.class, Mailbox.class), CloseAfter.STATE, 300L);
 
-        Assertions.assertEquals(
-                server.url("/jmap/download/test%40example.com/B10B1D/lttrs?accept=text%2Fplain"), download);
-        Assertions.assertEquals(server.url("/jmap/upload/test%40example.com/"), upload);
-        Assertions.assertEquals(
-                server.url("jmap/eventsource/?types=Email,Mailbox&closeafter=state&ping=300"), eventSource);
-
-        server.shutdown();
+            Assertions.assertEquals(
+                    server.url("/jmap/download/test%40example.com/B10B1D/lttrs?accept=text%2Fplain"), download);
+            Assertions.assertEquals(server.url("/jmap/upload/test%40example.com/"), upload);
+            Assertions.assertEquals(
+                    server.url("jmap/eventsource/?types=Email,Mailbox&closeafter=state&ping=300"), eventSource);
+        }
     }
 
     @Test
     public void incompleteSessionResource() throws IOException, ExecutionException, InterruptedException {
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setBody(readResourceAsString("broken-session-urls/01-session.json")));
-        server.start();
-        final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("broken-session-urls/01-session.json"))
+                    .build());
+            server.start();
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
 
-        final Session session = jmapClient.getSession().get();
-        Assertions.assertThrows(IllegalStateException.class, () -> session.getUploadUrl(USERNAME));
-        server.shutdown();
+            final Session session = jmapClient.getSession().get();
+            Assertions.assertThrows(IllegalStateException.class, () -> session.getUploadUrl(USERNAME));
+        }
     }
 
     @Test
     public void webSocketUrl() throws IOException, ExecutionException, InterruptedException {
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setBody(readResourceAsString("session-urls/02-session-ws.json")));
-        server.start();
-        final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("session-urls/02-session-ws.json"))
+                    .build());
+            server.start();
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
 
-        final Session session = jmapClient.getSession().get();
-        Assertions.assertNotNull(
-                session.getCapability(WebSocketCapability.class).getUrl());
+            final Session session = jmapClient.getSession().get();
+            Assertions.assertNotNull(
+                    session.getCapability(WebSocketCapability.class).getUrl());
+        }
     }
 
     @Test
     public void invalidJsonResponse() throws IOException {
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setBody(readResourceAsString("session-urls/01-session.json")));
-        server.enqueue(new MockResponse().setBody("Garbage"));
-        server.start();
-        final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
-        final ListenableFuture<MethodResponses> future = jmapClient.call(
-                GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("session-urls/01-session.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder().body("Garbage").build());
+            server.start();
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+            final ListenableFuture<MethodResponses> future = jmapClient.call(
+                    GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
 
-        final ExecutionException executionException = Assertions.assertThrows(
-                ExecutionException.class, () -> future.get().getMain(GetMailboxMethodResponse.class));
+            final ExecutionException executionException = Assertions.assertThrows(
+                    ExecutionException.class, () -> future.get().getMain(GetMailboxMethodResponse.class));
 
-        MatcherAssert.assertThat(executionException.getCause(), CoreMatchers.instanceOf(JsonParseException.class));
-
-        server.shutdown();
+            MatcherAssert.assertThat(executionException.getCause(), CoreMatchers.instanceOf(JsonParseException.class));
+        }
     }
 
     @Test
     public void callIsCancelableSession() throws Exception {
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse()
-                .setBody(readResourceAsString("fetch-mailboxes/01-session.json"))
-                .setSocketPolicy(SocketPolicy.STALL_SOCKET_AT_START));
-        server.start();
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/01-session.json"))
+                    .onRequestStart(SocketEffect.Stall.INSTANCE)
+                    .build());
+            server.start();
 
-        final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
 
-        final ListenableFuture<MethodResponses> future = jmapClient.call(
-                GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
+            final ListenableFuture<MethodResponses> future = jmapClient.call(
+                    GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
 
-        final Dispatcher dispatcher = Services.okHttpClient().dispatcher();
-        future.cancel(true);
-        Thread.sleep(1000); // wait for cancel to propagate.
-        Assertions.assertEquals(
-                0, dispatcher.runningCallsCount() + dispatcher.queuedCallsCount(), "Call has not been cancelled");
-        server.shutdown();
+            final Dispatcher dispatcher = Services.okHttpClient().dispatcher();
+            future.cancel(true);
+            Thread.sleep(1000); // wait for cancel to propagate.
+            Assertions.assertEquals(
+                    0, dispatcher.runningCallsCount() + dispatcher.queuedCallsCount(), "Call has not been cancelled");
+        }
     }
 
     @Test
     public void callIsCancelableRequest() throws Exception {
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setBody(readResourceAsString("fetch-mailboxes/01-session.json")));
-        server.enqueue(new MockResponse()
-                .setBody(readResourceAsString("fetch-mailboxes/02-mailboxes.json"))
-                .throttleBody(1, 1, TimeUnit.SECONDS));
-        server.start();
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/01-session.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/02-mailboxes.json"))
+                    .throttleBody(1, 1, TimeUnit.SECONDS)
+                    .build());
+            server.start();
 
-        final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
 
-        final ListenableFuture<MethodResponses> future = jmapClient.call(
-                GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
+            final ListenableFuture<MethodResponses> future = jmapClient.call(
+                    GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
 
-        final Dispatcher dispatcher = Services.okHttpClient().dispatcher();
+            final Dispatcher dispatcher = Services.okHttpClient().dispatcher();
 
-        Thread.sleep(1000);
-        future.cancel(true);
-        Thread.sleep(1000); // wait for cancel to propagate
+            Thread.sleep(1000);
+            future.cancel(true);
+            Thread.sleep(1000); // wait for cancel to propagate
 
-        Assertions.assertEquals(
-                0, dispatcher.runningCallsCount() + dispatcher.queuedCallsCount(), "Call has not been cancelled");
+            Assertions.assertEquals(
+                    0, dispatcher.runningCallsCount() + dispatcher.queuedCallsCount(), "Call has not been cancelled");
+        }
     }
 
     @Test
     public void authenticationRequired() throws IOException {
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse()
-                .setResponseCode(401)
-                .addHeader(
-                        "WWW-Authenticate",
-                        "Digest"
-                                + " nonce=\"arSDq0NLJbAtLqpKIGcP6hSK4GA78ggjJZ+48c2FGqs=\",realm=\"example\",qop=\"auth\",charset=utf-8,algorithm=md5-sess")
-                .addHeader("WWW-Authenticate", "Basic realm=\"example\"")
-                .addHeader("WWW-Authenticate", "Bearer"));
-        try (final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH))) {
-            final ListenableFuture<Session> future = jmapClient.getSession();
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .code(401)
+                    .addHeader(
+                            "WWW-Authenticate",
+                            "Digest"
+                                    + " nonce=\"arSDq0NLJbAtLqpKIGcP6hSK4GA78ggjJZ+48c2FGqs=\",realm=\"example\",qop=\"auth\",charset=utf-8,algorithm=md5-sess")
+                    .addHeader("WWW-Authenticate", "Basic realm=\"example\"")
+                    .addHeader("WWW-Authenticate", "Bearer")
+                    .build());
+            server.start();
+            try (final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH))) {
+                final ListenableFuture<Session> future = jmapClient.getSession();
 
-            final ExecutionException executionException =
-                    Assertions.assertThrows(ExecutionException.class, future::get);
-            final Throwable cause = executionException.getCause();
-            MatcherAssert.assertThat(cause, CoreMatchers.instanceOf(UnauthorizedException.class));
-            final UnauthorizedException unauthorizedException = (UnauthorizedException) cause;
-            final Collection<Challenge> challenges = unauthorizedException.getChallenges();
-            Assertions.assertEquals(3, challenges.size());
-            Assertions.assertTrue(challenges.stream().anyMatch(c -> "Bearer".equals(c.scheme())));
-            Assertions.assertEquals(
-                    ImmutableSet.of(
-                            HttpAuthentication.Scheme.BASIC,
-                            HttpAuthentication.Scheme.BEARER,
-                            HttpAuthentication.Scheme.DIGEST),
-                    unauthorizedException.getAuthenticationSchemes());
+                final ExecutionException executionException =
+                        Assertions.assertThrows(ExecutionException.class, future::get);
+                final Throwable cause = executionException.getCause();
+                MatcherAssert.assertThat(cause, CoreMatchers.instanceOf(UnauthorizedException.class));
+                final UnauthorizedException unauthorizedException = (UnauthorizedException) cause;
+                final Collection<Challenge> challenges = unauthorizedException.getChallenges();
+                Assertions.assertEquals(3, challenges.size());
+                Assertions.assertTrue(challenges.stream().anyMatch(c -> "Bearer".equals(c.scheme())));
+                Assertions.assertEquals(
+                        ImmutableSet.of(
+                                HttpAuthentication.Scheme.BASIC,
+                                HttpAuthentication.Scheme.BEARER,
+                                HttpAuthentication.Scheme.DIGEST),
+                        unauthorizedException.getAuthenticationSchemes());
+            }
         }
-        server.shutdown();
     }
 }

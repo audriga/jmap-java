@@ -21,8 +21,8 @@ import com.google.common.collect.ListMultimap;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
+import mockwebserver3.MockResponse;
+import mockwebserver3.MockWebServer;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
@@ -47,92 +47,95 @@ import rs.ltt.jmap.mock.server.StubMailServer;
 import rs.ltt.jmap.mua.cache.InMemoryCache;
 
 public class JmapMuaTest {
-
     @Test
     public void oneInboxMailbox() throws ExecutionException, InterruptedException, IOException {
-        final MockWebServer server = new MockWebServer();
-        final EmailServer emailServer = new EmailServer();
-        server.setDispatcher(emailServer);
+        try (var server = new MockWebServer()) {
+            final EmailServer emailServer = new EmailServer();
+            server.setDispatcher(emailServer);
+            server.start();
 
-        final MyInMemoryCache myInMemoryCache = new MyInMemoryCache();
+            final MyInMemoryCache myInMemoryCache = new MyInMemoryCache();
 
-        final Mua mua = Mua.builder()
-                .cache(myInMemoryCache)
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .username(emailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .accountId(emailServer.getAccountId())
-                .build();
-        mua.refreshMailboxes().get();
-        final Mailbox mailbox = Iterables.getFirst(myInMemoryCache.getMailboxes(), null);
-        Assertions.assertNotNull(mailbox);
-        Assertions.assertEquals(mailbox.getRole(), Role.INBOX);
-        server.shutdown();
+            final Mua mua = Mua.builder()
+                    .cache(myInMemoryCache)
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .username(emailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .accountId(emailServer.getAccountId())
+                    .build();
+            mua.refreshMailboxes().get();
+            final Mailbox mailbox = Iterables.getFirst(myInMemoryCache.getMailboxes(), null);
+            Assertions.assertNotNull(mailbox);
+            Assertions.assertEquals(mailbox.getRole(), Role.INBOX);
+        }
     }
 
     @Test
     public void methodNotFound() throws IOException {
-        final MockWebServer server = new MockWebServer();
-        final EmailServer emailServer = new EmailServer();
-        server.setDispatcher(emailServer);
+        try (var server = new MockWebServer()) {
+            final EmailServer emailServer = new EmailServer();
+            server.setDispatcher(emailServer);
+            server.start();
 
-        final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .username(emailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .accountId(emailServer.getAccountId())
-                .build();
-        final ExecutionException executionException = Assertions.assertThrows(
-                ExecutionException.class, () -> mua.refreshIdentities().get());
-        MatcherAssert.assertThat(
-                executionException.getCause(), CoreMatchers.instanceOf(MethodErrorResponseException.class));
-        server.shutdown();
+            final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .username(emailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .accountId(emailServer.getAccountId())
+                    .build();
+            final ExecutionException executionException = Assertions.assertThrows(
+                    ExecutionException.class, () -> mua.refreshIdentities().get());
+            MatcherAssert.assertThat(
+                    executionException.getCause(), CoreMatchers.instanceOf(MethodErrorResponseException.class));
+        }
     }
 
     @Test
     public void errorResponse() throws IOException {
-        final MockWebServer server = new MockWebServer();
-        final UnknownCapabilityMailServer emailServer = new UnknownCapabilityMailServer();
-        server.setDispatcher(emailServer);
+        try (var server = new MockWebServer()) {
+            final UnknownCapabilityMailServer emailServer = new UnknownCapabilityMailServer();
+            server.setDispatcher(emailServer);
+            server.start();
 
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .username(emailServer.getUsername())
-                .password(JmapDispatcher.PASSWORD)
-                .accountId(emailServer.getAccountId())
-                .build()) {
-            final ExecutionException executionException = Assertions.assertThrows(
-                    ExecutionException.class, () -> mua.refreshIdentities().get());
-            MatcherAssert.assertThat(
-                    executionException.getCause(), CoreMatchers.instanceOf(ErrorResponseException.class));
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .username(emailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .accountId(emailServer.getAccountId())
+                    .build()) {
+                final ExecutionException executionException = Assertions.assertThrows(
+                        ExecutionException.class, () -> mua.refreshIdentities().get());
+                MatcherAssert.assertThat(
+                        executionException.getCause(), CoreMatchers.instanceOf(ErrorResponseException.class));
 
-            final ErrorResponseException errorResponseException =
-                    (ErrorResponseException) executionException.getCause();
-            Assertions.assertEquals(
-                    ErrorType.UNKNOWN_CAPABILITY,
-                    errorResponseException.getErrorResponse().getType());
+                final ErrorResponseException errorResponseException =
+                        (ErrorResponseException) executionException.getCause();
+                Assertions.assertEquals(
+                        ErrorType.UNKNOWN_CAPABILITY,
+                        errorResponseException.getErrorResponse().getType());
+            }
         }
-        server.shutdown();
     }
 
     @Test
     public void unauthorized() throws IOException {
-        final MockWebServer server = new MockWebServer();
-        final EmailServer emailServer = new EmailServer();
-        server.setDispatcher(emailServer);
+        try (var server = new MockWebServer()) {
+            final EmailServer emailServer = new EmailServer();
+            server.setDispatcher(emailServer);
+            server.start();
 
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .username(emailServer.getUsername())
-                .password("wrong")
-                .accountId(emailServer.getAccountId())
-                .build()) {
-            final ExecutionException executionException = Assertions.assertThrows(
-                    ExecutionException.class, () -> mua.refreshIdentities().get());
-            MatcherAssert.assertThat(
-                    executionException.getCause(), CoreMatchers.instanceOf(UnauthorizedException.class));
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .username(emailServer.getUsername())
+                    .password("wrong")
+                    .accountId(emailServer.getAccountId())
+                    .build()) {
+                final ExecutionException executionException = Assertions.assertThrows(
+                        ExecutionException.class, () -> mua.refreshIdentities().get());
+                MatcherAssert.assertThat(
+                        executionException.getCause(), CoreMatchers.instanceOf(UnauthorizedException.class));
+            }
         }
-        server.shutdown();
     }
 
     @Test
@@ -140,6 +143,7 @@ public class JmapMuaTest {
         try (final MockWebServer server = new MockWebServer()) {
             final EmailServer emailServer = new EmailServer();
             server.setDispatcher(emailServer);
+            server.start();
 
             try (final Mua mua = Mua.builder()
                     .username("test@example.com ")
@@ -157,41 +161,43 @@ public class JmapMuaTest {
 
     @Test
     public void invalidSessionResourceEmpty() throws IOException {
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setBody("{}").setResponseCode(200));
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder().body("{}").code(200).build());
+            server.start();
 
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .username("irrelevant")
-                .password("wrong")
-                .accountId("irrelevant")
-                .build()) {
-            final ExecutionException executionException = Assertions.assertThrows(
-                    ExecutionException.class, () -> mua.refreshIdentities().get());
-            MatcherAssert.assertThat(
-                    executionException.getCause(), CoreMatchers.instanceOf(InvalidSessionResourceException.class));
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .username("irrelevant")
+                    .password("wrong")
+                    .accountId("irrelevant")
+                    .build()) {
+                final ExecutionException executionException = Assertions.assertThrows(
+                        ExecutionException.class, () -> mua.refreshIdentities().get());
+                MatcherAssert.assertThat(
+                        executionException.getCause(), CoreMatchers.instanceOf(InvalidSessionResourceException.class));
+            }
         }
-        server.shutdown();
     }
 
     @Test
     public void invalidSessionResourceJson() throws IOException {
-        final MockWebServer server = new MockWebServer();
-        server.enqueue(new MockResponse().setBody("{]").setResponseCode(200));
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder().body("{]").code(200).build());
+            server.start();
 
-        try (final Mua mua = Mua.builder()
-                .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
-                .username("irrelevant")
-                .password("wrong")
-                .accountId("irrelevant")
-                .build()) {
-            final ExecutionException executionException = Assertions.assertThrows(
-                    ExecutionException.class, () -> mua.refreshIdentities().get());
-            MatcherAssert.assertThat(
-                    executionException.getCause(), CoreMatchers.instanceOf(InvalidSessionResourceException.class));
-            executionException.printStackTrace();
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .username("irrelevant")
+                    .password("wrong")
+                    .accountId("irrelevant")
+                    .build()) {
+                final ExecutionException executionException = Assertions.assertThrows(
+                        ExecutionException.class, () -> mua.refreshIdentities().get());
+                MatcherAssert.assertThat(
+                        executionException.getCause(), CoreMatchers.instanceOf(InvalidSessionResourceException.class));
+                executionException.printStackTrace();
+            }
         }
-        server.shutdown();
     }
 
     private static class EmailServer extends StubMailServer {
@@ -211,7 +217,6 @@ public class JmapMuaTest {
     }
 
     private static class UnknownCapabilityMailServer extends StubMailServer {
-
         @Override
         protected GenericResponse dispatch(final Request request) {
             return new ErrorResponse(ErrorType.UNKNOWN_CAPABILITY, 400);
