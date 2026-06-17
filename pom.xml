@@ -49,6 +49,7 @@
         <module>jmap-client</module>
         <module>jmap-common</module>
         <module>jmap-common-interface</module>
+        <module>jmap-contacts</module>
         <module>jmap-gson</module>
         <module>jmap-mock-server</module>
         <module>jmap-mua</module>
