@@ -1,0 +1,96 @@
+/*
+ * Copyright 2021 Daniel Gultsch
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+package com.audriga.jmap.mua;
+
+import com.audriga.jmap.common.entity.Email;
+import com.audriga.jmap.common.entity.Identity;
+import com.audriga.jmap.common.entity.query.EmailQuery;
+import com.audriga.jmap.mock.server.JmapDispatcher;
+import com.audriga.jmap.mock.server.MockMailServer;
+import com.audriga.jmap.mua.plugin.EmailBuildStagePlugin;
+import com.audriga.jmap.mua.plugin.EmailCacheStagePlugin;
+import com.audriga.jmap.mua.plugin.EventCallback;
+import com.audriga.jmap.mua.service.MuaSession;
+import com.audriga.jmap.mua.service.PluginService;
+import com.google.common.collect.ImmutableList;
+import com.google.common.util.concurrent.Futures;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicInteger;
+import mockwebserver3.MockWebServer;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+public class PluginTest {
+
+    @Test
+    public void emailCreationPluginTest() throws ExecutionException, InterruptedException, IOException {
+        try (var server = new MockWebServer()) {
+            final MockMailServer mailServer = new MockMailServer(2);
+            server.setDispatcher(mailServer);
+            server.start();
+
+            final CountEmailCreationPlugin plugin = new CountEmailCreationPlugin();
+            final Identity identity = Identity.builder().name("Stub Identity").build();
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
+                    .username(mailServer.getUsername())
+                    .password(JmapDispatcher.PASSWORD)
+                    .accountId(mailServer.getAccountId())
+                    .plugin(CountEmailCreationPlugin.class, plugin)
+                    .build()) {
+                mua.query(EmailQuery.unfiltered(true)).get();
+                Assertions.assertEquals(3, plugin.cacheCounter.get());
+                final Email email = Email.builder().subject("Stub Email").build();
+                mua.draft(email).get();
+                mua.query(EmailQuery.unfiltered(true)).get();
+                Assertions.assertEquals(1, plugin.buildCounter.get());
+
+                final Email anotherEmail =
+                        Email.builder().subject("Another Stub Email").build();
+
+                Assertions.assertThrows(
+                        ExecutionException.class,
+                        () -> mua.send(anotherEmail, identity).get());
+                Assertions.assertEquals(2, plugin.buildCounter.get());
+
+                mua.query(EmailQuery.unfiltered(true)).get();
+
+                Assertions.assertEquals(5, plugin.cacheCounter.get());
+            }
+        }
+    }
+
+    private static class CountEmailCreationPlugin extends PluginService.Plugin {
+        private final AtomicInteger buildCounter = new AtomicInteger();
+        private final AtomicInteger cacheCounter = new AtomicInteger();
+
+        private final EmailBuildStagePlugin emailBuildStagePlugin = email -> {
+            buildCounter.incrementAndGet();
+            return Futures.immediateFuture(email);
+        };
+
+        private final EmailCacheStagePlugin emailCacheStagePlugin = email -> cacheCounter.incrementAndGet();
+
+        @Override
+        protected Collection<EventCallback> install(final MuaSession muaSession) {
+            super.install(muaSession);
+            return ImmutableList.of(emailBuildStagePlugin, emailCacheStagePlugin);
+        }
+    }
+}

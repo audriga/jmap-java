@@ -1,0 +1,106 @@
+/*
+ * Copyright 2019 Daniel Gultsch
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+package com.audriga.jmap.mua;
+
+import com.audriga.jmap.common.entity.IdentifiableMailboxWithRole;
+import com.audriga.jmap.common.entity.Role;
+import com.audriga.jmap.mua.cache.InMemoryCache;
+import com.audriga.jmap.mua.util.MailboxUtil;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.io.Resources;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import mockwebserver3.MockResponse;
+import mockwebserver3.MockWebServer;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+public class ToggleImportantTest {
+    private static final String ACCOUNT_ID = "test@example.com";
+    private static final String USERNAME = "test@example.com";
+    private static final String PASSWORD = "secret";
+    private static final String WELL_KNOWN_PATH = ".well-known/jmap";
+
+    @Test
+    public void emailAlreadyImportant() throws Exception {
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("common/01-session.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("common/02-mailboxes.json"))
+                    .build());
+            server.start();
+
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(WELL_KNOWN_PATH))
+                    .username(USERNAME)
+                    .password(PASSWORD)
+                    .accountId(ACCOUNT_ID)
+                    .build()) {
+                mua.refreshMailboxes().get();
+
+                final Collection<MyIdentifiableEmailWithMailboxes> emails =
+                        ImmutableSet.of(new MyIdentifiableEmailWithMailboxes("e0", "mb2"));
+
+                Assertions.assertFalse(mua.copyToImportant(emails).get());
+            }
+        }
+    }
+
+    private static String readResourceAsString(String filename) throws IOException {
+        return Resources.asCharSource(Resources.getResource(filename), StandardCharsets.UTF_8)
+                .read()
+                .trim();
+    }
+
+    @Test
+    public void emailAlreadyNotImportant() throws Exception {
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("common/01-session.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("common/02-mailboxes.json"))
+                    .build());
+            server.start();
+
+            final InMemoryCache inMemoryCache = new InMemoryCache();
+            try (final Mua mua = Mua.builder()
+                    .sessionResource(server.url(WELL_KNOWN_PATH))
+                    .username(USERNAME)
+                    .password(PASSWORD)
+                    .accountId(ACCOUNT_ID)
+                    .cache(inMemoryCache)
+                    .build()) {
+                mua.refreshMailboxes().get();
+
+                IdentifiableMailboxWithRole mailbox =
+                        MailboxUtil.find(inMemoryCache.getSpecialMailboxes(), Role.IMPORTANT);
+
+                Assertions.assertNotNull(mailbox);
+
+                final Collection<MyIdentifiableEmailWithMailboxes> emails =
+                        ImmutableSet.of(new MyIdentifiableEmailWithMailboxes("e0", "mb0"));
+
+                Assertions.assertFalse(
+                        mua.removeFromMailbox(emails, mailbox.getId()).get());
+            }
+        }
+    }
+}

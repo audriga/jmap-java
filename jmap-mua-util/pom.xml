@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>rs.ltt.jmap</groupId>
+        <groupId>com.audriga.jmap</groupId>
         <artifactId>jmap</artifactId>
         <version>${revision}</version>
     </parent>
@@ -28,17 +28,17 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.audriga.jmap</groupId>
+            <artifactId>jmap-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>rs.ltt.jmap</groupId>
-            <artifactId>jmap-client</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

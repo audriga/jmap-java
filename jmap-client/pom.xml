@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>rs.ltt.jmap</groupId>
+        <groupId>com.audriga.jmap</groupId>
         <artifactId>jmap</artifactId>
         <version>${revision}</version>
     </parent>
@@ -27,6 +27,16 @@
     <artifactId>jmap-client</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>com.audriga.jmap</groupId>
+            <artifactId>jmap-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.audriga.jmap</groupId>
+            <artifactId>jmap-gson</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.damnhandy</groupId>
             <artifactId>handy-uri-templates</artifactId>
@@ -48,14 +58,10 @@
             <artifactId>okhttp-sse</artifactId>
         </dependency>
         <dependency>
-            <groupId>rs.ltt.jmap</groupId>
-            <artifactId>jmap-common</artifactId>
+            <groupId>com.audriga.jmap</groupId>
+            <artifactId>jmap-annotation-processor</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>rs.ltt.jmap</groupId>
-            <artifactId>jmap-gson</artifactId>
-            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
@@ -70,12 +76,6 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>rs.ltt.jmap</groupId>
-            <artifactId>jmap-annotation-processor</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

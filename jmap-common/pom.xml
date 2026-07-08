@@ -18,7 +18,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>rs.ltt.jmap</groupId>
+        <groupId>com.audriga.jmap</groupId>
         <artifactId>jmap</artifactId>
         <version>${revision}</version>
     </parent>

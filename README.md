@@ -1,7 +1,7 @@
 # Java JMAP library
 [![Apache 2.0 License](https://img.shields.io/github/license/inputmice/jmap?color=informational)](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
 [![status-badge](https://ci.codeberg.org/api/badges/12402/status.svg)](https://ci.codeberg.org/repos/12402)
-[![Maven Central](https://img.shields.io/maven-central/v/rs.ltt.jmap/jmap.svg?label=Maven%20Central&color=informational)](https://search.maven.org/search?q=g:%22rs.ltt.jmap%22%20AND%20a:%22jmap%22)
+[![Maven Central](https://img.shields.io/maven-central/v/com.audriga.jmap/jmap.svg?label=Maven%20Central&color=informational)](https://search.maven.org/search?q=g:%22com.audriga.jmap%22%20AND%20a:%22jmap%22)
 [![Liberapay patrons](https://img.shields.io/liberapay/patrons/inputmice?logo=liberapay&style=flat&color=informational)](https://liberapay.com/iNPUTmice)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/inputmice?label=GitHub%20Sponsors)](https://github.com/sponsors/iNPUTmice/)
 
@@ -43,12 +43,12 @@ A JMAP client library to make JMAP method calls and process the responses. It ha
 
 Gradle:
 ```groovy
-implementation 'rs.ltt.jmap:jmap-client:0.8.18'
+implementation 'com.audriga.jmap:jmap-client:0.8.18'
 ```
 Maven:
 ```xml
 <dependency>
-  <groupId>rs.ltt.jmap</groupId>
+  <groupId>com.audriga.jmap</groupId>
   <artifactId>jmap-client</artifactId>
   <version>0.8.18</version>
 </dependency>
@@ -125,12 +125,12 @@ A high level API to act as an email client. It handles everything an email clien
 
 Gradle:
 ```groovy
-implementation 'rs.ltt.jmap:jmap-mua:0.8.18'
+implementation 'com.audriga.jmap:jmap-mua:0.8.18'
 ```
 Maven:
 ```xml
 <dependency>
-  <groupId>rs.ltt.jmap</groupId>
+  <groupId>com.audriga.jmap</groupId>
   <artifactId>jmap-mua</artifactId>
   <version>0.8.18</version>
 </dependency>
