@@ -19,14 +19,7 @@ package com.audriga.jmap.common.entity.capability;
 import com.audriga.jmap.Namespace;
 import com.audriga.jmap.annotation.JmapCapability;
 import com.audriga.jmap.common.entity.Capability;
-import lombok.Getter;
-import lombok.ToString;
 
 @JmapCapability(namespace = Namespace.WEB_SOCKET)
 @lombok.Builder
-@Getter
-@ToString
-public class WebSocketCapability implements Capability {
-    private String url;
-    private Boolean supportsPush;
-}
+public record WebSocketCapability(String url, boolean supportsPush) implements Capability {}

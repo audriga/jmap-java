@@ -19,13 +19,7 @@ package com.audriga.jmap.common.entity.capability;
 import com.audriga.jmap.Namespace;
 import com.audriga.jmap.annotation.JmapCapability;
 import com.audriga.jmap.common.entity.Capability;
-import lombok.Getter;
-import lombok.ToString;
 
 @JmapCapability(namespace = Namespace.WEB_PUSH_VAPID)
 @lombok.Builder
-@Getter
-@ToString
-public class WebPushVapidCapability implements Capability {
-    private String applicationServerKey;
-}
+public record WebPushVapidCapability(String applicationServerKey) implements Capability {}

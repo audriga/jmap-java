@@ -19,9 +19,6 @@ package com.audriga.jmap.common.entity.capability;
 import com.audriga.jmap.Namespace;
 import com.audriga.jmap.annotation.JmapAccountCapability;
 import com.audriga.jmap.common.entity.AccountCapability;
-import lombok.ToString;
 
 @JmapAccountCapability(namespace = Namespace.VACATION_RESPONSE)
-@lombok.Builder
-@ToString
-public class VacationResponseAccountCapability implements AccountCapability {}
+public record VacationResponseAccountCapability() implements AccountCapability {}

@@ -8,6 +8,7 @@ import com.audriga.jmap.common.entity.capability.SubmissionAccountCapability;
 import com.audriga.jmap.common.entity.capability.VacationResponseAccountCapability;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
@@ -24,11 +25,11 @@ public class AccountCapabilitiesDeserializerTest extends AbstractGsonTest {
         AccountCapability accountCapability = accountCapabilities.get(MailAccountCapability.class);
         assertEquals(MailAccountCapability.class, accountCapability.getClass());
         MailAccountCapability mailAccountCapability = (MailAccountCapability) accountCapability;
-        assertEquals(Long.valueOf(20), mailAccountCapability.getMaxMailboxesPerEmail());
-        assertEquals(Long.valueOf(10), mailAccountCapability.getMaxMailboxDepth());
+        assertEquals(Long.valueOf(20), mailAccountCapability.maxMailboxesPerEmail());
+        assertEquals(Long.valueOf(10), mailAccountCapability.maxMailboxDepth());
         assertEquals(200, mailAccountCapability.maxSizeMailboxName());
         assertEquals(50_000_000, mailAccountCapability.maxSizeAttachmentsPerEmail());
-        assertArrayEquals(new String[] {"receivedAt"}, mailAccountCapability.getEmailQuerySortOptions());
+        assertEquals(List.of("receivedAt"), mailAccountCapability.emailQuerySortOptions());
         assertTrue(mailAccountCapability.mayCreateTopLevelMailbox());
     }
 
@@ -42,11 +43,7 @@ public class AccountCapabilitiesDeserializerTest extends AbstractGsonTest {
         assertEquals(SubmissionAccountCapability.class, accountCapability.getClass());
         SubmissionAccountCapability submissionAccountCapability = (SubmissionAccountCapability) accountCapability;
         assertEquals(0, submissionAccountCapability.maxDelayedSend());
-        Map<String, String[]> submissionExtensions = submissionAccountCapability.getSubmissionExtensions();
-        assertEquals(1, submissionExtensions.size());
-        assertTrue(submissionExtensions.containsKey("SIZE"));
-        String[] sizeExtensionArguments = submissionExtensions.get("SIZE");
-        assertArrayEquals(new String[] {"50000000"}, sizeExtensionArguments);
+        assertEquals(Map.of("SIZE", List.of("50000000")), submissionAccountCapability.submissionExtensions());
     }
 
     @Test

@@ -53,7 +53,7 @@ public final class AttachmentUtil {
         final long combinedAttachmentSize =
                 attachments.stream().map(a -> Math.max(0, a.getSize())).reduce(0L, Long::sum);
         final MailAccountCapability capability = session.getAccountCapability(account, MailAccountCapability.class);
-        final Long maxSizeAttachments = capability == null ? null : capability.getMaxSizeAttachmentsPerEmail();
+        final Long maxSizeAttachments = capability == null ? null : capability.maxSizeAttachmentsPerEmail();
         if (maxSizeAttachments != null && combinedAttachmentSize > maxSizeAttachments) {
             throw new CombinedAttachmentSizeExceedsLimitException(maxSizeAttachments);
         }

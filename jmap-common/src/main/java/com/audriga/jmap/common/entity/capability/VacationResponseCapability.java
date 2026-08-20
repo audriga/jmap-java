@@ -21,4 +21,4 @@ import com.audriga.jmap.annotation.JmapCapability;
 import com.audriga.jmap.common.entity.Capability;
 
 @JmapCapability(namespace = Namespace.VACATION_RESPONSE)
-public class VacationResponseCapability implements Capability {}
+public record VacationResponseCapability() implements Capability {}

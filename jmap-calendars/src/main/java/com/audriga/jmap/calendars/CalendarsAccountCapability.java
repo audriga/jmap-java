@@ -8,6 +8,7 @@ import java.time.Instant;
 import org.jspecify.annotations.Nullable;
 
 @JmapAccountCapability(namespace = Namespace.CALENDARS)
+@lombok.Builder(toBuilder = true)
 public record CalendarsAccountCapability(
         @Nullable Long maxCalendarsPerEvent,
         Instant minDateTime,

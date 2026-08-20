@@ -19,31 +19,16 @@ package com.audriga.jmap.common.entity.capability;
 import com.audriga.jmap.Namespace;
 import com.audriga.jmap.annotation.JmapAccountCapability;
 import com.audriga.jmap.common.entity.AccountCapability;
-import com.audriga.jmap.common.util.Property;
-import lombok.Getter;
-import lombok.ToString;
+import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 @JmapAccountCapability(namespace = Namespace.MAIL)
-@Getter
-@lombok.Builder
-@ToString
-public class MailAccountCapability implements AccountCapability {
-    private Long maxMailboxesPerEmail;
-    private Long maxMailboxDepth;
-    private Long maxSizeMailboxName;
-    private Long maxSizeAttachmentsPerEmail;
-    private String[] emailQuerySortOptions;
-    private Boolean mayCreateTopLevelMailbox;
-
-    public long maxSizeMailboxName() {
-        return Property.expected(maxSizeMailboxName);
-    }
-
-    public long maxSizeAttachmentsPerEmail() {
-        return Property.expected(maxSizeAttachmentsPerEmail);
-    }
-
-    public boolean mayCreateTopLevelMailbox() {
-        return Property.expected(mayCreateTopLevelMailbox);
-    }
-}
+@lombok.Builder(toBuilder = true)
+public record MailAccountCapability(
+        @Nullable Long maxMailboxesPerEmail,
+        @Nullable Long maxMailboxDepth,
+        long maxSizeMailboxName,
+        long maxSizeAttachmentsPerEmail,
+        List<String> emailQuerySortOptions,
+        boolean mayCreateTopLevelMailbox)
+        implements AccountCapability {}

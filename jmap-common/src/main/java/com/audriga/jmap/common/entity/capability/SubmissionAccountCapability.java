@@ -19,20 +19,10 @@ package com.audriga.jmap.common.entity.capability;
 import com.audriga.jmap.Namespace;
 import com.audriga.jmap.annotation.JmapAccountCapability;
 import com.audriga.jmap.common.entity.AccountCapability;
-import com.audriga.jmap.common.util.Property;
+import java.util.List;
 import java.util.Map;
-import lombok.Getter;
-import lombok.ToString;
 
 @JmapAccountCapability(namespace = Namespace.SUBMISSION)
-@Getter
 @lombok.Builder
-@ToString
-public class SubmissionAccountCapability implements AccountCapability {
-    private Long maxDelayedSend;
-    private Map<String, String[]> submissionExtensions;
-
-    public long maxDelayedSend() {
-        return Property.expected(maxDelayedSend);
-    }
-}
+public record SubmissionAccountCapability(long maxDelayedSend, Map<String, List<String>> submissionExtensions)
+        implements AccountCapability {}

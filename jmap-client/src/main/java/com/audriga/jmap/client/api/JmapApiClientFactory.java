@@ -38,8 +38,8 @@ public class JmapApiClientFactory {
     public JmapApiClient getJmapApiClient(final Session session, final boolean useWebSocket) {
         final WebSocketCapability webSocketCapability = session.getCapability(WebSocketCapability.class);
         if (validWebSocketCapability(webSocketCapability) && useWebSocket) {
-            final HttpUrl url = WebSocketUtil.normalizeUrl(session.getBase(), webSocketCapability.getUrl());
-            if (Boolean.TRUE.equals(webSocketCapability.getSupportsPush())) {
+            final HttpUrl url = WebSocketUtil.normalizeUrl(session.getBase(), webSocketCapability.url());
+            if (webSocketCapability.supportsPush()) {
                 return new WebSocketPushService(url, connectionConfig, sessionStateListener);
             } else {
                 return new WebSocketJmapApiClient(url, connectionConfig, sessionStateListener);
@@ -49,6 +49,6 @@ public class JmapApiClientFactory {
     }
 
     private static boolean validWebSocketCapability(final WebSocketCapability capability) {
-        return capability != null && capability.getUrl() != null;
+        return capability != null && capability.url() != null;
     }
 }

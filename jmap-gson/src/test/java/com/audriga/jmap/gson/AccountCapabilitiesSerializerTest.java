@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -73,22 +74,20 @@ public class AccountCapabilitiesSerializerTest extends AbstractGsonTest {
                 .maxMailboxDepth(5L)
                 .maxSizeMailboxName(500L)
                 .maxSizeAttachmentsPerEmail(10_000_000L)
-                .emailQuerySortOptions(new String[] {"receivedAt", "To"})
+                .emailQuerySortOptions(List.of("receivedAt", "To"))
                 .mayCreateTopLevelMailbox(false)
                 .build();
     }
 
     private SubmissionAccountCapability createSubmissionAccountCapability() {
-        Map<String, String[]> submissionExtensions = new LinkedHashMap<>();
-        submissionExtensions.put("DELIVERBY", new String[] {"240"});
         return SubmissionAccountCapability.builder()
                 .maxDelayedSend(300L)
-                .submissionExtensions(submissionExtensions)
+                .submissionExtensions(Map.of("DELIVERBY", List.of("240")))
                 .build();
     }
 
     private VacationResponseAccountCapability createVacationResponseAccountCapability() {
-        return VacationResponseAccountCapability.builder().build();
+        return new VacationResponseAccountCapability();
     }
 
     private Map<Class<? extends AccountCapability>, AccountCapability> createAccountCapabilitiesMap(

@@ -218,7 +218,7 @@ public class JmapClient implements Closeable {
             final Session session, final String accountId, final Uploadable uploadable, final Progress progress) {
         final HttpUrl httpUrl = session.getUploadUrl(accountId);
         final CoreCapability coreCapability = session.getCapability(CoreCapability.class);
-        final Long maxUploadSize = coreCapability == null ? null : coreCapability.getMaxSizeUpload();
+        final Long maxUploadSize = coreCapability == null ? null : coreCapability.maxSizeUpload();
         if (maxUploadSize != null && uploadable.getContentLength() > maxUploadSize) {
             return Futures.immediateFailedFuture(
                     new MaxUploadSizeExceededException(uploadable.getContentLength(), maxUploadSize));

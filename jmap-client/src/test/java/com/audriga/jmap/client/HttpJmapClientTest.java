@@ -436,7 +436,7 @@ public class HttpJmapClientTest {
 
             final Session session = jmapClient.getSession().get();
             Assertions.assertNotNull(
-                    session.getCapability(WebSocketCapability.class).getUrl());
+                    session.getCapability(WebSocketCapability.class).url());
         }
     }
 

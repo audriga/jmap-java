@@ -21,4 +21,4 @@ import com.audriga.jmap.annotation.JmapCapability;
 import com.audriga.jmap.common.entity.Capability;
 
 @JmapCapability(namespace = Namespace.SUBMISSION)
-public class SubmissionCapability implements Capability {}
+public record SubmissionCapability() implements Capability {}
