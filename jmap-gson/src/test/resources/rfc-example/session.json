@@ -15,7 +15,7 @@
       ]
     },
     "urn:ietf:params:jmap:mail": {},
-    "urn:ietf:params:jmap:contacts": {},
+    "urn:ietf:params:jmap:submission": {},
     "https://example.com/apis/foobar": {
       "maxFoosFinangled": 42
     }

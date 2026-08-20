@@ -35,7 +35,7 @@ public class SessionResourceTest extends AbstractGsonTest {
     public void deserializeBasicRfcExample() throws IOException {
         final SessionResource session = parseFromResource("rfc-example/session.json", SessionResource.class);
         assertNotNull(session.getCapability(MailCapability.class));
-        assertNotNull(session.getCapability(ContactsCapability.class));
+        assertNotNull(session.getCapability(SubmissionCapability.class));
         assertNull(session.getCapability(VacationResponseCapability.class));
 
         CoreCapability coreCapability = session.getCapability(CoreCapability.class);

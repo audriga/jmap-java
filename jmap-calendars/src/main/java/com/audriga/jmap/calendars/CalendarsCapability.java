@@ -14,11 +14,11 @@
  *
  */
 
-package com.audriga.jmap.common.entity.capability;
+package com.audriga.jmap.calendars;
 
 import com.audriga.jmap.Namespace;
 import com.audriga.jmap.annotation.JmapCapability;
 import com.audriga.jmap.common.entity.Capability;
 
-@JmapCapability(namespace = Namespace.CONTACTS)
-public class ContactsCapability implements Capability {}
+@JmapCapability(namespace = Namespace.CALENDARS)
+public record CalendarsCapability() implements Capability {}
