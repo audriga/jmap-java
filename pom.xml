@@ -105,11 +105,6 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>com.audriga</groupId>
-                <artifactId>jmap-stalwart</artifactId>
-                <version>0.1.0-SNAPSHOT-schema0.16.12</version>
-            </dependency>
-            <dependency>
                 <groupId>com.damnhandy</groupId>
                 <artifactId>handy-uri-templates</artifactId>
                 <version>2.1.8</version>
