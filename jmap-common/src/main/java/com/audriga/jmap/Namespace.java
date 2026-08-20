@@ -24,6 +24,7 @@ public final class Namespace {
     public static final String VACATION_RESPONSE = "urn:ietf:params:jmap:vacationresponse";
     public static final String CONTACTS = "urn:ietf:params:jmap:contacts";
     public static final String CALENDARS = "urn:ietf:params:jmap:calendars";
+    public static final String FILE_NODE = "urn:ietf:params:jmap:filenode";
     public static final String WEB_SOCKET = "urn:ietf:params:jmap:websocket";
     public static final String WEB_PUSH_VAPID = "urn:ietf:params:jmap:webpush-vapid";
 
