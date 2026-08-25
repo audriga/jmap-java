@@ -21,12 +21,12 @@ import com.audriga.jmap.client.JmapRequest;
 import com.audriga.jmap.client.MethodResponses;
 import com.audriga.jmap.client.api.MethodErrorResponseException;
 import com.audriga.jmap.client.session.Session;
-import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.entity.AddedItem;
 import com.audriga.jmap.common.entity.Email;
 import com.audriga.jmap.common.entity.capability.CoreCapability;
 import com.audriga.jmap.common.entity.query.EmailQuery;
 import com.audriga.jmap.common.method.MethodErrorResponse;
+import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.method.call.email.GetEmailMethodCall;
 import com.audriga.jmap.common.method.call.email.QueryChangesEmailMethodCall;
 import com.audriga.jmap.common.method.call.email.QueryEmailMethodCall;
@@ -173,7 +173,7 @@ public class QueryService extends AbstractMuaService {
         final ListenableFuture<MethodResponses> getThreadIdsResponsesFuture = multiCall
                 .call(GetEmailMethodCall.builder()
                         .accountId(accountId)
-                        .idsReference(queryCall.createResultReference(Request.Invocation.ResultReference.Path.IDS))
+                        .idsReference(queryCall.createResultReference(ResultReference.Path.IDS))
                         .properties(Email.Properties.THREAD_ID)
                         .build())
                 .getMethodResponses();
@@ -241,8 +241,7 @@ public class QueryService extends AbstractMuaService {
         final ListenableFuture<MethodResponses> getThreadIdResponsesFuture = multiCall
                 .call(GetEmailMethodCall.builder()
                         .accountId(accountId)
-                        .idsReference(queryChangesCall.createResultReference(
-                                Request.Invocation.ResultReference.Path.ADDED_IDS))
+                        .idsReference(queryChangesCall.createResultReference(ResultReference.Path.ADDED_IDS))
                         .properties(Email.Properties.THREAD_ID)
                         .build())
                 .getMethodResponses();
@@ -365,7 +364,7 @@ public class QueryService extends AbstractMuaService {
         final ListenableFuture<MethodResponses> queryResponsesFuture = queryCall.getMethodResponses();
         final JmapRequest.Call threadIdsCall = multiCall.call(GetEmailMethodCall.builder()
                 .accountId(accountId)
-                .idsReference(queryCall.createResultReference(Request.Invocation.ResultReference.Path.IDS))
+                .idsReference(queryCall.createResultReference(ResultReference.Path.IDS))
                 .properties(Email.Properties.THREAD_ID)
                 .build());
         final ListenableFuture<MethodResponses> getThreadIdsResponsesFuture = threadIdsCall.getMethodResponses();
@@ -378,15 +377,13 @@ public class QueryService extends AbstractMuaService {
         if (queryStateWrapper.objectsState.threadState == null || queryStateWrapper.objectsState.emailState == null) {
             final JmapRequest.Call threadCall = multiCall.call(GetThreadMethodCall.builder()
                     .accountId(accountId)
-                    .idsReference(threadIdsCall.createResultReference(
-                            Request.Invocation.ResultReference.Path.LIST_THREAD_IDS))
+                    .idsReference(threadIdsCall.createResultReference(ResultReference.Path.LIST_THREAD_IDS))
                     .build());
             getThreadsResponsesFuture = threadCall.getMethodResponses();
             getEmailResponsesFuture = multiCall
                     .call(GetEmailMethodCall.builder()
                             .accountId(accountId)
-                            .idsReference(threadCall.createResultReference(
-                                    Request.Invocation.ResultReference.Path.LIST_EMAIL_IDS))
+                            .idsReference(threadCall.createResultReference(ResultReference.Path.LIST_EMAIL_IDS))
                             .fetchTextBodyValues(true)
                             .properties(Email.Properties.LTTRS_DEFAULT)
                             .build())
@@ -495,8 +492,7 @@ public class QueryService extends AbstractMuaService {
         final ListenableFuture<MethodResponses> getEmailsResponsesFuture = multiCall
                 .call(GetEmailMethodCall.builder()
                         .accountId(accountId)
-                        .idsReference(threadsCall.createResultReference(
-                                Request.Invocation.ResultReference.Path.LIST_EMAIL_IDS))
+                        .idsReference(threadsCall.createResultReference(ResultReference.Path.LIST_EMAIL_IDS))
                         .fetchTextBodyValues(true)
                         .properties(Email.Properties.LTTRS_DEFAULT)
                         .build())

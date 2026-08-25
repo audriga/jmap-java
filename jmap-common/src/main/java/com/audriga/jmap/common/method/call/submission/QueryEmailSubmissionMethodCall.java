@@ -22,6 +22,7 @@ import com.audriga.jmap.common.entity.EmailSubmission;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.entity.query.EmailSubmissionQuery;
 import com.audriga.jmap.common.method.call.standard.QueryMethodCall;
+import java.util.List;
 import lombok.NonNull;
 
 @JmapMethod("EmailSubmission/query")
@@ -31,7 +32,7 @@ public class QueryEmailSubmissionMethodCall extends QueryMethodCall<EmailSubmiss
     public QueryEmailSubmissionMethodCall(
             @NonNull String accountId,
             Filter<EmailSubmission> filter,
-            Comparator[] sort,
+            List<Comparator> sort,
             Long position,
             String anchor,
             Long anchorOffset,

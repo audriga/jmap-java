@@ -16,7 +16,7 @@
 
 package com.audriga.jmap.gson.adapter;
 
-import com.audriga.jmap.common.Request;
+import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.util.Mapper;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
@@ -24,15 +24,14 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 
-public class ResultReferenceTypeAdapter extends TypeAdapter<Request.Invocation.ResultReference> {
+public class ResultReferenceTypeAdapter extends TypeAdapter<ResultReference> {
 
     public static void register(final GsonBuilder builder) {
-        builder.registerTypeAdapter(Request.Invocation.ResultReference.class, new ResultReferenceTypeAdapter());
+        builder.registerTypeAdapter(ResultReference.class, new ResultReferenceTypeAdapter());
     }
 
     @Override
-    public void write(JsonWriter jsonWriter, final Request.Invocation.ResultReference resultReference)
-            throws IOException {
+    public void write(JsonWriter jsonWriter, final ResultReference resultReference) throws IOException {
         if (resultReference == null) {
             jsonWriter.nullValue();
             return;
@@ -45,7 +44,7 @@ public class ResultReferenceTypeAdapter extends TypeAdapter<Request.Invocation.R
     }
 
     @Override
-    public Request.Invocation.ResultReference read(JsonReader jsonReader) throws IOException {
+    public ResultReference read(JsonReader jsonReader) throws IOException {
         String name = null;
         String path = null;
         String id = null;
@@ -64,6 +63,6 @@ public class ResultReferenceTypeAdapter extends TypeAdapter<Request.Invocation.R
             }
         }
         jsonReader.endObject();
-        return new Request.Invocation.ResultReference(id, Mapper.METHOD_CALLS.get(name), path);
+        return new ResultReference(id, Mapper.METHOD_CALLS.get(name), path);
     }
 }

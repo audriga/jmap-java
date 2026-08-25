@@ -17,10 +17,10 @@
 package com.audriga.jmap.common.method.call.snippet;
 
 import com.audriga.jmap.annotation.JmapMethod;
-import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.entity.Email;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.method.MethodCall;
+import com.audriga.jmap.common.method.ResultReference;
 import com.google.common.base.Preconditions;
 import com.google.gson.annotations.SerializedName;
 import lombok.NonNull;
@@ -35,14 +35,11 @@ public class GetSearchSnippetsMethodCall implements MethodCall {
     private String[] emailIds;
 
     @SerializedName("#emailIds")
-    private Request.Invocation.ResultReference emailIdsReference;
+    private ResultReference emailIdsReference;
 
     @lombok.Builder
     public GetSearchSnippetsMethodCall(
-            @NonNull String accountId,
-            String[] emailIds,
-            Filter<Email> filter,
-            Request.Invocation.ResultReference emailIdsReference) {
+            @NonNull String accountId, String[] emailIds, Filter<Email> filter, ResultReference emailIdsReference) {
         Preconditions.checkArgument(
                 emailIds == null ^ emailIdsReference == null,
                 "Must set one, and only one, of emailIds or emailIdsReference");

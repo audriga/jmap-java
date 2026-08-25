@@ -1,4 +1,4 @@
-package com.audriga.jmap.gson;
+package com.audriga.jmap.gson.factory;
 
 import com.audriga.jmap.common.entity.VendorExtension;
 import com.google.gson.Gson;

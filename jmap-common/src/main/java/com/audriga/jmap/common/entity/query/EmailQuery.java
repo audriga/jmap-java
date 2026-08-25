@@ -21,12 +21,13 @@ import com.audriga.jmap.common.entity.Email;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.util.QueryStringUtils;
 import com.google.common.base.MoreObjects;
+import java.util.List;
 
 public class EmailQuery extends Query<Email> {
 
     public final Boolean collapseThreads;
 
-    private EmailQuery(final Filter<Email> filter, final Comparator[] sort, final Boolean collapseThreads) {
+    private EmailQuery(final Filter<Email> filter, final List<Comparator> sort, final Boolean collapseThreads) {
         super(filter, sort);
         this.collapseThreads = collapseThreads;
     }
@@ -48,7 +49,7 @@ public class EmailQuery extends Query<Email> {
         return new EmailQuery(filter, null, null);
     }
 
-    public static EmailQuery of(Filter<Email> filter, Comparator[] sort) {
+    public static EmailQuery of(Filter<Email> filter, List<Comparator> sort) {
         return new EmailQuery(filter, sort, null);
     }
 
@@ -56,7 +57,7 @@ public class EmailQuery extends Query<Email> {
         return new EmailQuery(filter, null, collapseThreads);
     }
 
-    public static EmailQuery of(Filter<Email> filter, Comparator[] sort, boolean collapseThreads) {
+    public static EmailQuery of(Filter<Email> filter, List<Comparator> sort, boolean collapseThreads) {
         return new EmailQuery(filter, sort, collapseThreads);
     }
 

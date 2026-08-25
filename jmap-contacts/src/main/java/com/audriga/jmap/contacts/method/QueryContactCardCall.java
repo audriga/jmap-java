@@ -5,6 +5,7 @@ import com.audriga.jmap.common.entity.Comparator;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.method.call.standard.QueryMethodCall;
 import com.audriga.jmap.contacts.entity.ContactCard;
+import java.util.List;
 import org.jspecify.annotations.Nullable;
 
 @JmapMethod("ContactCard/query")
@@ -13,7 +14,7 @@ public class QueryContactCardCall extends QueryMethodCall<ContactCard> {
     public QueryContactCardCall(
             String accountId,
             @Nullable Filter<ContactCard> filter,
-            Comparator @Nullable [] sort,
+            @Nullable List<Comparator> sort,
             @Nullable Long position,
             @Nullable String anchor,
             @Nullable Long anchorOffset,

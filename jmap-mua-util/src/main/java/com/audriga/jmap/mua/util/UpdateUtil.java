@@ -19,9 +19,9 @@ package com.audriga.jmap.mua.util;
 import com.audriga.jmap.client.JmapClient;
 import com.audriga.jmap.client.JmapRequest;
 import com.audriga.jmap.client.MethodResponses;
-import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.entity.Email;
 import com.audriga.jmap.common.method.MethodResponse;
+import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.method.call.email.ChangesEmailMethodCall;
 import com.audriga.jmap.common.method.call.email.GetEmailMethodCall;
 import com.audriga.jmap.common.method.call.identity.ChangesIdentityMethodCall;
@@ -48,8 +48,7 @@ public class UpdateUtil {
         final ListenableFuture<MethodResponses> created = multiCall
                 .call(GetEmailMethodCall.builder()
                         .accountId(accountId)
-                        .idsReference(
-                                changesCallInfo.createResultReference(Request.Invocation.ResultReference.Path.CREATED))
+                        .idsReference(changesCallInfo.createResultReference(ResultReference.Path.CREATED))
                         .properties(Email.Properties.LTTRS_DEFAULT)
                         .fetchTextBodyValues(true)
                         .build())
@@ -57,8 +56,7 @@ public class UpdateUtil {
         final ListenableFuture<MethodResponses> updated = multiCall
                 .call(GetEmailMethodCall.builder()
                         .accountId(accountId)
-                        .idsReference(
-                                changesCallInfo.createResultReference(Request.Invocation.ResultReference.Path.UPDATED))
+                        .idsReference(changesCallInfo.createResultReference(ResultReference.Path.UPDATED))
                         .properties(Email.Properties.MUTABLE)
                         .build())
                 .getMethodResponses();
@@ -75,15 +73,13 @@ public class UpdateUtil {
         final ListenableFuture<MethodResponses> created = multiCall
                 .call(GetIdentityMethodCall.builder()
                         .accountId(accountId)
-                        .idsReference(
-                                changesCallInfo.createResultReference(Request.Invocation.ResultReference.Path.CREATED))
+                        .idsReference(changesCallInfo.createResultReference(ResultReference.Path.CREATED))
                         .build())
                 .getMethodResponses();
         final ListenableFuture<MethodResponses> updated = multiCall
                 .call(GetIdentityMethodCall.builder()
                         .accountId(accountId)
-                        .idsReference(
-                                changesCallInfo.createResultReference(Request.Invocation.ResultReference.Path.UPDATED))
+                        .idsReference(changesCallInfo.createResultReference(ResultReference.Path.UPDATED))
                         .build())
                 .getMethodResponses();
 
@@ -99,17 +95,15 @@ public class UpdateUtil {
         final ListenableFuture<MethodResponses> created = multiCall
                 .call(GetMailboxMethodCall.builder()
                         .accountId(accountId)
-                        .idsReference(
-                                changesCallInfo.createResultReference(Request.Invocation.ResultReference.Path.CREATED))
+                        .idsReference(changesCallInfo.createResultReference(ResultReference.Path.CREATED))
                         .build())
                 .getMethodResponses();
         final ListenableFuture<MethodResponses> updated = multiCall
                 .call(GetMailboxMethodCall.builder()
                         .accountId(accountId)
-                        .idsReference(
-                                changesCallInfo.createResultReference(Request.Invocation.ResultReference.Path.UPDATED))
-                        .propertiesReference(changesCallInfo.createResultReference(
-                                Request.Invocation.ResultReference.Path.UPDATED_PROPERTIES))
+                        .idsReference(changesCallInfo.createResultReference(ResultReference.Path.UPDATED))
+                        .propertiesReference(
+                                changesCallInfo.createResultReference(ResultReference.Path.UPDATED_PROPERTIES))
                         .build())
                 .getMethodResponses();
 
@@ -125,15 +119,13 @@ public class UpdateUtil {
         final ListenableFuture<MethodResponses> created = multiCall
                 .call(GetThreadMethodCall.builder()
                         .accountId(accountId)
-                        .idsReference(
-                                changesCallInfo.createResultReference(Request.Invocation.ResultReference.Path.CREATED))
+                        .idsReference(changesCallInfo.createResultReference(ResultReference.Path.CREATED))
                         .build())
                 .getMethodResponses();
         final ListenableFuture<MethodResponses> updated = multiCall
                 .call(GetThreadMethodCall.builder()
                         .accountId(accountId)
-                        .idsReference(
-                                changesCallInfo.createResultReference(Request.Invocation.ResultReference.Path.UPDATED))
+                        .idsReference(changesCallInfo.createResultReference(ResultReference.Path.UPDATED))
                         .build())
                 .getMethodResponses();
 

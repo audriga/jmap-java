@@ -17,16 +17,15 @@
 package com.audriga.jmap.common.method.call.thread;
 
 import com.audriga.jmap.annotation.JmapMethod;
-import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.entity.Thread;
-import com.audriga.jmap.common.method.call.standard.GetMethodCall;
+import com.audriga.jmap.common.method.ResultReference;
+import com.audriga.jmap.common.method.call.standard.AbstractGetMethodCall;
 
 @JmapMethod("Thread/get")
-public class GetThreadMethodCall extends GetMethodCall<Thread> {
+public class GetThreadMethodCall extends AbstractGetMethodCall<Thread> {
 
     @lombok.Builder
-    public GetThreadMethodCall(
-            String accountId, String[] ids, String[] properties, Request.Invocation.ResultReference idsReference) {
+    public GetThreadMethodCall(String accountId, String[] ids, String[] properties, ResultReference idsReference) {
         super(accountId, ids, properties, idsReference);
     }
 }

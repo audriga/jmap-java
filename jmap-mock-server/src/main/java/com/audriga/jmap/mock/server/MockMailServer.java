@@ -16,13 +16,13 @@
 
 package com.audriga.jmap.mock.server;
 
-import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.Response;
 import com.audriga.jmap.common.entity.*;
 import com.audriga.jmap.common.entity.Thread;
 import com.audriga.jmap.common.entity.filter.EmailFilterCondition;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.method.MethodResponse;
+import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.method.call.core.SetPushSubscriptionMethodCall;
 import com.audriga.jmap.common.method.call.email.*;
 import com.audriga.jmap.common.method.call.identity.GetIdentityMethodCall;
@@ -296,7 +296,7 @@ public class MockMailServer extends StubMailServer {
     @Override
     protected MethodResponse[] execute(
             GetEmailMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
-        final Request.Invocation.ResultReference idsReference = methodCall.idsReference();
+        final ResultReference idsReference = methodCall.idsReference();
         final List<String> ids;
         if (idsReference != null) {
             try {
@@ -559,7 +559,7 @@ public class MockMailServer extends StubMailServer {
     @Override
     protected MethodResponse[] execute(
             GetMailboxMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
-        final Request.Invocation.ResultReference idsReference = methodCall.idsReference();
+        final ResultReference idsReference = methodCall.idsReference();
         final List<String> ids;
         if (idsReference != null) {
             try {
@@ -728,7 +728,7 @@ public class MockMailServer extends StubMailServer {
     @Override
     protected MethodResponse[] execute(
             GetThreadMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
-        final Request.Invocation.ResultReference idsReference = methodCall.idsReference();
+        final ResultReference idsReference = methodCall.idsReference();
         final List<String> ids;
         if (idsReference != null) {
             try {

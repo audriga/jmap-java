@@ -1,7 +1,8 @@
-package com.audriga.jmap.gson;
+package com.audriga.jmap.gson.factory;
 
 import com.audriga.jmap.annotation.Inline;
 import com.audriga.jmap.annotation.Type;
+import com.audriga.jmap.gson.TagRepr;
 import com.audriga.jmap.gson.adapter.SumTypeAdapter;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;

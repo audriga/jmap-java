@@ -17,14 +17,14 @@
 package com.audriga.jmap.common.method.call.email;
 
 import com.audriga.jmap.annotation.JmapMethod;
-import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.entity.Email;
-import com.audriga.jmap.common.method.call.standard.GetMethodCall;
+import com.audriga.jmap.common.method.ResultReference;
+import com.audriga.jmap.common.method.call.standard.AbstractGetMethodCall;
 import lombok.Getter;
 
 @JmapMethod("Email/get")
 @Getter
-public class GetEmailMethodCall extends GetMethodCall<Email> {
+public class GetEmailMethodCall extends AbstractGetMethodCall<Email> {
 
     private String[] bodyProperties;
     private Boolean fetchTextBodyValues;
@@ -37,7 +37,7 @@ public class GetEmailMethodCall extends GetMethodCall<Email> {
             String accountId,
             String[] ids,
             String[] properties,
-            Request.Invocation.ResultReference idsReference,
+            ResultReference idsReference,
             String[] bodyProperties,
             Boolean fetchTextBodyValues,
             Boolean fetchHTMLBodyValues,

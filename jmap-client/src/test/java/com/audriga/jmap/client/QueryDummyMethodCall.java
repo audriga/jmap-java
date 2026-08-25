@@ -25,7 +25,7 @@ public class QueryDummyMethodCall extends QueryMethodCall<Dummy> {
     public QueryDummyMethodCall(
             String accountId,
             Filter<Dummy> filter,
-            Comparator[] sort,
+            List<Comparator> sort,
             Long position,
             String anchor,
             Long anchorOffset,

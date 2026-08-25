@@ -16,9 +16,9 @@
 
 package com.audriga.jmap.common.method.call.standard;
 
-import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.entity.Identifiable;
 import com.audriga.jmap.common.method.MethodCall;
+import com.audriga.jmap.common.method.ResultReference;
 import com.google.common.base.Preconditions;
 import com.google.gson.annotations.SerializedName;
 import java.util.Map;
@@ -40,7 +40,7 @@ public abstract class SetMethodCall<T extends Identifiable> implements MethodCal
     private String[] destroy;
 
     @SerializedName("#destroy")
-    private Request.Invocation.ResultReference destroyReference;
+    private ResultReference destroyReference;
 
     public SetMethodCall(
             @NonNull String accountId,
@@ -48,7 +48,7 @@ public abstract class SetMethodCall<T extends Identifiable> implements MethodCal
             Map<String, T> create,
             Map<String, Map<String, Object>> update,
             String[] destroy,
-            Request.Invocation.ResultReference destroyReference) {
+            ResultReference destroyReference) {
         Preconditions.checkArgument(
                 destroy == null || destroyReference == null, "Can't set both 'destroy' and 'destroyReference'");
         this.accountId = accountId;

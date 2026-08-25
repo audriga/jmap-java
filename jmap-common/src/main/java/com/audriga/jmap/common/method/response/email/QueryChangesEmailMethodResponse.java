@@ -19,11 +19,11 @@ package com.audriga.jmap.common.method.response.email;
 import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.common.entity.AddedItem;
 import com.audriga.jmap.common.entity.Email;
-import com.audriga.jmap.common.method.response.standard.QueryChangesMethodResponse;
+import com.audriga.jmap.common.method.response.standard.AbstractQueryChangesMethodResponse;
 import java.util.List;
 
 @JmapMethod("Email/queryChanges")
-public class QueryChangesEmailMethodResponse extends QueryChangesMethodResponse<Email> {
+public class QueryChangesEmailMethodResponse extends AbstractQueryChangesMethodResponse<Email> {
 
     @lombok.Builder
     public QueryChangesEmailMethodResponse(

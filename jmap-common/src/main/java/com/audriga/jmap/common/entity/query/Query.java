@@ -20,14 +20,15 @@ import com.audriga.jmap.common.entity.Comparator;
 import com.audriga.jmap.common.entity.Identifiable;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.entity.filter.QueryString;
+import java.util.List;
 
 public abstract class Query<T extends Identifiable> implements QueryString {
 
     public final Filter<T> filter;
 
-    public final Comparator[] sort;
+    public final List<Comparator> sort;
 
-    protected Query(final Filter<T> filter, final Comparator[] sort) {
+    protected Query(final Filter<T> filter, final List<Comparator> sort) {
         this.filter = filter;
         this.sort = sort;
     }

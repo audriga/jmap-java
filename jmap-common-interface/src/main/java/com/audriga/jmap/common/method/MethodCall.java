@@ -16,4 +16,18 @@
 
 package com.audriga.jmap.common.method;
 
-public interface MethodCall {}
+public interface MethodCall {
+    sealed interface Arg<T> {
+        record Value<T>(T value) implements Arg<T> {}
+
+        record Reference<T>(ResultReference reference) implements Arg<T> {}
+
+        static <T> Value<T> of(T value) {
+            return new Value<>(value);
+        }
+
+        static <T> Reference<T> of(ResultReference reference) {
+            return new Reference<>(reference);
+        }
+    }
+}

@@ -1,6 +1,7 @@
-package com.audriga.jmap.gson;
+package com.audriga.jmap.gson.factory;
 
 import com.audriga.jmap.annotation.Inline;
+import com.audriga.jmap.gson.GsonUtils;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
@@ -12,7 +13,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
-public class InlineRecordAdapterFactory implements TypeAdapterFactory {
+public final class InlineRecordAdapterFactory implements TypeAdapterFactory {
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
 
     @Override

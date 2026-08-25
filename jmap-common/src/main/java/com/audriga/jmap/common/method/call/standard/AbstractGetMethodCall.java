@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Daniel Gultsch
+ * Copyright 2019 Daniel Gultsch
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,16 +14,19 @@
  *
  */
 
-package com.audriga.jmap.common.method.call.core;
+package com.audriga.jmap.common.method.call.standard;
 
-import com.audriga.jmap.annotation.JmapMethod;
-import com.audriga.jmap.common.method.MethodCall;
+import com.audriga.jmap.common.entity.Identifiable;
 import com.audriga.jmap.common.method.ResultReference;
 import com.google.common.base.Preconditions;
 import com.google.gson.annotations.SerializedName;
+import lombok.Getter;
+import lombok.NonNull;
 
-@JmapMethod("PushSubscription/get")
-public class GetPushSubscriptionMethodCall implements MethodCall {
+@Getter
+public abstract class AbstractGetMethodCall<T extends Identifiable> implements GetMethodCall<T> {
+
+    private String accountId;
 
     private String[] ids;
 
@@ -32,9 +35,10 @@ public class GetPushSubscriptionMethodCall implements MethodCall {
     @SerializedName("#ids")
     private ResultReference idsReference;
 
-    @lombok.Builder
-    public GetPushSubscriptionMethodCall(String[] ids, String[] properties, ResultReference idsReference) {
+    public AbstractGetMethodCall(
+            @NonNull String accountId, String[] ids, String[] properties, ResultReference idsReference) {
         Preconditions.checkArgument(ids == null || idsReference == null, "Can't set both 'ids' and 'idsReference'");
+        this.accountId = accountId;
         this.ids = ids;
         this.properties = properties;
         this.idsReference = idsReference;

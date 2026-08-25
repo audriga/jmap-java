@@ -17,6 +17,7 @@
 package com.audriga.jmap.common;
 
 import com.audriga.jmap.common.method.MethodCall;
+import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.util.Namespace;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,22 +43,6 @@ public record Request(List<String> using, List<Invocation> methodCalls) {
     public record Invocation(MethodCall methodCall, String id) {
         public ResultReference createReference(String path) {
             return new ResultReference(id, methodCall.getClass(), path);
-        }
-
-        /**
-         * Internal constructor, only exposed for use by jmap-gson when deserializing.
-         */
-        public record ResultReference(String id, Class<? extends MethodCall> clazz, String path) {
-            public static final class Path {
-                public static final String IDS = "/ids";
-                public static final String ADDED_IDS = "/added/*/id";
-                public static final String LIST_IDS = "/list/*/id";
-                public static final String LIST_THREAD_IDS = "/list/*/threadId";
-                public static final String LIST_EMAIL_IDS = "/list/*/emailIds";
-                public static final String UPDATED = "/updated";
-                public static final String CREATED = "/created";
-                public static final String UPDATED_PROPERTIES = "/updatedProperties";
-            }
         }
     }
 

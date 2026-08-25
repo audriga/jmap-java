@@ -17,8 +17,8 @@
 package com.audriga.jmap.common.method.call.email;
 
 import com.audriga.jmap.annotation.JmapMethod;
-import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.entity.Email;
+import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.method.call.standard.SetMethodCall;
 import java.util.Map;
 
@@ -32,7 +32,7 @@ public class SetEmailMethodCall extends SetMethodCall<Email> {
             Map<String, Email> create,
             Map<String, Map<String, Object>> update,
             String[] destroy,
-            Request.Invocation.ResultReference destroyReference) {
+            ResultReference destroyReference) {
         super(accountId, ifInState, create, update, destroy, destroyReference);
     }
 }

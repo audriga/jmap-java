@@ -16,6 +16,7 @@
 
 package com.audriga.jmap.common;
 
+import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.method.call.email.GetEmailMethodCall;
 import com.audriga.jmap.common.method.call.email.QueryEmailMethodCall;
 import com.audriga.jmap.common.method.call.mailbox.ChangesMailboxMethodCall;
@@ -71,8 +72,7 @@ public class MethodCallTest {
                 () -> GetEmailMethodCall.builder()
                         .accountId("dummy")
                         .ids(new String[] {"1", "2"})
-                        .idsReference(
-                                invocation.createReference(Request.Invocation.ResultReference.Path.LIST_EMAIL_IDS))
+                        .idsReference(invocation.createReference(ResultReference.Path.LIST_EMAIL_IDS))
                         .build());
     }
 }

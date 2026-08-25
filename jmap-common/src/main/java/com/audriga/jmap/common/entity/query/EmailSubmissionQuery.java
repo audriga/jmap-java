@@ -20,10 +20,11 @@ import com.audriga.jmap.common.entity.Comparator;
 import com.audriga.jmap.common.entity.EmailSubmission;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.util.QueryStringUtils;
+import java.util.List;
 
 public class EmailSubmissionQuery extends Query<EmailSubmission> {
 
-    private EmailSubmissionQuery(Filter<EmailSubmission> filter, Comparator[] sort) {
+    private EmailSubmissionQuery(Filter<EmailSubmission> filter, List<Comparator> sort) {
         super(filter, sort);
     }
 
@@ -36,7 +37,7 @@ public class EmailSubmissionQuery extends Query<EmailSubmission> {
         return new EmailSubmissionQuery(null, null);
     }
 
-    public static EmailSubmissionQuery unfiltered(final Comparator[] sort) {
+    public static EmailSubmissionQuery unfiltered(final List<Comparator> sort) {
         return new EmailSubmissionQuery(null, sort);
     }
 
@@ -44,7 +45,7 @@ public class EmailSubmissionQuery extends Query<EmailSubmission> {
         return new EmailSubmissionQuery(filter, null);
     }
 
-    public static EmailSubmissionQuery of(final Filter<EmailSubmission> filter, final Comparator[] sort) {
+    public static EmailSubmissionQuery of(final Filter<EmailSubmission> filter, final List<Comparator> sort) {
         return new EmailSubmissionQuery(filter, sort);
     }
 }

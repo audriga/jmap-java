@@ -1,4 +1,4 @@
-package com.audriga.jmap.gson;
+package com.audriga.jmap.gson.factory;
 
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;

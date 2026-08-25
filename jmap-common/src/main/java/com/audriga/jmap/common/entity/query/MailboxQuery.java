@@ -20,6 +20,7 @@ import com.audriga.jmap.common.entity.Comparator;
 import com.audriga.jmap.common.entity.Mailbox;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.util.QueryStringUtils;
+import java.util.List;
 
 public class MailboxQuery extends Query<Mailbox> {
 
@@ -27,7 +28,7 @@ public class MailboxQuery extends Query<Mailbox> {
 
     public final Boolean filterAsTree;
 
-    private MailboxQuery(Filter<Mailbox> filter, Comparator[] sort, Boolean sortAsTree, Boolean filterAsTree) {
+    private MailboxQuery(Filter<Mailbox> filter, List<Comparator> sort, Boolean sortAsTree, Boolean filterAsTree) {
         super(filter, sort);
         this.sortAsTree = sortAsTree;
         this.filterAsTree = filterAsTree;
@@ -50,11 +51,12 @@ public class MailboxQuery extends Query<Mailbox> {
         return new MailboxQuery(filter, null, null, null);
     }
 
-    public static MailboxQuery of(final Filter<Mailbox> filter, final Comparator[] sort) {
+    public static MailboxQuery of(final Filter<Mailbox> filter, final List<Comparator> sort) {
         return new MailboxQuery(filter, sort, null, null);
     }
 
-    public static MailboxQuery of(Filter<Mailbox> filter, Comparator[] sort, Boolean sortAsTree, Boolean filterAsTree) {
+    public static MailboxQuery of(
+            Filter<Mailbox> filter, List<Comparator> sort, Boolean sortAsTree, Boolean filterAsTree) {
         return new MailboxQuery(filter, sort, sortAsTree, filterAsTree);
     }
 }

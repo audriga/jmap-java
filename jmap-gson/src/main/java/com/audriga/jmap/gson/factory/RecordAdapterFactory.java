@@ -1,9 +1,14 @@
-package com.audriga.jmap.gson;
+package com.audriga.jmap.gson.factory;
 
 import com.audriga.jmap.annotation.Default;
 import com.audriga.jmap.annotation.Inline;
+import com.audriga.jmap.gson.Annotations;
+import com.audriga.jmap.gson.GsonUtils;
+import com.audriga.jmap.gson.NameValueTypeAdapter;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.*;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.internal.bind.JsonTreeReader;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -15,7 +20,6 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.RecordComponent;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.jspecify.annotations.Nullable;
 
 public final class RecordAdapterFactory implements TypeAdapterFactory {
@@ -41,8 +45,8 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
             false);
 
     private record Component(
-            String name,
             Class<?> type,
+            NameValueTypeAdapter.Instance<Object> nvAdapter,
             TypeAdapter<Object> adapter,
             MethodHandle accessor,
             boolean inline,
@@ -59,18 +63,58 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
 
         var components = Arrays.stream(componentArray)
                 .map(c -> {
-                    var name = Annotations.get(c, SerializedName.class)
-                            .map(SerializedName::value)
-                            .orElse(c.getName());
+                    var inline = c.isAnnotationPresent(Inline.class);
+                    var serializedName = Annotations.get(c, SerializedName.class);
                     @SuppressWarnings("unchecked")
                     var adapter = (TypeAdapter<Object>) gson.getAdapter(TypeToken.get(c.getGenericType()));
+                    NameValueTypeAdapter.Instance<Object> nvAdapter;
+                    if (inline) {
+                        nvAdapter = null;
+                        if (serializedName.isPresent()) {
+                            throw new IllegalArgumentException(
+                                    "useless @SerializedName on @Inline record component " + raw + "." + c.getName());
+                        }
+                    } else {
+                        var name = serializedName.map(SerializedName::value).orElse(c.getName());
+                        var alternateNames = serializedName
+                                .map(SerializedName::alternate)
+                                .map(Set::of)
+                                .orElse(Set.of());
+                        if (adapter instanceof NameValueTypeAdapter<Object> nv) {
+                            nvAdapter = nv.instantiate(name, alternateNames);
+                        } else {
+                            var names = ImmutableSet.<String>builder()
+                                    .add(name)
+                                    .addAll(alternateNames)
+                                    .build();
+                            nvAdapter = new NameValueTypeAdapter.Instance<>() {
+                                @Override
+                                public Set<String> names() {
+                                    return names;
+                                }
+
+                                @Override
+                                public void write(
+                                        JsonWriter out, NameValueTypeAdapter.NameWriter nameWriter, Object value)
+                                        throws IOException {
+                                    nameWriter.write(name);
+                                    adapter.write(out, value);
+                                }
+
+                                @Override
+                                public Object read(JsonReader in, String name) throws IOException {
+                                    return adapter.read(in);
+                                }
+                            };
+                        }
+                    }
+
                     MethodHandle accessor;
                     try {
                         accessor = LOOKUP.unreflect(c.getAccessor());
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);
                     }
-                    var inline = c.isAnnotationPresent(Inline.class);
                     var defaultJson = Annotations.get(c, Default.class)
                             .map(a -> gson.fromJson(a.value(), JsonElement.class))
                             .orElse(null);
@@ -83,15 +127,10 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                         throw new IllegalArgumentException("record component " + raw.getName() + "." + c.getName()
                                 + " is marked nullable but has primitive type");
                     }
-                    return new Component(name, c.getType(), adapter, accessor, inline, defaultJson, nullable);
+                    return new Component(c.getType(), nvAdapter, adapter, accessor, inline, defaultJson, nullable);
                 })
                 .toList();
-        var componentNames = components.stream().map(Component::name).collect(Collectors.toUnmodifiableSet());
-        if (componentNames.size() != components.size()) {
-            throw new IllegalArgumentException(
-                    "record " + raw.getName() + " has components with duplicate serialized name");
-        }
-        var nameToIndex = indexMap(components, Component::name);
+        var nameToIndex = indexMap(components, c -> c.nvAdapter.names());
         var needsFlatten = components.stream().anyMatch(Component::inline);
 
         var ctorType = MethodType.methodType(
@@ -112,7 +151,7 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
             @Override
             public void write(JsonWriter out, T value) throws IOException {
                 out.beginObject();
-                var names = new HashSet<>(componentNames);
+                var names = new HashSet<>();
                 for (var component : components) {
                     if (component.inline) {
                         var tree = component.adapter.toJsonTree(GsonUtils.invoke(component.accessor, value));
@@ -126,8 +165,15 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                             jsonElementAdapter.write(out, entry.getValue());
                         }
                     } else {
-                        out.name(component.name);
-                        component.adapter.write(out, GsonUtils.invoke(component.accessor, value));
+                        component.nvAdapter.write(
+                                out,
+                                s -> {
+                                    if (!names.add(s)) {
+                                        throw new IllegalArgumentException("encountered duplicate name " + s);
+                                    }
+                                    out.name(s);
+                                },
+                                GsonUtils.invoke(component.accessor, value));
                     }
                 }
                 out.endObject();
@@ -147,7 +193,8 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                         if (fields[index] != EMPTY_SLOT) {
                             throw new JsonParseException("encountered duplicate name '" + entry.getKey() + "'");
                         }
-                        fields[index] = comp.adapter.fromJsonTree(entry.getValue());
+                        var reader = new JsonTreeReader(entry.getValue());
+                        fields[index] = comp.nvAdapter.read(reader, entry.getKey());
                     }
                     for (int i = 0; i < fields.length; ++i) {
                         var comp = components.get(i);
@@ -166,7 +213,7 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                         if (fields[index] != EMPTY_SLOT) {
                             throw new JsonParseException("encountered duplicate name '" + name + "'");
                         }
-                        fields[index] = components.get(index).adapter.read(in);
+                        fields[index] = components.get(index).nvAdapter.read(in, name);
                     }
                     in.endObject();
                 }
@@ -198,11 +245,15 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
         }.nullSafe();
     }
 
-    private static <A, B> Map<B, Integer> indexMap(List<A> list, Function<A, B> makeKey) {
+    private static <A, B> Map<B, Integer> indexMap(List<A> list, Function<A, Set<B>> makeKey) {
         var res = new HashMap<B, Integer>();
         int i = 0;
         for (var a : list) {
-            res.put(makeKey.apply(a), i);
+            for (var k : makeKey.apply(a)) {
+                if (res.put(k, i) != null) {
+                    throw new IllegalArgumentException("duplicate name '" + k + "'");
+                }
+            }
             ++i;
         }
         return Map.copyOf(res);

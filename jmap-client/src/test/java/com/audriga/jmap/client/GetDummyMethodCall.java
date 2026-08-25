@@ -17,10 +17,10 @@
 package com.audriga.jmap.client;
 
 import com.audriga.jmap.annotation.JmapMethod;
-import com.audriga.jmap.common.method.call.standard.GetMethodCall;
+import com.audriga.jmap.common.method.call.standard.AbstractGetMethodCall;
 
 @JmapMethod("Dummy/get")
-public class GetDummyMethodCall extends GetMethodCall<Dummy> {
+public class GetDummyMethodCall extends AbstractGetMethodCall<Dummy> {
 
     public GetDummyMethodCall(String accountId) {
         super(accountId, null, null, null);

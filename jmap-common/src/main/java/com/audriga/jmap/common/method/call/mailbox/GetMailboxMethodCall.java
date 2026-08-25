@@ -17,25 +17,25 @@
 package com.audriga.jmap.common.method.call.mailbox;
 
 import com.audriga.jmap.annotation.JmapMethod;
-import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.entity.Mailbox;
-import com.audriga.jmap.common.method.call.standard.GetMethodCall;
+import com.audriga.jmap.common.method.ResultReference;
+import com.audriga.jmap.common.method.call.standard.AbstractGetMethodCall;
 import com.google.common.base.Preconditions;
 import com.google.gson.annotations.SerializedName;
 
 @JmapMethod("Mailbox/get")
-public class GetMailboxMethodCall extends GetMethodCall<Mailbox> {
+public class GetMailboxMethodCall extends AbstractGetMethodCall<Mailbox> {
 
     @SerializedName("#properties")
-    private Request.Invocation.ResultReference propertiesReference;
+    private ResultReference propertiesReference;
 
     @lombok.Builder
     public GetMailboxMethodCall(
             String accountId,
             String[] ids,
             String[] properties,
-            Request.Invocation.ResultReference idsReference,
-            Request.Invocation.ResultReference propertiesReference) {
+            ResultReference idsReference,
+            ResultReference propertiesReference) {
         super(accountId, ids, properties, idsReference);
         Preconditions.checkArgument(
                 properties == null || propertiesReference == null,

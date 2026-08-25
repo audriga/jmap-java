@@ -46,7 +46,7 @@ public final class GsonUtils {
         }
     }
 
-    static Object invoke(MethodHandle handle, Object... args) {
+    public static Object invoke(MethodHandle handle, Object... args) {
         try {
             return handle.invokeWithArguments(args);
         } catch (RuntimeException | Error e) {

@@ -1,4 +1,4 @@
-package com.audriga.jmap.gson;
+package com.audriga.jmap.gson.factory;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;

@@ -18,6 +18,7 @@ package com.audriga.jmap.client;
 
 import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.method.MethodCall;
+import com.audriga.jmap.common.method.ResultReference;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -111,7 +112,7 @@ public class JmapRequest {
             return future;
         }
 
-        public Request.Invocation.ResultReference createResultReference(String path) {
+        public ResultReference createResultReference(String path) {
             return invocation.createReference(path);
         }
     }

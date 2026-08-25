@@ -19,6 +19,7 @@ package com.audriga.jmap.common.method.call.standard;
 import com.audriga.jmap.common.entity.Comparator;
 import com.audriga.jmap.common.entity.Identifiable;
 import com.audriga.jmap.common.entity.filter.Filter;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
@@ -31,7 +32,7 @@ public abstract class AbstractQueryChangesMethodCall<T extends Identifiable> imp
 
     private Filter<T> filter;
 
-    private Comparator[] sort;
+    private List<Comparator> sort;
 
     @NonNull
     private String sinceQueryState;

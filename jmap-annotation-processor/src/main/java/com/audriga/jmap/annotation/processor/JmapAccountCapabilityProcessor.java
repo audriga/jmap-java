@@ -59,8 +59,7 @@ public class JmapAccountCapabilityProcessor extends AbstractProcessor {
         Set<? extends Element> elements = roundEnvironment.getElementsAnnotatedWith(JmapAccountCapability.class);
         final List<TypeElement> classes = new ArrayList<>();
         for (Element element : elements) {
-            if (element instanceof TypeElement) {
-                final TypeElement typeElement = (TypeElement) element;
+            if (element instanceof TypeElement typeElement) {
                 if (typeUtils.isAssignable(element.asType(), accountCapability)) {
                     classes.add(typeElement);
                 } else {
@@ -77,7 +76,7 @@ public class JmapAccountCapabilityProcessor extends AbstractProcessor {
         }
 
         System.out.println("creating for " + classes.size() + " classes");
-        if (classes.size() == 0) {
+        if (classes.isEmpty()) {
             return true;
         }
 

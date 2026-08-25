@@ -1,7 +1,7 @@
 package com.audriga.jmap.gson.adapter;
 
-import com.audriga.jmap.gson.AtTypeSealedAdapterFactory;
 import com.audriga.jmap.gson.TagRepr;
+import com.audriga.jmap.gson.factory.AtTypeSealedAdapterFactory;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;

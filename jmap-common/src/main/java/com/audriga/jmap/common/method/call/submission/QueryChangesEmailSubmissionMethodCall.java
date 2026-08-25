@@ -22,6 +22,7 @@ import com.audriga.jmap.common.entity.EmailSubmission;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.entity.query.EmailSubmissionQuery;
 import com.audriga.jmap.common.method.call.standard.AbstractQueryChangesMethodCall;
+import java.util.List;
 
 @JmapMethod("EmailSubmission/queryChanges")
 public class QueryChangesEmailSubmissionMethodCall extends AbstractQueryChangesMethodCall<EmailSubmission> {
@@ -30,7 +31,7 @@ public class QueryChangesEmailSubmissionMethodCall extends AbstractQueryChangesM
     public QueryChangesEmailSubmissionMethodCall(
             String accountId,
             Filter<EmailSubmission> filter,
-            Comparator[] sort,
+            List<Comparator> sort,
             String sinceQueryState,
             Long maxChanges,
             String upToId,

@@ -17,16 +17,15 @@
 package com.audriga.jmap.common.method.call.identity;
 
 import com.audriga.jmap.annotation.JmapMethod;
-import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.entity.Identity;
-import com.audriga.jmap.common.method.call.standard.GetMethodCall;
+import com.audriga.jmap.common.method.ResultReference;
+import com.audriga.jmap.common.method.call.standard.AbstractGetMethodCall;
 
 @JmapMethod("Identity/get")
-public class GetIdentityMethodCall extends GetMethodCall<Identity> {
+public class GetIdentityMethodCall extends AbstractGetMethodCall<Identity> {
 
     @lombok.Builder
-    public GetIdentityMethodCall(
-            String accountId, String[] ids, String[] properties, Request.Invocation.ResultReference idsReference) {
+    public GetIdentityMethodCall(String accountId, String[] ids, String[] properties, ResultReference idsReference) {
         super(accountId, ids, properties, idsReference);
     }
 }

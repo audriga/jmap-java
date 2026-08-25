@@ -2,7 +2,7 @@ package com.audriga.jmap.calendars.method;
 
 import com.audriga.jmap.annotation.JmapMethod;
 import com.audriga.jmap.calendars.entity.ParticipantIdentity;
-import com.audriga.jmap.common.Request;
+import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.method.call.standard.SetMethodCall;
 import java.util.Map;
 import lombok.Getter;
@@ -21,7 +21,7 @@ public class SetParticipantIdentityCall extends SetMethodCall<ParticipantIdentit
             Map<String, ParticipantIdentity> create,
             Map<String, Map<String, Object>> update,
             String[] destroy,
-            Request.Invocation.ResultReference destroyReference,
+            ResultReference destroyReference,
             @Nullable String onSuccessSetIsDefault) {
         super(accountId, ifInState, create, update, destroy, destroyReference);
         this.onSuccessSetIsDefault = onSuccessSetIsDefault;

@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.RECORD_COMPONENT)
+@Target(ElementType.TYPE_USE)
 public @interface Default {
     /**
      * Default JSON value for this property.

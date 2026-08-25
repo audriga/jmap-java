@@ -14,9 +14,10 @@
  *
  */
 
-package com.audriga.jmap.gson;
+package com.audriga.jmap.gson.factory;
 
 import com.audriga.jmap.annotation.Type;
+import com.audriga.jmap.gson.GsonUtils;
 import com.google.common.base.Strings;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
@@ -24,7 +25,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 
-public class TypeInjectionAdapterFactory implements TypeAdapterFactory {
+public final class TypeInjectionAdapterFactory implements TypeAdapterFactory {
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
         final Class<? super T> clazz = typeToken.getRawType();

@@ -4,12 +4,12 @@ import static com.google.common.html.HtmlEscapers.htmlEscaper;
 
 import com.audriga.jmap.annotation.JmapEntity;
 import com.audriga.jmap.annotation.JmapMethod;
-import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.entity.Comparator;
 import com.audriga.jmap.common.entity.Identifiable;
 import com.audriga.jmap.common.entity.SetError;
 import com.audriga.jmap.common.entity.filter.Filter;
-import com.audriga.jmap.common.method.call.standard.GetMethodCall;
+import com.audriga.jmap.common.method.ResultReference;
+import com.audriga.jmap.common.method.call.standard.AbstractGetMethodCall;
 import com.audriga.jmap.common.method.call.standard.QueryMethodCall;
 import com.audriga.jmap.common.method.call.standard.SetMethodCall;
 import com.audriga.jmap.common.method.response.standard.GetMethodResponse;
@@ -48,12 +48,12 @@ public record EntityInfo(String description, String permissionPrefix, boolean si
     private static final List<Method> OBJECT_METHODS = List.of(
             new Method(
                     "get",
-                    _ -> ClassName.get(GetMethodCall.class),
+                    _ -> ClassName.get(AbstractGetMethodCall.class),
                     _ -> List.of(
                             p(Types.STRING, "accountId"),
                             p(Types.nullable(ArrayTypeName.of(Types.STRING)), "ids"),
                             p(Types.nullable(ArrayTypeName.of(Types.STRING)), "properties"),
-                            p(Types.nullable(ClassName.get(Request.Invocation.ResultReference.class)), "idsReference")),
+                            p(Types.nullable(ClassName.get(ResultReference.class)), "idsReference")),
                     _ -> ClassName.get(GetMethodResponse.class),
                     entityClass -> List.of(
                             p(Types.STRING, "accountId"),
@@ -71,9 +71,7 @@ public record EntityInfo(String description, String permissionPrefix, boolean si
                                     Types.nullable(Types.map(Types.STRING, Types.map(Types.STRING, ClassName.OBJECT))),
                                     "update"),
                             p(Types.nullable(ArrayTypeName.of(Types.STRING)), "destroy"),
-                            p(
-                                    Types.nullable(ClassName.get(Request.Invocation.ResultReference.class)),
-                                    "destroyReference")),
+                            p(Types.nullable(ClassName.get(ResultReference.class)), "destroyReference")),
                     _ -> ClassName.get(SetMethodResponse.class),
                     entityClass -> List.of(
                             p(Types.STRING, "accountId"),
@@ -93,7 +91,7 @@ public record EntityInfo(String description, String permissionPrefix, boolean si
                             p(
                                     Types.nullable(ParameterizedTypeName.get(ClassName.get(Filter.class), entityClass)),
                                     "filter"),
-                            p(Types.nullable(ArrayTypeName.of(Comparator.class)), "sort"),
+                            p(Types.nullable(Types.list(ClassName.get(Comparator.class))), "sort"),
                             p(Types.nullable(TypeName.LONG), "position"),
                             p(Types.nullable(Types.STRING), "anchor"),
                             p(Types.nullable(TypeName.LONG), "anchorOffset"),

@@ -17,7 +17,7 @@
 package com.audriga.jmap.client.dummy;
 
 import com.audriga.jmap.client.Dummy;
-import com.audriga.jmap.common.Request;
+import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.method.call.standard.SetMethodCall;
 import java.util.Map;
 
@@ -29,7 +29,7 @@ public class SetDummyMethodCall extends SetMethodCall<Dummy> {
             Map<String, Dummy> create,
             Map<String, Map<String, Object>> update,
             String[] destroy,
-            Request.Invocation.ResultReference destroyReference) {
+            ResultReference destroyReference) {
         super(accountId, ifInState, create, update, destroy, destroyReference);
     }
 }

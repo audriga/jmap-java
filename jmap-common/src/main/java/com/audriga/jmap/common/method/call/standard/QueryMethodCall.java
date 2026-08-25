@@ -20,6 +20,7 @@ import com.audriga.jmap.common.entity.Comparator;
 import com.audriga.jmap.common.entity.Identifiable;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.method.MethodCall;
+import java.util.List;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -31,7 +32,7 @@ public abstract class QueryMethodCall<T extends Identifiable> implements MethodC
 
     private Filter<T> filter;
 
-    private Comparator[] sort;
+    private List<Comparator> sort;
 
     private Long position;
 
@@ -46,7 +47,7 @@ public abstract class QueryMethodCall<T extends Identifiable> implements MethodC
     public QueryMethodCall(
             @NonNull String accountId,
             Filter<T> filter,
-            Comparator[] sort,
+            List<Comparator> sort,
             Long position,
             String anchor,
             Long anchorOffset,

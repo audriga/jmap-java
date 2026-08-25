@@ -18,6 +18,14 @@ package com.audriga.jmap.gson;
 
 import com.audriga.jmap.gson.adapter.*;
 import com.audriga.jmap.gson.deserializer.*;
+import com.audriga.jmap.gson.factory.AtTypeSealedAdapterFactory;
+import com.audriga.jmap.gson.factory.InlineRecordAdapterFactory;
+import com.audriga.jmap.gson.factory.MethodCallArgAdapterFactory;
+import com.audriga.jmap.gson.factory.OmitEmptyAdapterFactory;
+import com.audriga.jmap.gson.factory.RecordAdapterFactory;
+import com.audriga.jmap.gson.factory.SetAsObjectAdapterFactory;
+import com.audriga.jmap.gson.factory.TypeInjectionAdapterFactory;
+import com.audriga.jmap.gson.factory.VendorPropertyMapAdapterFactory;
 import com.audriga.jmap.gson.serializer.*;
 import com.google.gson.GsonBuilder;
 
@@ -32,7 +40,8 @@ public final class JmapAdapters {
                 .registerTypeAdapterFactory(new AtTypeSealedAdapterFactory())
                 .registerTypeAdapterFactory(new SetAsObjectAdapterFactory())
                 .registerTypeAdapterFactory(new VendorPropertyMapAdapterFactory())
-                .registerTypeAdapterFactory(new OmitEmptyAdapterFactory());
+                .registerTypeAdapterFactory(new OmitEmptyAdapterFactory())
+                .registerTypeAdapterFactory(new MethodCallArgAdapterFactory());
 
         ApiWebSocketMessageTypeAdapter.register(builder);
         InstantTypeAdapter.register(builder);

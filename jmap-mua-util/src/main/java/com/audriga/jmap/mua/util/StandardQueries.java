@@ -23,11 +23,10 @@ import com.audriga.jmap.common.entity.filter.EmailFilterCondition;
 import com.audriga.jmap.common.entity.filter.FilterOperator;
 import com.audriga.jmap.common.entity.query.EmailQuery;
 import com.google.common.base.Preconditions;
+import java.util.List;
 
 public final class StandardQueries {
-
-    public static final Comparator[] SORT_DEFAULT =
-            new Comparator[] {new Comparator(Email.Property.RECEIVED_AT, false)};
+    public static final List<Comparator> SORT_DEFAULT = List.of(new Comparator(Email.Property.RECEIVED_AT, false));
 
     private StandardQueries() {}
 

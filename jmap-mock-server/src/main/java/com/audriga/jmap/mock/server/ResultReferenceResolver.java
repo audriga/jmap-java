@@ -16,13 +16,14 @@
 
 package com.audriga.jmap.mock.server;
 
-import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.Response;
 import com.audriga.jmap.common.entity.AddedItem;
 import com.audriga.jmap.common.entity.Email;
 import com.audriga.jmap.common.entity.Thread;
 import com.audriga.jmap.common.method.MethodResponse;
+import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.method.response.email.GetEmailMethodResponse;
+import com.audriga.jmap.common.method.response.standard.AbstractQueryChangesMethodResponse;
 import com.audriga.jmap.common.method.response.standard.ChangesMethodResponse;
 import com.audriga.jmap.common.method.response.standard.QueryChangesMethodResponse;
 import com.audriga.jmap.common.method.response.standard.QueryMethodResponse;
@@ -36,24 +37,23 @@ import java.util.List;
 public class ResultReferenceResolver {
 
     public static String[] resolve(
-            final Request.Invocation.ResultReference resultReference,
-            final ListMultimap<String, Response.Invocation> previousResponses) {
+            final ResultReference resultReference, final ListMultimap<String, Response.Invocation> previousResponses) {
         final MethodResponse methodResponse = find(resultReference, previousResponses);
         final String path = resultReference.path();
         switch (resultReference.path()) {
-            case Request.Invocation.ResultReference.Path.IDS:
+            case ResultReference.Path.IDS:
                 if (methodResponse instanceof QueryMethodResponse) {
                     return ((QueryMethodResponse<?>) methodResponse).ids();
                 }
                 break;
-            case Request.Invocation.ResultReference.Path.LIST_THREAD_IDS:
+            case ResultReference.Path.LIST_THREAD_IDS:
                 if (methodResponse instanceof GetEmailMethodResponse) {
                     return Arrays.stream(((GetEmailMethodResponse) methodResponse).list())
                             .map(Email::threadId)
                             .toArray(String[]::new);
                 }
                 break;
-            case Request.Invocation.ResultReference.Path.LIST_EMAIL_IDS:
+            case ResultReference.Path.LIST_EMAIL_IDS:
                 if (methodResponse instanceof GetThreadMethodResponse) {
                     return Arrays.stream(((GetThreadMethodResponse) methodResponse).list())
                             .map(Thread::emailIds)
@@ -61,18 +61,18 @@ public class ResultReferenceResolver {
                             .toArray(String[]::new);
                 }
                 break;
-            case Request.Invocation.ResultReference.Path.CREATED:
+            case ResultReference.Path.CREATED:
                 if (methodResponse instanceof ChangesMethodResponse) {
                     return nullToEmpty(((ChangesMethodResponse<?>) methodResponse).created());
                 }
                 break;
-            case Request.Invocation.ResultReference.Path.UPDATED:
+            case ResultReference.Path.UPDATED:
                 if (methodResponse instanceof ChangesMethodResponse) {
                     return nullToEmpty(((ChangesMethodResponse<?>) methodResponse).updated());
                 }
                 break;
-            case Request.Invocation.ResultReference.Path.ADDED_IDS:
-                if (methodResponse instanceof QueryChangesMethodResponse) {
+            case ResultReference.Path.ADDED_IDS:
+                if (methodResponse instanceof AbstractQueryChangesMethodResponse) {
                     return ((QueryChangesMethodResponse<?>) methodResponse)
                             .added().stream().map(AddedItem::getItem).toArray(String[]::new);
                 }
@@ -85,8 +85,7 @@ public class ResultReferenceResolver {
     }
 
     private static MethodResponse find(
-            final Request.Invocation.ResultReference resultReference,
-            final ListMultimap<String, Response.Invocation> previousResponses) {
+            final ResultReference resultReference, final ListMultimap<String, Response.Invocation> previousResponses) {
         final String id = resultReference.id();
         final List<Response.Invocation> invocations = previousResponses.get(id);
         if (invocations.isEmpty()) {

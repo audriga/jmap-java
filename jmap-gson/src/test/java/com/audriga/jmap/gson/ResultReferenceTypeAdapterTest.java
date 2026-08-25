@@ -1,6 +1,7 @@
 package com.audriga.jmap.gson;
 
 import com.audriga.jmap.common.Request;
+import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.method.call.email.QueryEmailMethodCall;
 import com.audriga.jmap.gson.adapter.ResultReferenceTypeAdapter;
 import com.google.gson.GsonBuilder;
@@ -15,12 +16,11 @@ public class ResultReferenceTypeAdapterTest {
     public void writeAndReadBack() {
         Request.Invocation emailQuery = new Request.Invocation(
                 QueryEmailMethodCall.builder().accountId("accountId").build(), METHOD_CALL_ID);
-        Request.Invocation.ResultReference resultReferenceOut = emailQuery.createReference("/ids");
+        ResultReference resultReferenceOut = emailQuery.createReference("/ids");
         GsonBuilder gsonBuilder = new GsonBuilder();
         ResultReferenceTypeAdapter.register(gsonBuilder);
         String json = gsonBuilder.create().toJson(resultReferenceOut);
-        Request.Invocation.ResultReference resultReferenceIn =
-                gsonBuilder.create().fromJson(json, Request.Invocation.ResultReference.class);
+        ResultReference resultReferenceIn = gsonBuilder.create().fromJson(json, ResultReference.class);
         Assertions.assertEquals(resultReferenceIn.clazz(), resultReferenceOut.clazz());
         Assertions.assertEquals(resultReferenceIn.id(), resultReferenceOut.id());
         Assertions.assertEquals(resultReferenceIn.path(), resultReferenceOut.path());

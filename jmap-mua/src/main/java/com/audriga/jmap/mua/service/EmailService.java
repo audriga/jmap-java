@@ -19,9 +19,9 @@ package com.audriga.jmap.mua.service;
 import com.audriga.jmap.client.JmapClient;
 import com.audriga.jmap.client.JmapRequest;
 import com.audriga.jmap.client.MethodResponses;
-import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.entity.*;
 import com.audriga.jmap.common.entity.filter.EmailFilterCondition;
+import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.method.call.email.QueryEmailMethodCall;
 import com.audriga.jmap.common.method.call.email.SetEmailMethodCall;
 import com.audriga.jmap.common.method.call.submission.SetEmailSubmissionMethodCall;
@@ -1058,7 +1058,7 @@ public class EmailService extends AbstractMuaService {
         final ListenableFuture<MethodResponses> setFuture = multiCall
                 .call(SetEmailMethodCall.builder()
                         .accountId(accountId)
-                        .destroyReference(queryCall.createResultReference(Request.Invocation.ResultReference.Path.IDS))
+                        .destroyReference(queryCall.createResultReference(ResultReference.Path.IDS))
                         .build())
                 .getMethodResponses();
         multiCall.execute();

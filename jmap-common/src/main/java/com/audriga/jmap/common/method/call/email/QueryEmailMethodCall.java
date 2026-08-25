@@ -22,6 +22,7 @@ import com.audriga.jmap.common.entity.Email;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.entity.query.EmailQuery;
 import com.audriga.jmap.common.method.call.standard.QueryMethodCall;
+import java.util.List;
 import lombok.Getter;
 
 @JmapMethod("Email/query")
@@ -34,7 +35,7 @@ public class QueryEmailMethodCall extends QueryMethodCall<Email> {
     public QueryEmailMethodCall(
             String accountId,
             Filter<Email> filter,
-            Comparator[] sort,
+            List<Comparator> sort,
             Long position,
             String anchor,
             Long anchorOffset,
