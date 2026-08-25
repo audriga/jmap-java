@@ -58,7 +58,7 @@ public class BrokenMailboxChangesTest {
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(myMockMailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(myMockMailServer.getAccountId())
+                    .accountId(myMockMailServer.accountId())
                     .build()) {
                 mua.query(EmailQuery.unfiltered()).get();
                 final List<IdentifiableEmailWithKeywords> emails = Arrays.asList(
@@ -72,9 +72,9 @@ public class BrokenMailboxChangesTest {
         }
     }
 
-    private record MyIdentifiableEmailWithKeywords(String getId) implements IdentifiableEmailWithKeywords {
+    private record MyIdentifiableEmailWithKeywords(String id) implements IdentifiableEmailWithKeywords {
         @Override
-        public Map<String, Boolean> getKeywords() {
+        public Map<String, Boolean> keywords() {
             return Collections.emptyMap();
         }
     }
@@ -91,9 +91,9 @@ public class BrokenMailboxChangesTest {
                 GetMailboxMethodResponse.builder()
                         .list(mailboxes.values().stream()
                                 .map(mailboxInfo -> Mailbox.builder()
-                                        .id(mailboxInfo.getId())
-                                        .name(mailboxInfo.getName())
-                                        .role(mailboxInfo.getRole())
+                                        .id(mailboxInfo.id())
+                                        .name(mailboxInfo.name())
+                                        .role(mailboxInfo.role())
                                         .build())
                                 .toArray(Mailbox[]::new))
                         .state(getState())

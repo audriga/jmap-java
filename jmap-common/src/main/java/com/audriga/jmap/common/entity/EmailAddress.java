@@ -39,7 +39,7 @@ public class EmailAddress {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EmailAddress that = (EmailAddress) o;
-        return Objects.equal(name, that.name) && Objects.equal(email, that.email);
+        return Objects.equal(name, that.name) && Objects.equal(email, that.email());
     }
 
     @Override

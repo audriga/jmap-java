@@ -103,7 +103,7 @@ public final class Mapper {
 
     private static <T> Iterable<BufferedReader> getSystemResources(final Class<T> type) {
         final List<URL> urls = getSystemResourceUrls(type);
-        if (urls.size() == 0) {
+        if (urls.isEmpty()) {
             final InputStream is = Mapper.class.getClassLoader().getResourceAsStream(Utils.getFilenameFor(type));
             if (is == null) {
                 LOGGER.error("Unable to find resources for type {}", type.getName());

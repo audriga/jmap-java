@@ -20,14 +20,14 @@ import com.google.common.net.MediaType;
 
 public interface BinaryData {
 
-    String getBlobId();
+    String blobId();
 
-    String getType();
+    String type();
 
-    Long getSize();
+    Long size();
 
     default MediaType getMediaType() {
-        final String type = getType();
+        final String type = type();
         return type == null ? null : MediaType.parse(type);
     }
 }

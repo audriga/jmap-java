@@ -39,9 +39,9 @@ public class CreationIdResolver {
             final MethodResponse methodResponse = invocation.methodResponse();
             if (methodResponse instanceof SetMethodResponse) {
                 final Identifiable entity =
-                        ((SetMethodResponse<?>) methodResponse).getCreated().get(strippedId);
+                        ((SetMethodResponse<?>) methodResponse).created().get(strippedId);
                 if (entity != null) {
-                    return entity.getId();
+                    return entity.id();
                 }
             }
         }

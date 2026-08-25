@@ -32,7 +32,7 @@ public final class StandardQueries {
     private StandardQueries() {}
 
     public static EmailQuery mailbox(final IdentifiableMailboxWithRole mailbox) {
-        return mailbox(mailbox.getId());
+        return mailbox(mailbox.id());
     }
 
     public static EmailQuery mailbox(final String mailboxId) {

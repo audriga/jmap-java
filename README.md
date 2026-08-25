@@ -89,8 +89,8 @@ Future<MethodResponses> future = client.call(
 
 GetMailboxMethodResponse mailboxMethodResponse = future.get().getMain(GetMailboxMethodResponse.class);
 
-for(Mailbox mailbox : mailboxMethodResponse.getList()) {
-    System.out.println(mailbox.getName());
+for(Mailbox mailbox : mailboxMethodResponse.list()) {
+    System.out.println(mailbox.name());
 }
 ```
 
@@ -125,8 +125,8 @@ multiCall.execute();
 //process responses
 QueryEmailMethodResponse emailQueryResponse = queryEmailCall.getMethodResponses().get().getMain(QueryEmailMethodResponse.class);
 GetEmailMethodResponse getEmailMethodResponse = getEmailCall.getMethodResponses().get().getMain(GetEmailMethodResponse.class);
-for (Email email : getEmailMethodResponse.getList()) {
-    System.out.println(email.getSentAt() + " " + email.getFrom() + " " + email.getSubject());
+for (Email email : getEmailMethodResponse.list()) {
+    System.out.println(email.sentAt() + " " + email.from() + " " + email.subject());
 }
 ```
 

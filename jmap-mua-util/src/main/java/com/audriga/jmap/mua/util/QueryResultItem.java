@@ -33,7 +33,7 @@ public class QueryResultItem {
         return emailId;
     }
 
-    public String getThreadId() {
+    public String threadId() {
         return threadId;
     }
 

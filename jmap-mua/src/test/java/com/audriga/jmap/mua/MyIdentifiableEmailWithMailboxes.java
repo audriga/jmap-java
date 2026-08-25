@@ -37,12 +37,12 @@ class MyIdentifiableEmailWithMailboxes implements IdentifiableEmailWithMailboxId
     }
 
     @Override
-    public Map<String, Boolean> getMailboxIds() {
+    public Map<String, Boolean> mailboxIds() {
         return Maps.asMap(mailboxIds, s -> true);
     }
 
     @Override
-    public String getId() {
+    public String id() {
         return id;
     }
 }

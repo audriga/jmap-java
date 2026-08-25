@@ -71,9 +71,9 @@ public abstract class AbstractMuaService {
                     public void onSuccess(@Nullable MethodResponses methodResponses) {
                         final ChangesMethodResponse<?> changesMethodResponse =
                                 methodResponses.getMain(ChangesMethodResponse.class);
-                        final TypedState<?> oldState = changesMethodResponse.getTypedOldState();
-                        final TypedState<?> newState = changesMethodResponse.getTypedNewState();
-                        final boolean hasMoreChanges = changesMethodResponse.isHasMoreChanges();
+                        final TypedState<?> oldState = changesMethodResponse.typedOldState();
+                        final TypedState<?> newState = changesMethodResponse.typedNewState();
+                        final boolean hasMoreChanges = changesMethodResponse.hasMoreChanges();
                         if (hasMoreChanges && oldState.equals(newState)) {
                             LOGGER.error(
                                     "Invalid server response to {} oldState==newState despite" + " having more changes",

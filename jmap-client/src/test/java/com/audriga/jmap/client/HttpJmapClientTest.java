@@ -85,7 +85,7 @@ public class HttpJmapClientTest {
 
             final GetMailboxMethodResponse mailboxResponse = future.get().getMain(GetMailboxMethodResponse.class);
 
-            Assertions.assertEquals(7, mailboxResponse.getList().length);
+            Assertions.assertEquals(7, mailboxResponse.list().length);
         }
     }
 
@@ -346,7 +346,7 @@ public class HttpJmapClientTest {
             final GetMailboxMethodResponse firstMailboxResponse =
                     firstFuture.get().getMain(GetMailboxMethodResponse.class);
 
-            Assertions.assertEquals(7, firstMailboxResponse.getList().length);
+            Assertions.assertEquals(7, firstMailboxResponse.list().length);
 
             final ListenableFuture<MethodResponses> secondFuture = secondJmapClient.call(
                     GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
@@ -354,7 +354,7 @@ public class HttpJmapClientTest {
             final GetMailboxMethodResponse secondMailboxResponse =
                     secondFuture.get().getMain(GetMailboxMethodResponse.class);
 
-            Assertions.assertEquals(7, secondMailboxResponse.getList().length);
+            Assertions.assertEquals(7, secondMailboxResponse.list().length);
 
             Assertions.assertEquals(2, cacheReadAttempts.get(), "Unexpected number of session cache read attempts");
 

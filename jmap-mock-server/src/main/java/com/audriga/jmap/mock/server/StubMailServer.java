@@ -159,9 +159,7 @@ public class StubMailServer extends JmapDispatcher {
     protected MethodResponse[] execute(
             EchoMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
         return new MethodResponse[] {
-            EchoMethodResponse.builder()
-                    .libraryName(methodCall.getLibraryName())
-                    .build()
+            EchoMethodResponse.builder().libraryName(methodCall.libraryName()).build()
         };
     }
 

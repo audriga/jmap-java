@@ -28,8 +28,8 @@ import java.util.List;
 public class LabelUtil {
 
     public static final Comparator<? super Label> COMPARATOR = (Comparator<Label>) (a, b) -> ComparisonChain.start()
-            .compare(order(a.getRole()), (order(b.getRole())))
-            .compare(Strings.nullToEmpty(a.getName()), Strings.nullToEmpty(b.getName()))
+            .compare(order(a.role()), (order(b.role())))
+            .compare(Strings.nullToEmpty(a.name()), Strings.nullToEmpty(b.name()))
             .result();
     private static final Collection<KeywordLabel> KEYWORD_LABELS = Collections2.transform(
             KeywordUtil.KEYWORD_ROLE.entrySet(), entry -> new KeywordLabel(entry.getKey(), entry.getValue()));
@@ -37,7 +37,7 @@ public class LabelUtil {
     public static List<LabelWithCount> fillUpAndSort(List<? extends LabelWithCount> mailboxes) {
         final ArrayList<LabelWithCount> labels = new ArrayList<>(mailboxes);
         for (final KeywordLabel keywordLabel : KEYWORD_LABELS) {
-            if (!anyIsRole(mailboxes, keywordLabel.getRole())) {
+            if (!anyIsRole(mailboxes, keywordLabel.role())) {
                 labels.add(keywordLabel);
             }
         }
@@ -47,7 +47,7 @@ public class LabelUtil {
 
     private static boolean anyIsRole(final Collection<? extends Label> labels, final Role role) {
         for (final Label label : labels) {
-            if (label.getRole() == role) {
+            if (label.role() == role) {
                 return true;
             }
         }

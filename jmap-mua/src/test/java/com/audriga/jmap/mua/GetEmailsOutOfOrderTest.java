@@ -55,9 +55,8 @@ public class GetEmailsOutOfOrderTest {
                     .build()) {
                 mua.query(EmailQuery.unfiltered()).get();
                 final Mailbox mailboxBeforeModification = cache.getMailbox(Role.INBOX);
-                Assertions.assertEquals(
-                        2, mailboxBeforeModification.getUnreadThreads(), "Miss match in unread threads");
-                Assertions.assertEquals(3, mailboxBeforeModification.getUnreadEmails(), "Miss match in unread emails");
+                Assertions.assertEquals(2, mailboxBeforeModification.unreadThreads(), "Miss match in unread threads");
+                Assertions.assertEquals(3, mailboxBeforeModification.unreadEmails(), "Miss match in unread emails");
                 final List<CachedEmail> emails = cache.getEmails("T1");
                 mua.setKeyword(emails, Keyword.SEEN).get();
 
@@ -78,7 +77,7 @@ public class GetEmailsOutOfOrderTest {
             GetEmailMethodResponse getEmailMethodResponse = (GetEmailMethodResponse) response[0];
             return new MethodResponse[] {
                 GetEmailMethodResponse.builder()
-                        .list(Lists.reverse(Arrays.asList(getEmailMethodResponse.getList()))
+                        .list(Lists.reverse(Arrays.asList(getEmailMethodResponse.list()))
                                 .toArray(new Email[0]))
                         .state(getState())
                         .build()

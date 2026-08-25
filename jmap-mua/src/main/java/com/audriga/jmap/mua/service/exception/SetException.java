@@ -51,19 +51,19 @@ public abstract class SetException extends Exception {
             return null;
         }
         final Collection<SetErrorType> types =
-                Collections2.filter(Collections2.transform(errors.values(), SetError::getType), Objects::nonNull);
+                Collections2.filter(Collections2.transform(errors.values(), SetError::type), Objects::nonNull);
         return String.format("not %s: (%s)", action, Joiner.on(", ").join(types));
     }
 
-    public Map<String, SetError> getNotCreated() {
+    public Map<String, SetError> notCreated() {
         return notCreated;
     }
 
-    public Map<String, SetError> getNotUpdated() {
+    public Map<String, SetError> notUpdated() {
         return notUpdated;
     }
 
-    public Map<String, SetError> getNotDestroyed() {
+    public Map<String, SetError> notDestroyed() {
         return notDestroyed;
     }
 

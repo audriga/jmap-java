@@ -43,38 +43,38 @@ public class ResultReferenceResolver {
         switch (resultReference.path()) {
             case Request.Invocation.ResultReference.Path.IDS:
                 if (methodResponse instanceof QueryMethodResponse) {
-                    return ((QueryMethodResponse<?>) methodResponse).getIds();
+                    return ((QueryMethodResponse<?>) methodResponse).ids();
                 }
                 break;
             case Request.Invocation.ResultReference.Path.LIST_THREAD_IDS:
                 if (methodResponse instanceof GetEmailMethodResponse) {
-                    return Arrays.stream(((GetEmailMethodResponse) methodResponse).getList())
-                            .map(Email::getThreadId)
+                    return Arrays.stream(((GetEmailMethodResponse) methodResponse).list())
+                            .map(Email::threadId)
                             .toArray(String[]::new);
                 }
                 break;
             case Request.Invocation.ResultReference.Path.LIST_EMAIL_IDS:
                 if (methodResponse instanceof GetThreadMethodResponse) {
-                    return Arrays.stream(((GetThreadMethodResponse) methodResponse).getList())
-                            .map(Thread::getEmailIds)
+                    return Arrays.stream(((GetThreadMethodResponse) methodResponse).list())
+                            .map(Thread::emailIds)
                             .flatMap(Collection::stream)
                             .toArray(String[]::new);
                 }
                 break;
             case Request.Invocation.ResultReference.Path.CREATED:
                 if (methodResponse instanceof ChangesMethodResponse) {
-                    return nullToEmpty(((ChangesMethodResponse<?>) methodResponse).getCreated());
+                    return nullToEmpty(((ChangesMethodResponse<?>) methodResponse).created());
                 }
                 break;
             case Request.Invocation.ResultReference.Path.UPDATED:
                 if (methodResponse instanceof ChangesMethodResponse) {
-                    return nullToEmpty(((ChangesMethodResponse<?>) methodResponse).getUpdated());
+                    return nullToEmpty(((ChangesMethodResponse<?>) methodResponse).updated());
                 }
                 break;
             case Request.Invocation.ResultReference.Path.ADDED_IDS:
                 if (methodResponse instanceof QueryChangesMethodResponse) {
                     return ((QueryChangesMethodResponse<?>) methodResponse)
-                            .getAdded().stream().map(AddedItem::getItem).toArray(String[]::new);
+                            .added().stream().map(AddedItem::getItem).toArray(String[]::new);
                 }
                 break;
             default:

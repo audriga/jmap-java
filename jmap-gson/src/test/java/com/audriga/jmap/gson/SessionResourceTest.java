@@ -44,13 +44,13 @@ public class SessionResourceTest extends AbstractGsonTest {
         assertNotNull(coreCapability);
         assertEquals(50000000, coreCapability.maxSizeUpload());
 
-        Map<String, Account> accounts = session.getAccounts();
+        Map<String, Account> accounts = session.accounts();
         assertNotNull(accounts);
-        assertEquals(2, session.getAccounts().size());
+        assertEquals(2, session.accounts().size());
 
         Account account = accounts.get("A13824");
         assertNotNull(account);
-        assertEquals("john@example.com", account.getName());
+        assertEquals("john@example.com", account.name());
 
         assertTrue(account.isPersonal());
         assertFalse(account.isReadOnly());
@@ -68,7 +68,7 @@ public class SessionResourceTest extends AbstractGsonTest {
     public void missingRequiredPropertyInMailCapability() throws IOException {
         final SessionResource session = parseFromResource("rfc-example/session.json", SessionResource.class);
 
-        Map<String, Account> accounts = session.getAccounts();
+        Map<String, Account> accounts = session.accounts();
         assertNotNull(accounts);
 
         Account account = accounts.get("A13824");

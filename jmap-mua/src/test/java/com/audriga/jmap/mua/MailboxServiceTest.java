@@ -41,17 +41,17 @@ public class MailboxServiceTest {
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(mailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build()) {
                 mua.refreshMailboxes().get();
                 final Mailbox inboxBeforeModification = cache.getMailbox(Role.INBOX);
-                Assertions.assertEquals(2, inboxBeforeModification.getTotalThreads());
-                Assertions.assertEquals(3, inboxBeforeModification.getTotalEmails());
+                Assertions.assertEquals(2, inboxBeforeModification.totalThreads());
+                Assertions.assertEquals(3, inboxBeforeModification.totalEmails());
                 mailServer.generateEmailOnTop();
                 mua.refreshMailboxes().get();
                 final Mailbox inboxAfterModification = cache.getMailbox(Role.INBOX);
-                Assertions.assertEquals(3, inboxAfterModification.getTotalThreads());
-                Assertions.assertEquals(4, inboxAfterModification.getTotalEmails());
+                Assertions.assertEquals(3, inboxAfterModification.totalThreads());
+                Assertions.assertEquals(4, inboxAfterModification.totalEmails());
             }
         }
     }
@@ -69,7 +69,7 @@ public class MailboxServiceTest {
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(mailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build()) {
                 mua.refreshMailboxes().get();
                 final List<Mailbox> mailboxes = cache.getMailboxes();
@@ -81,7 +81,7 @@ public class MailboxServiceTest {
                 final List<Mailbox> mailboxesAfterCreate = cache.getMailboxes();
                 Assertions.assertEquals(2, mailboxesAfterCreate.size());
                 Assertions.assertTrue(
-                        mailboxesAfterCreate.stream().map(Mailbox::getName).anyMatch("Archive"::equals));
+                        mailboxesAfterCreate.stream().map(Mailbox::name).anyMatch("Archive"::equals));
             }
         }
     }

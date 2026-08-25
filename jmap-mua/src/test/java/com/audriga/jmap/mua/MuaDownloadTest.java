@@ -43,7 +43,7 @@ public class MuaDownloadTest {
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(mailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build();
             final Downloadable downloadable = EmailBodyPart.builder()
                     .blobId("d3d9da72-eff2-4e7c-b682-25efa6972dee")

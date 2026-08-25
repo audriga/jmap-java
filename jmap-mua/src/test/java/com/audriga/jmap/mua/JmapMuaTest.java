@@ -61,13 +61,13 @@ public class JmapMuaTest {
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(emailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(emailServer.getAccountId())
+                    .accountId(emailServer.accountId())
                     .build()) {
                 mua.refreshMailboxes().get();
             }
             final Mailbox mailbox = Iterables.getFirst(myInMemoryCache.getMailboxes(), null);
             Assertions.assertNotNull(mailbox);
-            Assertions.assertEquals(Role.INBOX, mailbox.getRole());
+            Assertions.assertEquals(Role.INBOX, mailbox.role());
         }
     }
 
@@ -83,7 +83,7 @@ public class JmapMuaTest {
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(emailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(emailServer.getAccountId())
+                    .accountId(emailServer.accountId())
                     .build()) {
                 executionException = Assertions.assertThrows(
                         ExecutionException.class, () -> mua.refreshIdentities().get());
@@ -104,7 +104,7 @@ public class JmapMuaTest {
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(emailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(emailServer.getAccountId())
+                    .accountId(emailServer.accountId())
                     .build()) {
                 final ExecutionException executionException = Assertions.assertThrows(
                         ExecutionException.class, () -> mua.refreshIdentities().get());
@@ -115,7 +115,7 @@ public class JmapMuaTest {
                         (ErrorResponseException) executionException.getCause();
                 Assertions.assertEquals(
                         ErrorType.UNKNOWN_CAPABILITY,
-                        errorResponseException.getErrorResponse().getType());
+                        errorResponseException.getErrorResponse().type());
             }
         }
     }
@@ -131,7 +131,7 @@ public class JmapMuaTest {
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(emailServer.getUsername())
                     .password("wrong")
-                    .accountId(emailServer.getAccountId())
+                    .accountId(emailServer.accountId())
                     .build()) {
                 final ExecutionException executionException = Assertions.assertThrows(
                         ExecutionException.class, () -> mua.refreshIdentities().get());
@@ -151,7 +151,7 @@ public class JmapMuaTest {
             try (final Mua mua = Mua.builder()
                     .username("test@example.com ")
                     .password("wrong")
-                    .accountId(emailServer.getAccountId())
+                    .accountId(emailServer.accountId())
                     .build()) {
                 final ExecutionException executionException = Assertions.assertThrows(
                         ExecutionException.class, () -> mua.refreshIdentities().get());
@@ -212,7 +212,7 @@ public class JmapMuaTest {
                         .list(new Mailbox[] {
                             Mailbox.builder().name("Inbox").role(Role.INBOX).build()
                         })
-                        .accountId(getAccountId())
+                        .accountId(accountId())
                         .build()
             };
         }

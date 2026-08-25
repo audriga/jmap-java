@@ -40,7 +40,7 @@ public class MailboxUtil {
     public static @Nullable IdentifiableMailboxWithRole find(
             Collection<? extends IdentifiableMailboxWithRole> mailboxes, Role role) {
         for (IdentifiableMailboxWithRole mailbox : mailboxes) {
-            if (mailbox.getRole() == role) {
+            if (mailbox.role() == role) {
                 return mailbox;
             }
         }
@@ -49,7 +49,7 @@ public class MailboxUtil {
 
     public static boolean anyWithRole(Collection<? extends IdentifiableMailboxWithRole> mailboxes, Role role) {
         for (final IdentifiableMailboxWithRole mailbox : mailboxes) {
-            if (mailbox.getRole() == role) {
+            if (mailbox.role() == role) {
                 return true;
             }
         }
@@ -66,7 +66,7 @@ public class MailboxUtil {
 
     public static boolean anyIn(Collection<? extends IdentifiableEmailWithMailboxIds> emails, String mailboxId) {
         for (IdentifiableEmailWithMailboxIds email : emails) {
-            if (email.getMailboxIds().containsKey(mailboxId)) {
+            if (email.mailboxIds().containsKey(mailboxId)) {
                 return true;
             }
         }

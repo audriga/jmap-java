@@ -27,8 +27,8 @@ public class BinaryDataTest {
     public void attachmentPlainTextMediaType() {
         final EmailBodyPart emailBodyPart =
                 EmailBodyPart.builder().mediaType(MediaType.PLAIN_TEXT_UTF_8).build();
-        Assertions.assertEquals("utf-8", emailBodyPart.getCharset());
-        Assertions.assertEquals("text/plain", emailBodyPart.getType());
+        Assertions.assertEquals("utf-8", emailBodyPart.charset());
+        Assertions.assertEquals("text/plain", emailBodyPart.type());
         Assertions.assertTrue(MediaType.PLAIN_TEXT_UTF_8.is(emailBodyPart.getMediaType()));
     }
 }

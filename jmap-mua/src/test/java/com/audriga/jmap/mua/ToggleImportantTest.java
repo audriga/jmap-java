@@ -99,7 +99,7 @@ public class ToggleImportantTest {
                         ImmutableSet.of(new MyIdentifiableEmailWithMailboxes("e0", "mb0"));
 
                 Assertions.assertFalse(
-                        mua.removeFromMailbox(emails, mailbox.getId()).get());
+                        mua.removeFromMailbox(emails, mailbox.id()).get());
             }
         }
     }

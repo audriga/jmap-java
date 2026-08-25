@@ -103,10 +103,10 @@ public final class StalwartContainer extends GenericContainer<StalwartContainer>
             } catch (ExecutionException | InterruptedException e) {
                 throw new ContainerLaunchException("Stalwart bootstrap failed", e);
             }
-            if (res.getNotUpdated() != null) {
-                throw new ContainerLaunchException("couldn't update stalwart x:Bootstrap: " + res.getNotUpdated());
+            if (res.notUpdated() != null) {
+                throw new ContainerLaunchException("couldn't update stalwart x:Bootstrap: " + res.notUpdated());
             }
-            var updated = res.getUpdated().get("singleton");
+            var updated = res.updated().get("singleton");
             username = updated.username();
             password = updated.secret();
 

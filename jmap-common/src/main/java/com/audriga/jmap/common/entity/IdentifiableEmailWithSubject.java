@@ -18,5 +18,5 @@ package com.audriga.jmap.common.entity;
 
 public interface IdentifiableEmailWithSubject extends Identifiable {
 
-    String getSubject();
+    String subject();
 }

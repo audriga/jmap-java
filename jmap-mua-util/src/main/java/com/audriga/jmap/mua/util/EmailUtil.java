@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -33,12 +32,12 @@ public class EmailUtil {
 
     private static final String RESPONSE_PREFIX = "Re";
 
-    private static final List<String> RESPONSE_PREFIXES = Arrays.asList("re", "aw");
+    private static final List<String> RESPONSE_PREFIXES = List.of("re", "aw");
 
     private EmailUtil() {}
 
     public static String getResponseSubject(IdentifiableEmailWithSubject emailWithSubject) {
-        final String subject = emailWithSubject.getSubject();
+        final String subject = emailWithSubject.subject();
         final int length = subject.length();
         if (length <= 3) {
             return subjectWithPrefix(subject);
@@ -56,8 +55,8 @@ public class EmailUtil {
     }
 
     public static Instant getEffectiveDate(final IdentifiableEmailWithTime email) {
-        final Instant receivedAt = email.getReceivedAt();
-        final OffsetDateTime sentAt = email.getSentAt();
+        final Instant receivedAt = email.receivedAt();
+        final OffsetDateTime sentAt = email.sentAt();
         if (sentAt == null) {
             return receivedAt;
         }
@@ -68,19 +67,19 @@ public class EmailUtil {
     }
 
     public static ReplyAddresses reply(IdentifiableEmailWithAddresses emailWithAddresses) {
-        final Collection<EmailAddress> replyTo = emailWithAddresses.getReplyTo();
-        if (replyTo != null && replyTo.size() > 0) {
+        final Collection<EmailAddress> replyTo = emailWithAddresses.replyTo();
+        if (replyTo != null && !replyTo.isEmpty()) {
             return new ReplyAddresses(replyTo);
         }
         return new ReplyAddresses(replyTo(emailWithAddresses));
     }
 
     private static Collection<EmailAddress> replyTo(final IdentifiableEmailWithAddresses emailWithAddresses) {
-        final Collection<EmailAddress> from = emailWithAddresses.getFrom();
+        final Collection<EmailAddress> from = emailWithAddresses.from();
         if (from != null && !from.isEmpty()) {
             return from;
         }
-        final Collection<EmailAddress> sender = emailWithAddresses.getSender();
+        final Collection<EmailAddress> sender = emailWithAddresses.sender();
         if (sender != null && !sender.isEmpty()) {
             return sender;
         }
@@ -93,16 +92,16 @@ public class EmailUtil {
 
     public static ReplyAddresses replyAll(
             final IdentifiableEmailWithAddresses emailWithAddresses, final Collection<String> identityEmailAddresses) {
-        final Collection<EmailAddress> replyTo = emailWithAddresses.getReplyTo();
-        final Collection<EmailAddress> cc = emailWithAddresses.getCc();
-        if (replyTo != null && replyTo.size() > 0 && (cc == null || cc.isEmpty())) {
+        final Collection<EmailAddress> replyTo = emailWithAddresses.replyTo();
+        final Collection<EmailAddress> cc = emailWithAddresses.cc();
+        if (replyTo != null && !replyTo.isEmpty() && (cc == null || cc.isEmpty())) {
             return new ReplyAddresses(replyTo);
         }
-        final Collection<EmailAddress> to = emailWithAddresses.getTo();
+        final Collection<EmailAddress> to = emailWithAddresses.to();
         ImmutableList.Builder<EmailAddress> ccBuilder = new ImmutableList.Builder<>();
         if (to != null) {
             for (final EmailAddress address : to) {
-                if (Iterables.any(identityEmailAddresses, i -> i.equalsIgnoreCase(address.getEmail()))) {
+                if (Iterables.any(identityEmailAddresses, i -> i.equalsIgnoreCase(address.email()))) {
                     continue;
                 }
                 ccBuilder.add(address);
@@ -111,33 +110,16 @@ public class EmailUtil {
         if (cc != null) {
             ccBuilder.addAll(cc);
         }
-        if (replyTo != null && replyTo.size() > 0) {
+        if (replyTo != null && !replyTo.isEmpty()) {
             return new ReplyAddresses(replyTo, ccBuilder.build());
         } else {
             return new ReplyAddresses(replyTo(emailWithAddresses), ccBuilder.build());
         }
     }
 
-    public static class ReplyAddresses {
-        private final Collection<EmailAddress> to;
-        private final Collection<EmailAddress> cc;
-
+    public record ReplyAddresses(Collection<EmailAddress> to, Collection<EmailAddress> cc) {
         public ReplyAddresses(Collection<EmailAddress> to) {
-            this.to = to;
-            this.cc = Collections.emptyList();
-        }
-
-        public ReplyAddresses(Collection<EmailAddress> to, Collection<EmailAddress> cc) {
-            this.to = to;
-            this.cc = cc;
-        }
-
-        public Collection<EmailAddress> getTo() {
-            return to;
-        }
-
-        public Collection<EmailAddress> getCc() {
-            return cc;
+            this(to, Collections.emptyList());
         }
     }
 }

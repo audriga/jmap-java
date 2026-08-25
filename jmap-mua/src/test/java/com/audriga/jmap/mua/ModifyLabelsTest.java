@@ -45,7 +45,7 @@ public class ModifyLabelsTest {
     @Test
     public void removeNonIdentifiable() {
         Collection<IdentifiableEmailWithMailboxIds> emails = Collections.singleton(
-                Email.builder().mailboxId(INBOX_WITH_ID.getId(), true).build());
+                Email.builder().mailboxId(INBOX_WITH_ID.id(), true).build());
         try (final Mua mua = Mua.builder()
                 .username("ignored")
                 .password(JmapDispatcher.PASSWORD)
@@ -61,7 +61,7 @@ public class ModifyLabelsTest {
     @Test
     public void simultaneousAdditionAndRemoval() {
         Collection<IdentifiableEmailWithMailboxIds> emails = Collections.singleton(
-                Email.builder().mailboxId(INBOX_WITH_ID.getId(), true).build());
+                Email.builder().mailboxId(INBOX_WITH_ID.id(), true).build());
         try (final Mua mua = Mua.builder()
                 .username("ignored")
                 .password(JmapDispatcher.PASSWORD)
@@ -97,7 +97,7 @@ public class ModifyLabelsTest {
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(mailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build()) {
                 mua.query(EmailQuery.unfiltered()).get();
 
@@ -115,11 +115,11 @@ public class ModifyLabelsTest {
 
                 Assertions.assertNotNull(archiveAfterModification);
 
-                Assertions.assertEquals(1, archiveAfterModification.getUnreadThreads());
-                Assertions.assertEquals(1, inboxAfterModification.getUnreadThreads());
+                Assertions.assertEquals(1, archiveAfterModification.unreadThreads());
+                Assertions.assertEquals(1, inboxAfterModification.unreadThreads());
 
-                Assertions.assertEquals(2, archiveAfterModification.getTotalEmails());
-                Assertions.assertEquals(1, inboxAfterModification.getTotalEmails());
+                Assertions.assertEquals(2, archiveAfterModification.totalEmails());
+                Assertions.assertEquals(1, inboxAfterModification.totalEmails());
             }
         }
     }
@@ -137,14 +137,14 @@ public class ModifyLabelsTest {
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(mailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build()) {
                 mua.query(EmailQuery.unfiltered()).get();
 
                 final Mailbox inbox = cache.getMailbox(Role.INBOX);
 
-                Assertions.assertEquals(2, inbox.getUnreadThreads());
-                Assertions.assertEquals(3, inbox.getTotalEmails());
+                Assertions.assertEquals(2, inbox.unreadThreads());
+                Assertions.assertEquals(3, inbox.totalEmails());
 
                 final List<CachedEmail> threadT1 = cache.getEmails("T1");
 
@@ -154,16 +154,16 @@ public class ModifyLabelsTest {
                 Assertions.assertEquals(Status.UPDATED, mua.refresh().get());
 
                 final Mailbox inboxAfterModification = cache.getMailbox(Role.INBOX);
-                Assertions.assertEquals(2, inboxAfterModification.getUnreadThreads());
-                Assertions.assertEquals(3, inboxAfterModification.getTotalEmails());
+                Assertions.assertEquals(2, inboxAfterModification.unreadThreads());
+                Assertions.assertEquals(3, inboxAfterModification.totalEmails());
 
                 final Mailbox jmap = cache.getMailboxes().stream()
-                        .filter(mailbox -> mailbox.getName().equals("JMAP"))
+                        .filter(mailbox -> mailbox.name().equals("JMAP"))
                         .findFirst()
                         .orElse(null);
                 Assertions.assertNotNull(jmap);
 
-                Assertions.assertEquals(1, jmap.getTotalThreads());
+                Assertions.assertEquals(1, jmap.totalThreads());
             }
         }
     }
@@ -184,7 +184,7 @@ public class ModifyLabelsTest {
                 @Override
                 protected MethodResponse[] execute(
                         SetEmailMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
-                    if (Objects.nonNull(methodCall.getIfInState())) {
+                    if (Objects.nonNull(methodCall.ifInState())) {
                         ifInState.set(true);
                     }
                     return super.execute(methodCall, previousResponses);
@@ -199,14 +199,14 @@ public class ModifyLabelsTest {
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(mailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build()) {
                 mua.query(EmailQuery.unfiltered()).get();
                 // just reconfirming that mock server is setup correctly
                 final Mailbox inbox = cache.getMailbox(Role.INBOX);
                 Assertions.assertNotNull(inbox);
-                Assertions.assertEquals(2, inbox.getUnreadThreads());
-                Assertions.assertEquals(3, inbox.getTotalEmails());
+                Assertions.assertEquals(2, inbox.unreadThreads());
+                Assertions.assertEquals(3, inbox.totalEmails());
 
                 final List<CachedEmail> threadT1 = cache.getEmails("T1");
 
@@ -216,12 +216,12 @@ public class ModifyLabelsTest {
                 Assertions.assertEquals(Status.UPDATED, mua.refresh().get());
 
                 final Mailbox jmap = cache.getMailboxes().stream()
-                        .filter(mailbox -> mailbox.getName().equals("JMAP"))
+                        .filter(mailbox -> mailbox.name().equals("JMAP"))
                         .findFirst()
                         .orElse(null);
                 Assertions.assertNotNull(jmap);
 
-                Assertions.assertEquals(1, jmap.getTotalThreads());
+                Assertions.assertEquals(1, jmap.totalThreads());
 
                 Assertions.assertTrue(ifInState.get(), "If in state had not been set");
             }
@@ -249,14 +249,14 @@ public class ModifyLabelsTest {
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(mailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build()) {
                 mua.query(EmailQuery.unfiltered()).get();
                 // just reconfirming that mock server is setup correctly
                 final Mailbox inbox = cache.getMailbox(Role.INBOX);
                 Assertions.assertNotNull(inbox);
-                Assertions.assertEquals(2, inbox.getUnreadThreads());
-                Assertions.assertEquals(3, inbox.getTotalEmails());
+                Assertions.assertEquals(2, inbox.unreadThreads());
+                Assertions.assertEquals(3, inbox.totalEmails());
 
                 // address JMAP mailbox by name
                 final List<CachedEmail> threadT1 = cache.getEmails("T1");
@@ -266,12 +266,12 @@ public class ModifyLabelsTest {
                 Assertions.assertEquals(Status.UPDATED, mua.refresh().get());
 
                 final Mailbox jmap = cache.getMailboxes().stream()
-                        .filter(mailbox -> mailbox.getName().equals("JMAP"))
+                        .filter(mailbox -> mailbox.name().equals("JMAP"))
                         .findFirst()
                         .orElse(null);
                 Assertions.assertNotNull(jmap);
 
-                Assertions.assertEquals(1, jmap.getTotalThreads());
+                Assertions.assertEquals(1, jmap.totalThreads());
 
                 final List<CachedEmail> threadT0 = cache.getEmails("T0");
 
@@ -282,10 +282,10 @@ public class ModifyLabelsTest {
                 Assertions.assertEquals(Status.UPDATED, mua.refresh().get());
 
                 final Mailbox jmapAfterSecondModification = cache.getMailboxes().stream()
-                        .filter(mailbox -> mailbox.getName().equals("JMAP"))
+                        .filter(mailbox -> mailbox.name().equals("JMAP"))
                         .findFirst()
                         .orElse(null);
-                Assertions.assertEquals(2, jmapAfterSecondModification.getTotalThreads());
+                Assertions.assertEquals(2, jmapAfterSecondModification.totalThreads());
             }
         }
     }
@@ -308,17 +308,17 @@ public class ModifyLabelsTest {
         }
 
         @Override
-        public String getName() {
+        public String name() {
             return name;
         }
 
         @Override
-        public Role getRole() {
+        public Role role() {
             return role;
         }
 
         @Override
-        public String getId() {
+        public String id() {
             return id;
         }
     }

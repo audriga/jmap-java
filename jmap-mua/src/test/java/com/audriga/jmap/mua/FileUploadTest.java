@@ -64,14 +64,14 @@ public class FileUploadTest {
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(mailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build();
 
             try (final FileUpload fileUpload = FileUpload.of(textFileLocation)) {
                 final Upload upload = mua.upload(fileUpload, null).get();
-                Assertions.assertEquals(11, upload.getSize());
+                Assertions.assertEquals(11, upload.size());
                 Assertions.assertEquals(
-                        "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9", upload.getBlobId());
+                        "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9", upload.blobId());
             }
         }
     }
@@ -93,7 +93,7 @@ public class FileUploadTest {
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(mailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build();
 
             final InputStream inputStream = CharSource.wrap("hello world")
@@ -107,10 +107,10 @@ public class FileUploadTest {
             }
 
             final Upload upload = future.get();
-            Assertions.assertEquals(11, upload.getSize());
+            Assertions.assertEquals(11, upload.size());
             Assertions.assertEquals(
-                    "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9", upload.getBlobId());
-            Assertions.assertEquals("text/plain", upload.getType());
+                    "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9", upload.blobId());
+            Assertions.assertEquals("text/plain", upload.type());
             Assertions.assertTrue(MediaType.create("text", "plain").is(upload.getMediaType()));
 
             Assertions.assertThrows(IllegalStateException.class, outputStreamUpload::getInputStream);
@@ -129,7 +129,7 @@ public class FileUploadTest {
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(mailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build();
 
             final InputStream inputStream = new ByteArrayInputStream(new byte[1024 * 1024]);
@@ -157,7 +157,7 @@ public class FileUploadTest {
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(mailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build();
             final Uploadable fakeUpload = new Uploadable() {
                 @Override
@@ -206,7 +206,7 @@ public class FileUploadTest {
                     .sessionResource(server.url(JmapDispatcher.WELL_KNOWN_PATH))
                     .username(mailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build();
             mua.verifyAttachmentsDoNotExceedLimit(ImmutableList.of(imageAttachment))
                     .get();

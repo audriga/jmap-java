@@ -122,7 +122,7 @@ public class MailToUri {
 
     private static void throwOnName(final Collection<EmailAddress> addresses) throws IllegalArgumentException {
         for (final EmailAddress address : addresses) {
-            if (Strings.isNullOrEmpty(address.getName())) {
+            if (Strings.isNullOrEmpty(address.name())) {
                 continue;
             }
             throw new IllegalArgumentException("Mailto address must not have a name");
@@ -160,10 +160,10 @@ public class MailToUri {
             @Nullable
             @Override
             public EmailAddress apply(@Nullable EmailAddress emailAddress) {
-                if (emailAddress == null || Strings.isNullOrEmpty(emailAddress.getName())) {
+                if (emailAddress == null || Strings.isNullOrEmpty(emailAddress.name())) {
                     return emailAddress;
                 } else {
-                    return EmailAddress.builder().email(emailAddress.getEmail()).build();
+                    return EmailAddress.builder().email(emailAddress.email()).build();
                 }
             }
         });

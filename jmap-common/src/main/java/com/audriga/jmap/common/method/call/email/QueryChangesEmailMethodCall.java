@@ -21,10 +21,10 @@ import com.audriga.jmap.common.entity.Comparator;
 import com.audriga.jmap.common.entity.Email;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.entity.query.EmailQuery;
-import com.audriga.jmap.common.method.call.standard.QueryChangesMethodCall;
+import com.audriga.jmap.common.method.call.standard.AbstractQueryChangesMethodCall;
 
 @JmapMethod("Email/queryChanges")
-public class QueryChangesEmailMethodCall extends QueryChangesMethodCall<Email> {
+public class QueryChangesEmailMethodCall extends AbstractQueryChangesMethodCall<Email> {
 
     private Boolean collapseThreads;
 

@@ -48,20 +48,20 @@ public class QueryUpdate<T extends Identifiable, U> extends AbstractUpdate<T> {
         return new QueryUpdate<>(
                 queryChangesMethodResponse.getOldTypedQueryState(),
                 queryChangesMethodResponse.getNewTypedQueryState(),
-                queryChangesMethodResponse.getRemoved(),
+                queryChangesMethodResponse.removed(),
                 added,
-                queryChangesMethodResponse.getTotal());
+                queryChangesMethodResponse.total());
     }
 
-    public String[] getRemoved() {
+    public String[] removed() {
         return this.removed;
     }
 
-    public List<AddedItem<U>> getAdded() {
+    public List<AddedItem<U>> added() {
         return this.added;
     }
 
-    public Long getTotal() {
+    public Long total() {
         return this.total;
     }
 

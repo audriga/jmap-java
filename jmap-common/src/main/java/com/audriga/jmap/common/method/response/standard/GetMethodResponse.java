@@ -49,7 +49,7 @@ public abstract class GetMethodResponse<T extends Identifiable> implements Metho
                 .toString();
     }
 
-    public TypedState<T> getTypedState() {
+    public TypedState<T> typedState() {
         return TypedState.of(this.state);
     }
 }

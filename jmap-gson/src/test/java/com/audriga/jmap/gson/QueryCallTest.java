@@ -44,9 +44,7 @@ public class QueryCallTest extends AbstractGsonTest {
                         .build()));
         Assertions.assertEquals(
                 query.filter.toQueryString(),
-                gson.fromJson(json, QueryChangesEmailMethodCall.class)
-                        .getFilter()
-                        .toQueryString());
+                gson.fromJson(json, QueryChangesEmailMethodCall.class).filter().toQueryString());
     }
 
     @Test
@@ -66,7 +64,7 @@ public class QueryCallTest extends AbstractGsonTest {
                         .build()));
         Assertions.assertEquals(
                 query.filter.toQueryString(),
-                gson.fromJson(json, QueryEmailMethodCall.class).getFilter().toQueryString());
+                gson.fromJson(json, QueryEmailMethodCall.class).filter().toQueryString());
     }
 
     @Test
@@ -84,6 +82,6 @@ public class QueryCallTest extends AbstractGsonTest {
                         .build()));
         Assertions.assertEquals(
                 query.filter.toQueryString(),
-                gson.fromJson(json, QueryMailboxMethodCall.class).getFilter().toQueryString());
+                gson.fromJson(json, QueryMailboxMethodCall.class).filter().toQueryString());
     }
 }

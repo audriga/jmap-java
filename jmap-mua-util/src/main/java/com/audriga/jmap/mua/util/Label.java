@@ -19,7 +19,7 @@ import com.audriga.jmap.common.entity.Role;
 
 public interface Label extends Navigable {
 
-    String getName();
+    String name();
 
-    Role getRole();
+    Role role();
 }

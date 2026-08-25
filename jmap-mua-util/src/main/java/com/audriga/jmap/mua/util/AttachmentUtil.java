@@ -31,27 +31,27 @@ public final class AttachmentUtil {
             return (EmailBodyPart) attachment;
         }
         return EmailBodyPart.builder()
-                .blobId(attachment.getBlobId())
-                .charset(attachment.getCharset())
-                .type(attachment.getType())
-                .name(attachment.getName())
-                .size(attachment.getSize())
+                .blobId(attachment.blobId())
+                .charset(attachment.charset())
+                .type(attachment.type())
+                .name(attachment.name())
+                .size(attachment.size())
                 .build();
     }
 
     public static EmailBodyPart toAnonymousEmailBodyPart(final Attachment attachment) {
         return EmailBodyPart.builder()
-                .charset(attachment.getCharset())
-                .type(attachment.getType())
-                .name(attachment.getName())
-                .size(attachment.getSize())
+                .charset(attachment.charset())
+                .type(attachment.type())
+                .name(attachment.name())
+                .size(attachment.size())
                 .build();
     }
 
     public static void verifyAttachmentsDoNotExceedLimit(
             final Session session, final String account, final Collection<? extends Attachment> attachments) {
         final long combinedAttachmentSize =
-                attachments.stream().map(a -> Math.max(0, a.getSize())).reduce(0L, Long::sum);
+                attachments.stream().map(a -> Math.max(0, a.size())).reduce(0L, Long::sum);
         final MailAccountCapability capability = session.getAccountCapability(account, MailAccountCapability.class);
         final Long maxSizeAttachments = capability == null ? null : capability.maxSizeAttachmentsPerEmail();
         if (maxSizeAttachments != null && combinedAttachmentSize > maxSizeAttachments) {
@@ -67,7 +67,7 @@ public final class AttachmentUtil {
             this.limit = limit;
         }
 
-        public long getLimit() {
+        public long limit() {
             return limit;
         }
     }

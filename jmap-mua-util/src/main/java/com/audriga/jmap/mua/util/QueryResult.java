@@ -81,7 +81,7 @@ public class QueryResult {
 
     public static QueryResult of(
             QueryEmailMethodResponse queryEmailMethodResponse, GetEmailMethodResponse emailMethodResponse) {
-        final String[] emailIds = queryEmailMethodResponse.getIds();
+        final String[] emailIds = queryEmailMethodResponse.ids();
         final QueryResultItem[] resultItems = new QueryResultItem[emailIds.length];
         final ImmutableMap<String, String> emailIdToThreadIdMap = map(emailMethodResponse);
         for (int i = 0; i < emailIds.length; ++i) {
@@ -90,17 +90,17 @@ public class QueryResult {
         }
         return new QueryResult(
                 resultItems,
-                queryEmailMethodResponse.getTypedQueryState(),
-                queryEmailMethodResponse.isCanCalculateChanges(),
-                queryEmailMethodResponse.getPosition(),
-                queryEmailMethodResponse.getTotal(),
-                emailMethodResponse.getTypedState());
+                queryEmailMethodResponse.typedQueryState(),
+                queryEmailMethodResponse.canCalculateChanges(),
+                queryEmailMethodResponse.position(),
+                queryEmailMethodResponse.total(),
+                emailMethodResponse.typedState());
     }
 
     private static ImmutableMap<String, String> map(GetEmailMethodResponse emailMethodResponse) {
         ImmutableMap.Builder<String, String> builder = new ImmutableMap.Builder<>();
-        for (Email email : emailMethodResponse.getList()) {
-            builder.put(email.getId(), email.getThreadId());
+        for (Email email : emailMethodResponse.list()) {
+            builder.put(email.id(), email.threadId());
         }
         return builder.build();
     }
@@ -108,7 +108,7 @@ public class QueryResult {
     public static List<AddedItem<QueryResultItem>> of(
             QueryChangesEmailMethodResponse queryChangesEmailMethodResponse,
             GetEmailMethodResponse emailMethodResponse) {
-        final List<AddedItem<String>> addedEmailIdItems = nullToEmpty(queryChangesEmailMethodResponse.getAdded());
+        final List<AddedItem<String>> addedEmailIdItems = nullToEmpty(queryChangesEmailMethodResponse.added());
         ImmutableList.Builder<AddedItem<QueryResultItem>> builder = new ImmutableList.Builder<>();
         final ImmutableMap<String, String> emailIdToThreadIdMap = map(emailMethodResponse);
         for (AddedItem<String> addedItem : addedEmailIdItems) {

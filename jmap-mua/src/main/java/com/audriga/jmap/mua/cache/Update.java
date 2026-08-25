@@ -55,28 +55,28 @@ public class Update<T extends Identifiable> extends AbstractUpdate<T> {
             GetMethodResponse<T> createdMethodResponse,
             GetMethodResponse<T> updatedMethodResponse) {
         checkEquals(
-                changesMethodResponse.getCreated(),
-                Arrays.stream(createdMethodResponse.getList())
-                        .map(Identifiable::getId)
+                changesMethodResponse.created(),
+                Arrays.stream(createdMethodResponse.list())
+                        .map(Identifiable::id)
                         .collect(Collectors.toSet()),
                 String.format(
                         "IDs returned by %s.created does not match ids found in Get call",
                         changesMethodResponse.getClass().getSimpleName()));
         checkEquals(
-                changesMethodResponse.getUpdated(),
-                Arrays.stream(updatedMethodResponse.getList())
-                        .map(Identifiable::getId)
+                changesMethodResponse.updated(),
+                Arrays.stream(updatedMethodResponse.list())
+                        .map(Identifiable::id)
                         .collect(Collectors.toSet()),
                 String.format(
                         "IDs returned by %s.updated does not match ids found in Get call",
                         changesMethodResponse.getClass().getSimpleName()));
         return new Update<T>(
-                changesMethodResponse.getTypedOldState(),
-                changesMethodResponse.getTypedNewState(),
-                createdMethodResponse.getList(),
-                updatedMethodResponse.getList(),
-                changesMethodResponse.getDestroyed(),
-                changesMethodResponse.isHasMoreChanges());
+                changesMethodResponse.typedOldState(),
+                changesMethodResponse.typedNewState(),
+                createdMethodResponse.list(),
+                updatedMethodResponse.list(),
+                changesMethodResponse.destroyed(),
+                changesMethodResponse.hasMoreChanges());
     }
 
     private static void checkEquals(final String[] a, final Set<String> b, String message) {
@@ -86,15 +86,15 @@ public class Update<T extends Identifiable> extends AbstractUpdate<T> {
         }
     }
 
-    public T[] getCreated() {
+    public T[] created() {
         return created;
     }
 
-    public T[] getUpdated() {
+    public T[] updated() {
         return updated;
     }
 
-    public String[] getDestroyed() {
+    public String[] destroyed() {
         return destroyed;
     }
 
@@ -106,7 +106,7 @@ public class Update<T extends Identifiable> extends AbstractUpdate<T> {
                 .add("created", created)
                 .add("updated", updated)
                 .add("destroyed", destroyed)
-                .add("hasMore", isHasMore())
+                .add("hasMore", hasMore())
                 .toString();
     }
 

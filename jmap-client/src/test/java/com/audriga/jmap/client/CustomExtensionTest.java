@@ -98,6 +98,6 @@ public class CustomExtensionTest {
         final Gson gson = gsonBuilder.create();
         final QueryDummyMethodCall queryMethodCall =
                 gson.fromJson(EXPECTED_JSON_QUERY_CALL, QueryDummyMethodCall.class);
-        MatcherAssert.assertThat(queryMethodCall.getFilter(), CoreMatchers.instanceOf(DummyFilterCondition.class));
+        MatcherAssert.assertThat(queryMethodCall.filter(), CoreMatchers.instanceOf(DummyFilterCondition.class));
     }
 }

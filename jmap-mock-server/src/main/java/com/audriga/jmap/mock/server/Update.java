@@ -45,11 +45,11 @@ public class Update {
                 ImmutableMap.of(
                         Mailbox.class,
                         new Changes(
-                                nullToEmpty(setMailboxMethodResponse.getUpdated())
+                                nullToEmpty(setMailboxMethodResponse.updated())
                                         .keySet()
                                         .toArray(new String[0]),
-                                nullToEmpty(setMailboxMethodResponse.getCreated()).values().stream()
-                                        .map(Mailbox::getId)
+                                nullToEmpty(setMailboxMethodResponse.created()).values().stream()
+                                        .map(Mailbox::id)
                                         .toArray(String[]::new))),
                 newVersion);
     }
@@ -77,16 +77,16 @@ public class Update {
 
     public static Update created(Email email, String newVersion) {
         final ImmutableMap.Builder<Class<? extends Identifiable>, Changes> builder = new ImmutableMap.Builder<>();
-        builder.put(Email.class, new Changes(new String[0], new String[] {email.getId()}));
-        builder.put(Thread.class, new Changes(new String[0], new String[] {email.getThreadId()}));
-        builder.put(Mailbox.class, new Changes(email.getMailboxIds().keySet().toArray(new String[0]), new String[0]));
+        builder.put(Email.class, new Changes(new String[0], new String[] {email.id()}));
+        builder.put(Thread.class, new Changes(new String[0], new String[] {email.threadId()}));
+        builder.put(Mailbox.class, new Changes(email.mailboxIds().keySet().toArray(new String[0]), new String[0]));
         return new Update(builder.build(), newVersion);
     }
 
     public static Update updated(
             final Collection<Email> emails, final Collection<String> mailboxes, String newVersion) {
         final ImmutableMap.Builder<Class<? extends Identifiable>, Changes> builder = new ImmutableMap.Builder<>();
-        builder.put(Email.class, new Changes(emails.stream().map(Email::getId).toArray(String[]::new), new String[0]));
+        builder.put(Email.class, new Changes(emails.stream().map(Email::id).toArray(String[]::new), new String[0]));
         builder.put(Thread.class, new Changes(new String[0], new String[0]));
         builder.put(Mailbox.class, new Changes(mailboxes.toArray(new String[0]), new String[0]));
         return new Update(builder.build(), newVersion);

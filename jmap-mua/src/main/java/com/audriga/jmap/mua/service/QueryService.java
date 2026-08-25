@@ -271,7 +271,7 @@ public class QueryService extends AbstractMuaService {
                     Status queryUpdateStatus = Status.of(queryUpdate);
 
                     if (queryUpdate.hasChanges()) {
-                        cache.updateQueryResults(query.asHash(), queryUpdate, getThreadIdsResponse.getTypedState());
+                        cache.updateQueryResults(query.asHash(), queryUpdate, getThreadIdsResponse.typedState());
                     }
 
                     final List<ListenableFuture<Status>> list = new ArrayList<>();
@@ -413,12 +413,12 @@ public class QueryService extends AbstractMuaService {
                                 getThreadsResponsesFuture.get().getMain(GetThreadMethodResponse.class);
                         GetEmailMethodResponse getEmailResponse =
                                 getEmailResponsesFuture.get().getMain(GetEmailMethodResponse.class);
-                        getService(PluginService.class).executeEmailCacheStagePlugins(getEmailResponse.getList());
+                        getService(PluginService.class).executeEmailCacheStagePlugins(getEmailResponse.list());
                         cache.setThreadsAndEmails(
-                                getThreadsResponse.getTypedState(),
-                                getThreadsResponse.getList(),
-                                getEmailResponse.getTypedState(),
-                                getEmailResponse.getList());
+                                getThreadsResponse.typedState(),
+                                getThreadsResponse.list(),
+                                getEmailResponse.typedState(),
+                                getEmailResponse.list());
                     }
 
                     if (queryResult.position != 0) {
@@ -519,12 +519,12 @@ public class QueryService extends AbstractMuaService {
                             methodResponses.getMain(GetThreadMethodResponse.class);
                     GetEmailMethodResponse getEmailMethodResponse =
                             getEmailsResponsesFuture.get().getMain(GetEmailMethodResponse.class);
-                    getService(PluginService.class).executeEmailCacheStagePlugins(getEmailMethodResponse.getList());
+                    getService(PluginService.class).executeEmailCacheStagePlugins(getEmailMethodResponse.list());
                     cache.addThreadsAndEmail(
-                            getThreadMethodResponse.getTypedState(),
-                            getThreadMethodResponse.getList(),
-                            getEmailMethodResponse.getTypedState(),
-                            getEmailMethodResponse.getList());
+                            getThreadMethodResponse.typedState(),
+                            getThreadMethodResponse.list(),
+                            getEmailMethodResponse.typedState(),
+                            getEmailMethodResponse.list());
 
                     return Futures.immediateFuture(Status.UPDATED);
                 },

@@ -21,10 +21,10 @@ import com.audriga.jmap.common.entity.Comparator;
 import com.audriga.jmap.common.entity.EmailSubmission;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.entity.query.EmailSubmissionQuery;
-import com.audriga.jmap.common.method.call.standard.QueryChangesMethodCall;
+import com.audriga.jmap.common.method.call.standard.AbstractQueryChangesMethodCall;
 
 @JmapMethod("EmailSubmission/queryChanges")
-public class QueryChangesEmailSubmissionMethodCall extends QueryChangesMethodCall<EmailSubmission> {
+public class QueryChangesEmailSubmissionMethodCall extends AbstractQueryChangesMethodCall<EmailSubmission> {
 
     @lombok.Builder
     public QueryChangesEmailSubmissionMethodCall(

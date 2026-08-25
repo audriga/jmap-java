@@ -20,7 +20,7 @@ public class MethodErrorResponse implements MethodResponse {
 
     private String type;
 
-    public String getType() {
+    public String type() {
         return type;
     }
 }

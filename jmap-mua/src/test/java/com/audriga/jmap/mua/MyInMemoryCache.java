@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 class MyInMemoryCache extends InMemoryCache {
-    public Collection<String> getEmailIds() {
+    public Collection<String> emailIds() {
         return emails.keySet();
     }
 
@@ -35,7 +35,7 @@ class MyInMemoryCache extends InMemoryCache {
     }
 
     public List<CachedEmail> getEmails(final String threadId) {
-        List<String> emailIds = this.threads.get(threadId).getEmailIds();
+        List<String> emailIds = this.threads.get(threadId).emailIds();
         return emailIds.stream().map(id -> new CachedEmail(emails.get(id))).collect(Collectors.toList());
     }
 

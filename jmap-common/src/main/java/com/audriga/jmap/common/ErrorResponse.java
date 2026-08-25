@@ -40,7 +40,7 @@ public class ErrorResponse implements GenericResponse {
         this.detail = detail;
     }
 
-    public ErrorType getType() {
+    public ErrorType type() {
         return type;
     }
 

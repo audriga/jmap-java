@@ -20,15 +20,15 @@ import java.util.Collection;
 
 public interface IdentifiableEmailWithAddresses extends Identifiable {
 
-    Collection<EmailAddress> getSender();
+    Collection<EmailAddress> sender();
 
-    Collection<EmailAddress> getFrom();
+    Collection<EmailAddress> from();
 
-    Collection<EmailAddress> getTo();
+    Collection<EmailAddress> to();
 
-    Collection<EmailAddress> getCc();
+    Collection<EmailAddress> cc();
 
-    Collection<EmailAddress> getBcc();
+    Collection<EmailAddress> bcc();
 
-    Collection<EmailAddress> getReplyTo();
+    Collection<EmailAddress> replyTo();
 }

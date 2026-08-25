@@ -201,7 +201,7 @@ public class WebSocketJmapApiClient extends AbstractJmapApiClient implements Clo
     }
 
     protected boolean onApiMessage(final AbstractApiWebSocketMessage apiMessage) {
-        final String requestId = apiMessage.getRequestId();
+        final String requestId = apiMessage.requestId();
         if (requestId == null) {
             // all our Requests have an id set. We expect the server to do the same
             policyViolation(new IllegalStateException(String.format(

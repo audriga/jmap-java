@@ -26,7 +26,7 @@ public enum Status {
     UNCHANGED;
 
     public static <T extends Identifiable> Status of(AbstractUpdate<T> update) {
-        return update.isHasMore() ? HAS_MORE : of(update.hasChanges());
+        return update.hasMore() ? HAS_MORE : of(update.hasChanges());
     }
 
     public static Status of(final boolean hasChanges) {

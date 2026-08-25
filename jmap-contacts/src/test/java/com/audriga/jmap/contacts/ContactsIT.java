@@ -55,7 +55,7 @@ class ContactsIT {
             var calId = client.call(new GetCalendarCall(accountId, null, null, null))
                     .get()
                     .getMain(GetCalendarResponse.class)
-                    .getList()[0]
+                    .list()[0]
                     .id();
             var res = client.call(new SetCalendarEventCall(
                             accountId,
@@ -84,12 +84,12 @@ class ContactsIT {
                             true))
                     .get()
                     .getMain(SetCalendarEventResponse.class);
-            assertNull(res.getNotCreated());
+            assertNull(res.notCreated());
             var res2 = client.call(
                             GetCalendarEventCall.builder().accountId(calId).build())
                     .get()
                     .getMain(GetCalendarEventResponse.class);
-            System.out.println(Arrays.toString(res2.getList()));
+            System.out.println(Arrays.toString(res2.list()));
         }
     }
 
@@ -107,13 +107,13 @@ class ContactsIT {
                             GetEmailMethodCall.builder().accountId(accountId).build())
                     .get()
                     .getMain(GetEmailMethodResponse.class);
-            System.out.println(Arrays.toString(emailRes.getList()));
+            System.out.println(Arrays.toString(emailRes.list()));
 
             var eventRes = client.call(
                             GetCalendarEventCall.builder().accountId(accountId).build())
                     .get()
                     .getMain(GetCalendarEventResponse.class);
-            System.out.println(Arrays.toString(eventRes.getList()));
+            System.out.println(Arrays.toString(eventRes.list()));
         }
     }
 
@@ -131,15 +131,15 @@ class ContactsIT {
                     var res = client.call(new QueryContactCardCall(accountId, null, null, null, null, null, null, true))
                             .get()
                             .getMain(QueryContactCardResponse.class);
-                    assertEquals(0, res.getTotal());
+                    assertEquals(0, res.total());
                 }
                 String addressBookId;
                 {
                     var res = client.call(new GetAddressBookCall(accountId, null, null, null))
                             .get()
                             .getMain(GetAddressBookResponse.class);
-                    assertEquals(1, res.getList().length);
-                    addressBookId = res.getList()[0].id();
+                    assertEquals(1, res.list().length);
+                    addressBookId = res.list()[0].id();
                 }
                 {
                     var res = client.call(new SetContactCardCall(
@@ -155,13 +155,13 @@ class ContactsIT {
                                     null))
                             .get()
                             .getMain(SetContactCardResponse.class);
-                    assertNull(res.getDestroyed());
-                    assertNull(res.getUpdated());
-                    assertNull(res.getNotCreated());
-                    assertNull(res.getNotDestroyed());
-                    assertNull(res.getNotUpdated());
-                    assertEquals(1, res.getCreated().size());
-                    var created = res.getCreated().get("a");
+                    assertNull(res.destroyed());
+                    assertNull(res.updated());
+                    assertNull(res.notCreated());
+                    assertNull(res.notDestroyed());
+                    assertNull(res.notUpdated());
+                    assertEquals(1, res.created().size());
+                    var created = res.created().get("a");
                     assertEquals(
                             ContactCard.builder()
                                     .id(created.id())

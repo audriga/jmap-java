@@ -21,10 +21,10 @@ import com.google.common.net.MediaType;
 
 public interface Attachment extends Downloadable {
 
-    String getCharset();
+    String charset();
 
     @Override
     default MediaType getMediaType() {
-        return MediaTypes.of(getType(), getCharset());
+        return MediaTypes.of(type(), charset());
     }
 }

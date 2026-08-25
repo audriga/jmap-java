@@ -198,7 +198,7 @@ public abstract class JmapDispatcher extends Dispatcher {
             this.inMemoryAttachments.put(blobId, blob);
             final Upload upload = Upload.builder()
                     .size(size)
-                    .accountId(getAccountId())
+                    .accountId(accountId())
                     .blobId(blobId)
                     .type(contentType)
                     .build();
@@ -272,7 +272,7 @@ public abstract class JmapDispatcher extends Dispatcher {
     }
 
     public String getUsername() {
-        return account.getEmail();
+        return account.email();
     }
 
     private MockResponse session() {
@@ -291,7 +291,7 @@ public abstract class JmapDispatcher extends Dispatcher {
                             .supportsPush(true)
                             .build());
         }
-        final String id = getAccountId();
+        final String id = accountId();
         final SessionResource sessionResource = SessionResource.builder()
                 .apiUrl(API_PATH)
                 .uploadUrl(UPLOAD_PATH)
@@ -305,7 +305,7 @@ public abstract class JmapDispatcher extends Dispatcher {
                                         MailAccountCapability.builder()
                                                 .maxSizeAttachmentsPerEmail(50 * 1024 * 1024L) // 50MiB
                                                 .build()))
-                                .name(account.getEmail())
+                                .name(account.email())
                                 .build())
                 .capabilities(capabilityBuilder.build())
                 .primaryAccounts(ImmutableMap.of(MailAccountCapability.class, id))
@@ -314,9 +314,9 @@ public abstract class JmapDispatcher extends Dispatcher {
         return new MockResponse.Builder().body(GSON.toJson(sessionResource)).build();
     }
 
-    public String getAccountId() {
+    public String accountId() {
         return Hashing.sha256()
-                .hashString(account.getEmail(), StandardCharsets.UTF_8)
+                .hashString(account.email(), StandardCharsets.UTF_8)
                 .toString();
     }
 
@@ -387,8 +387,8 @@ public abstract class JmapDispatcher extends Dispatcher {
     }
 
     private AbstractApiWebSocketMessage dispatch(RequestWebSocketMessage webSocketMessage) {
-        final String id = webSocketMessage.getRequestId();
-        final GenericResponse response = dispatch(webSocketMessage.getRequest());
+        final String id = webSocketMessage.requestId();
+        final GenericResponse response = dispatch(webSocketMessage.request());
         if (response instanceof Response) {
             return ResponseWebSocketMessage.builder()
                     .response((Response) response)

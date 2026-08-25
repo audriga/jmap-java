@@ -41,7 +41,7 @@ public class MethodErrorResponseException extends JmapApiException {
             final MethodResponse[] additional,
             final MethodCall methodCall) {
         final StringBuilder messageBuilder = new StringBuilder();
-        messageBuilder.append(methodErrorResponse.getType());
+        messageBuilder.append(methodErrorResponse.type());
         if (additional != null && additional.length > 0) {
             messageBuilder.append(" + ");
             messageBuilder.append(additional.length);
@@ -49,7 +49,7 @@ public class MethodErrorResponseException extends JmapApiException {
         messageBuilder.append(" in response to ");
         messageBuilder.append(Mapper.METHOD_CALLS.inverse().get(methodCall.getClass()));
         if (methodErrorResponse instanceof InvalidArgumentsMethodErrorResponse) {
-            final String description = ((InvalidArgumentsMethodErrorResponse) methodErrorResponse).getDescription();
+            final String description = ((InvalidArgumentsMethodErrorResponse) methodErrorResponse).description();
             if (description != null) {
                 messageBuilder.append(" (");
                 messageBuilder.append(description);

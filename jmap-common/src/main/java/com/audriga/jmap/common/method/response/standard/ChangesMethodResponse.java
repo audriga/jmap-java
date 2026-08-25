@@ -50,11 +50,11 @@ public abstract class ChangesMethodResponse<T extends Identifiable> implements M
         this.destroyed = destroyed;
     }
 
-    public TypedState<T> getTypedOldState() {
+    public TypedState<T> typedOldState() {
         return TypedState.of(this.oldState);
     }
 
-    public TypedState<T> getTypedNewState() {
+    public TypedState<T> typedNewState() {
         return TypedState.of(this.newState);
     }
 

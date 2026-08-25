@@ -21,7 +21,7 @@ public abstract class AbstractIdentifiableEntity implements Identifiable {
     protected String id;
 
     @Override
-    public String getId() {
+    public String id() {
         return id;
     }
 }

@@ -46,11 +46,11 @@ public class MailToUriTest {
     @Test
     public void standaloneEmailAddressWithAt() {
         final MailToUri uri = MailToUri.get(String.format("mailto:%s", EXAMPLE_ADDRESS_AT));
-        final Collection<EmailAddress> to = uri.getTo();
+        final Collection<EmailAddress> to = uri.to();
         Assertions.assertEquals(1, to.size(), "Unexpected number of email addresses in URI");
         Assertions.assertEquals(
                 EXAMPLE_ADDRESS_AT,
-                Objects.requireNonNull(Iterables.getFirst(to, null)).getEmail());
+                Objects.requireNonNull(Iterables.getFirst(to, null)).email());
     }
 
     @Test

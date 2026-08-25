@@ -28,9 +28,9 @@ public class SetMailboxException extends SetException {
     }
 
     public static void throwIfFailed(SetMailboxMethodResponse response) throws SetMailboxException {
-        Map<String, SetError> notCreated = response.getNotCreated();
-        Map<String, SetError> notUpdated = response.getNotUpdated();
-        Map<String, SetError> notDestroyed = response.getNotDestroyed();
+        Map<String, SetError> notCreated = response.notCreated();
+        Map<String, SetError> notUpdated = response.notUpdated();
+        Map<String, SetError> notDestroyed = response.notDestroyed();
         if ((notCreated != null && notCreated.size() > 0)
                 || (notUpdated != null && notUpdated.size() > 0)
                 || (notDestroyed != null && notDestroyed.size() > 0)) {

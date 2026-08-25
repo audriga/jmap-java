@@ -54,7 +54,7 @@ public class CacheInvalidationTest {
                     .cache(myInMemoryCache)
                     .username(myMockMailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(myMockMailServer.getAccountId())
+                    .accountId(myMockMailServer.accountId())
                     .build()) {
                 mua.query(EmailQuery.unfiltered()).get();
                 myMockMailServer.bumpVersion();
@@ -94,7 +94,7 @@ public class CacheInvalidationTest {
                     .cache(myInMemoryCache)
                     .username(myMockMailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(myMockMailServer.getAccountId())
+                    .accountId(myMockMailServer.accountId())
                     .queryPageSize(5)
                     .build()) {
                 mua.query(emailQuery).get();
@@ -152,7 +152,7 @@ public class CacheInvalidationTest {
                     .cache(myInMemoryCache)
                     .username(myMockMailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(myMockMailServer.getAccountId())
+                    .accountId(myMockMailServer.accountId())
                     .queryPageSize(5)
                     .build()) {
                 mua.query(emailQuery).get();
@@ -211,9 +211,7 @@ public class CacheInvalidationTest {
         }
 
         public List<String> getThreadIdsInQuery(final String queryHash) {
-            return getItems(queryHash).stream()
-                    .map(QueryResultItem::getThreadId)
-                    .collect(Collectors.toList());
+            return getItems(queryHash).stream().map(QueryResultItem::threadId).collect(Collectors.toList());
         }
 
         public List<QueryResultItem> getItems(final String queryHash) {

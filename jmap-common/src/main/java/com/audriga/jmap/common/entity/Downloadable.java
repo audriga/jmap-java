@@ -17,5 +17,5 @@
 package com.audriga.jmap.common.entity;
 
 public interface Downloadable extends BinaryData {
-    String getName();
+    String name();
 }

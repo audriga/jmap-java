@@ -30,19 +30,19 @@ class CachedEmail implements IdentifiableEmailWithKeywords, IdentifiableEmailWit
     }
 
     @Override
-    public Map<String, Boolean> getKeywords() {
-        final Map<String, Boolean> keywords = inner.getKeywords();
+    public Map<String, Boolean> keywords() {
+        final Map<String, Boolean> keywords = inner.keywords();
         return keywords == null ? Collections.emptyMap() : keywords;
     }
 
     @Override
-    public String getId() {
-        return inner.getId();
+    public String id() {
+        return inner.id();
     }
 
     @Override
-    public Map<String, Boolean> getMailboxIds() {
-        final Map<String, Boolean> mailboxIds = inner.getMailboxIds();
+    public Map<String, Boolean> mailboxIds() {
+        final Map<String, Boolean> mailboxIds = inner.mailboxIds();
         return mailboxIds == null ? Collections.emptyMap() : mailboxIds;
     }
 }

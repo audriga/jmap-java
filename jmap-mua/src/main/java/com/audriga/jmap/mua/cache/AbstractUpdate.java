@@ -46,7 +46,7 @@ public abstract class AbstractUpdate<T extends Identifiable> {
         return oldState == null || !oldState.equals(getNewTypedState());
     }
 
-    public boolean isHasMore() {
+    public boolean hasMore() {
         return hasMore;
     }
 }

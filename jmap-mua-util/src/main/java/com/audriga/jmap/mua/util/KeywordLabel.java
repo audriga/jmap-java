@@ -33,12 +33,12 @@ public class KeywordLabel implements LabelWithCount, Serializable {
     }
 
     @Override
-    public String getName() {
+    public String name() {
         return CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, role.name());
     }
 
     @Override
-    public Role getRole() {
+    public Role role() {
         return this.role;
     }
 

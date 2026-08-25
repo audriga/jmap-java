@@ -42,7 +42,7 @@ public class Session {
     }
 
     public HttpUrl getApiUrl() {
-        final String apiUrl = sessionResource.getApiUrl();
+        final String apiUrl = sessionResource.apiUrl();
         final HttpUrl.Builder builder = base.newBuilder(apiUrl);
         Preconditions.checkState(
                 builder != null,
@@ -55,11 +55,11 @@ public class Session {
     }
 
     public HttpUrl getDownloadUrl(final String accountId, final Downloadable downloadable) {
-        return getDownloadUrl(accountId, downloadable.getBlobId(), downloadable.getName(), downloadable.getType());
+        return getDownloadUrl(accountId, downloadable.blobId(), downloadable.name(), downloadable.type());
     }
 
     public HttpUrl getDownloadUrl(String accountId, String blobId, String name, String type) {
-        final String downloadUrl = sessionResource.getDownloadUrl();
+        final String downloadUrl = sessionResource.downloadUrl();
         Preconditions.checkState(downloadUrl != null, "Session Resource did not contain a download Url");
         final UriTemplate uriTemplate = UriTemplate.fromTemplate(downloadUrl)
                 .set("accountId", accountId)
@@ -76,12 +76,12 @@ public class Session {
 
     public HttpUrl getEventSourceUrl(
             Collection<Class<? extends Identifiable>> types, CloseAfter closeAfter, Long ping) {
-        final String eventSourceUrl = sessionResource.getEventSourceUrl();
+        final String eventSourceUrl = sessionResource.eventSourceUrl();
         Preconditions.checkState(eventSourceUrl != null, "Session Resource did not contain an event source Url");
         final UriTemplate uriTemplate = UriTemplate.fromTemplate(eventSourceUrl)
                 .set("closeafter", closeAfter.toString().toLowerCase(Locale.US))
                 .set("ping", ping);
-        if (types.size() == 0) {
+        if (types.isEmpty()) {
             uriTemplate.set("types", "*");
         } else {
             uriTemplate.set("types", types.stream().map(Class::getSimpleName).toArray(String[]::new));
@@ -96,7 +96,7 @@ public class Session {
     }
 
     public HttpUrl getUploadUrl(String accountId) {
-        final String uploadUrl = sessionResource.getUploadUrl();
+        final String uploadUrl = sessionResource.uploadUrl();
         Preconditions.checkState(uploadUrl != null, "Session Resource did not contain an upload Url");
         final UriTemplate uriTemplate = UriTemplate.fromTemplate(uploadUrl).set("accountId", accountId);
         final HttpUrl.Builder builder = base.newBuilder(uriTemplate.expand());
@@ -107,7 +107,7 @@ public class Session {
     }
 
     public String getState() {
-        return sessionResource.getState();
+        return sessionResource.state();
     }
 
     public String getPrimaryAccount(Class<? extends AccountCapability> clazz) {
@@ -116,8 +116,7 @@ public class Session {
 
     public Map<String, Account> getAccounts(final Class<? extends AccountCapability> clazz) {
         return Maps.filterEntries(
-                sessionResource.getAccounts(),
-                entry -> entry != null && entry.getValue().hasCapability(clazz));
+                sessionResource.accounts(), entry -> entry.getValue().hasCapability(clazz));
     }
 
     public <T extends Capability> T getCapability(Class<T> clazz) {
@@ -125,7 +124,7 @@ public class Session {
     }
 
     public <T extends AccountCapability> T getAccountCapability(final String accountId, final Class<T> clazz) {
-        final Account account = sessionResource.getAccounts().get(accountId);
+        final Account account = sessionResource.accounts().get(accountId);
         return account == null ? null : account.getCapability(clazz);
     }
 }

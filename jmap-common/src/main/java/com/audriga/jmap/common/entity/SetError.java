@@ -28,11 +28,11 @@ public class SetError {
     private SetErrorType type;
     private String description;
 
-    public SetErrorType getType() {
+    public SetErrorType type() {
         return type;
     }
 
-    public String getDescription() {
+    public String description() {
         return description;
     }
 

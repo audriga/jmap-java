@@ -21,7 +21,7 @@ import java.time.OffsetDateTime;
 
 public interface IdentifiableEmailWithTime extends Identifiable {
 
-    Instant getReceivedAt();
+    Instant receivedAt();
 
-    OffsetDateTime getSentAt();
+    OffsetDateTime sentAt();
 }

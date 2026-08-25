@@ -31,7 +31,7 @@ public class KeywordUtil {
 
     public static boolean anyHas(Collection<? extends IdentifiableEmailWithKeywords> emails, String keyword) {
         for (IdentifiableEmailWithKeywords email : emails) {
-            if (email.getKeywords().containsKey(keyword)) {
+            if (email.keywords().containsKey(keyword)) {
                 return true;
             }
         }
@@ -40,7 +40,7 @@ public class KeywordUtil {
 
     public static boolean everyHas(Collection<? extends IdentifiableEmailWithKeywords> emails, String keyword) {
         for (IdentifiableEmailWithKeywords email : emails) {
-            if (!email.getKeywords().containsKey(keyword)) {
+            if (!email.keywords().containsKey(keyword)) {
                 return false;
             }
         }
@@ -48,10 +48,10 @@ public class KeywordUtil {
     }
 
     public static boolean seen(final IdentifiableEmailWithKeywords email) {
-        return email.getKeywords().getOrDefault(Keyword.SEEN, false);
+        return email.keywords().getOrDefault(Keyword.SEEN, false);
     }
 
     public static boolean draft(final IdentifiableEmailWithKeywords email) {
-        return email.getKeywords().getOrDefault(Keyword.DRAFT, false);
+        return email.keywords().getOrDefault(Keyword.DRAFT, false);
     }
 }

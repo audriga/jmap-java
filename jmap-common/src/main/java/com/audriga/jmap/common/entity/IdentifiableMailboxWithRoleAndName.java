@@ -21,13 +21,13 @@ import java.util.Objects;
 
 public interface IdentifiableMailboxWithRoleAndName extends IdentifiableMailboxWithRole {
 
-    String getName();
+    String name();
 
     default boolean matches(final IdentifiableMailboxWithRoleAndName mailbox) {
-        if (getId() == null) {
-            return Objects.equals(getName(), mailbox.getName()) && Objects.equals(getRole(), mailbox.getRole());
+        if (id() == null) {
+            return Objects.equals(name(), mailbox.name()) && Objects.equals(role(), mailbox.role());
         } else {
-            return getId().equals(mailbox.getId());
+            return id().equals(mailbox.id());
         }
     }
 

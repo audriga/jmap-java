@@ -56,7 +56,7 @@ public class WebSocketMessageTest extends AbstractGsonTest {
         Assertions.assertInstanceOf(ResponseWebSocketMessage.class, webSocketMessage);
         final ResponseWebSocketMessage responseWebSocketMessage = (ResponseWebSocketMessage) webSocketMessage;
         Assertions.assertEquals(
-                2, responseWebSocketMessage.getResponse().methodResponses().size());
+                2, responseWebSocketMessage.response().methodResponses().size());
     }
 
     @Test
@@ -65,7 +65,7 @@ public class WebSocketMessageTest extends AbstractGsonTest {
                 parseFromResource("websocket/unknown-capability.json", WebSocketMessage.class);
         MatcherAssert.assertThat(webSocketMessage, CoreMatchers.instanceOf(ErrorResponseWebSocketMessage.class));
         ErrorResponse errorResponse = ((ErrorResponseWebSocketMessage) webSocketMessage).getPayload();
-        Assertions.assertEquals(ErrorType.UNKNOWN_CAPABILITY, errorResponse.getType());
+        Assertions.assertEquals(ErrorType.UNKNOWN_CAPABILITY, errorResponse.type());
     }
 
     @Test

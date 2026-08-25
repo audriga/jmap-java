@@ -64,6 +64,6 @@ public class ResponseDeserializationTest extends AbstractGsonTest {
         final ResponseInvocationDeserializer.UnknownMethodNameException exception = Assertions.assertThrows(
                 ResponseInvocationDeserializer.UnknownMethodNameException.class,
                 () -> parseFromResource("response/invalid-invocation-unknown.json", GenericResponse.class));
-        Assertions.assertEquals("unknown/method", exception.getName());
+        Assertions.assertEquals("unknown/method", exception.name());
     }
 }

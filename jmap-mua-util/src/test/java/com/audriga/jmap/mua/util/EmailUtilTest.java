@@ -87,8 +87,8 @@ public class EmailUtilTest {
                 EmailAddress.builder().email("chris@example.com").build();
         final Email email = Email.builder().from(alice).to(bob).cc(chris).build();
         final EmailUtil.ReplyAddresses replyAddresses = EmailUtil.replyAll(email);
-        Assertions.assertEquals(ImmutableList.of(alice), replyAddresses.getTo());
-        Assertions.assertEquals(ImmutableList.of(bob, chris), replyAddresses.getCc());
+        Assertions.assertEquals(ImmutableList.of(alice), replyAddresses.to());
+        Assertions.assertEquals(ImmutableList.of(bob, chris), replyAddresses.cc());
     }
 
     @Test
@@ -99,8 +99,8 @@ public class EmailUtilTest {
         final Email email = Email.builder().from(alice).to(bob).build();
         final EmailUtil.ReplyAddresses replyAddresses =
                 EmailUtil.replyAll(email, Collections.singleton("bob@example.com"));
-        Assertions.assertEquals(ImmutableList.of(alice), replyAddresses.getTo());
-        Assertions.assertTrue(replyAddresses.getCc().isEmpty());
+        Assertions.assertEquals(ImmutableList.of(alice), replyAddresses.to());
+        Assertions.assertTrue(replyAddresses.cc().isEmpty());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class EmailUtilTest {
         final EmailAddress bob = EmailAddress.builder().email("bob@example.com").build();
         final Email email = Email.builder().from(alice).to(bob).build();
         final EmailUtil.ReplyAddresses replyAddresses = EmailUtil.reply(email);
-        Assertions.assertEquals(ImmutableList.of(alice), replyAddresses.getTo());
-        Assertions.assertTrue(replyAddresses.getCc().isEmpty());
+        Assertions.assertEquals(ImmutableList.of(alice), replyAddresses.to());
+        Assertions.assertTrue(replyAddresses.cc().isEmpty());
     }
 }

@@ -60,7 +60,7 @@ public class MuaWebSocketTest {
                     .password(JmapDispatcher.PASSWORD)
                     .cache(cache)
                     .useWebSocket(true)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build()) {
                 final EmailQuery query = EmailQuery.of(
                         FilterOperator.or(
@@ -91,7 +91,7 @@ public class MuaWebSocketTest {
                     .password(JmapDispatcher.PASSWORD)
                     .cache(cache)
                     .useWebSocket(true)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build()) {
                 awaitRoundTrip(mua); // this fetches the session
                 mailServer.setFailureTrigger(JmapDispatcher.FailureTrigger.IGNORE);
@@ -110,7 +110,7 @@ public class MuaWebSocketTest {
                         .call(new EchoMethodCall("jmap-mua"))
                         .get()
                         .getMain(EchoMethodResponse.class)
-                        .getLibraryName());
+                        .libraryName());
         System.out.println("got round trip");
     }
 
@@ -129,7 +129,7 @@ public class MuaWebSocketTest {
                     .password(JmapDispatcher.PASSWORD)
                     .cache(cache)
                     .useWebSocket(true)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build()) {
                 awaitRoundTrip(mua); // this fetches the session
                 mailServer.setFailureTrigger(JmapDispatcher.FailureTrigger.IGNORE);
@@ -163,7 +163,7 @@ public class MuaWebSocketTest {
                     .password(JmapDispatcher.PASSWORD)
                     .cache(cache)
                     .useWebSocket(true)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build()) {
                 final EmailQuery query = EmailQuery.of(
                         FilterOperator.or(
@@ -208,7 +208,7 @@ public class MuaWebSocketTest {
                     .password(JmapDispatcher.PASSWORD)
                     .cache(cache)
                     .useWebSocket(true)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build()) {
 
                 // fetches session. starts WebSocket
@@ -262,7 +262,7 @@ public class MuaWebSocketTest {
                     .password(JmapDispatcher.PASSWORD)
                     .cache(cache)
                     .useWebSocket(true)
-                    .accountId(mailServer.getAccountId())
+                    .accountId(mailServer.accountId())
                     .build()) {
                 final PushService pushService =
                         mua.getJmapClient().monitorEvents().get();

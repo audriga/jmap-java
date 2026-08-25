@@ -17,11 +17,5 @@
 package com.audriga.jmap.common.entity;
 
 public interface Identifiable {
-    default String id() {
-        return getId();
-    }
-
-    default String getId() {
-        return id();
-    }
+    String id();
 }

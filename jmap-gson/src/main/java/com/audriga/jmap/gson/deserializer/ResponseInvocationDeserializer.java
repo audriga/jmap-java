@@ -77,7 +77,7 @@ public class ResponseInvocationDeserializer implements JsonDeserializer<Response
             this.name = name;
         }
 
-        public String getName() {
+        public String name() {
             return name;
         }
     }

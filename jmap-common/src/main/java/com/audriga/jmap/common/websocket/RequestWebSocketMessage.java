@@ -38,7 +38,7 @@ public class RequestWebSocketMessage extends AbstractApiWebSocketMessage {
     }
 
     @Override
-    public String getRequestId() {
+    public String requestId() {
         return this.id;
     }
 

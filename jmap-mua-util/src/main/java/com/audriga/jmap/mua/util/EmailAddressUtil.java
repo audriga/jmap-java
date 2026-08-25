@@ -338,8 +338,8 @@ public class EmailAddressUtil {
     private static final List<String> STOP_WORDS = Arrays.asList("the");
 
     public static String toString(EmailAddress emailAddress) {
-        final String email = emailAddress.getEmail();
-        final String name = emailAddress.getName();
+        final String email = emailAddress.email();
+        final String name = emailAddress.name();
         if (Strings.isNullOrEmpty(name)) {
             return email;
         } else {
@@ -350,10 +350,10 @@ public class EmailAddressUtil {
     public static String toHeaderValue(Collection<EmailAddress> emailAddresses) {
         final StringBuilder builder = new StringBuilder();
         for (EmailAddress emailAddress : emailAddresses) {
-            if (Strings.isNullOrEmpty(emailAddress.getName())) {
-                builder.append(emailAddress.getEmail());
+            if (Strings.isNullOrEmpty(emailAddress.name())) {
+                builder.append(emailAddress.email());
             } else {
-                builder.append(String.format("\"%s\" <%s>", emailAddress.getName(), emailAddress.getEmail()));
+                builder.append(String.format("\"%s\" <%s>", emailAddress.name(), emailAddress.email()));
             }
             builder.append(',');
         }
@@ -365,7 +365,7 @@ public class EmailAddressUtil {
     }
 
     public static boolean isValid(final EmailAddress emailAddress) {
-        return isValid(emailAddress.getEmail());
+        return isValid(emailAddress.email());
     }
 
     public static boolean isValid(final String email) {

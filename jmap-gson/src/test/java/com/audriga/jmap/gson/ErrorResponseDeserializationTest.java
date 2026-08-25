@@ -17,7 +17,7 @@ public class ErrorResponseDeserializationTest extends AbstractGsonTest {
                 parseFromResource("response-error/unknown-capability.json", GenericResponse.class);
         MatcherAssert.assertThat(genericResponse, CoreMatchers.instanceOf(ErrorResponse.class));
         ErrorResponse errorResponse = (ErrorResponse) genericResponse;
-        Assertions.assertEquals(errorResponse.getType(), ErrorType.UNKNOWN_CAPABILITY);
+        Assertions.assertEquals(errorResponse.type(), ErrorType.UNKNOWN_CAPABILITY);
     }
 
     @Test
@@ -25,7 +25,7 @@ public class ErrorResponseDeserializationTest extends AbstractGsonTest {
         GenericResponse genericResponse = parseFromResource("response-error/not-json.json", GenericResponse.class);
         MatcherAssert.assertThat(genericResponse, CoreMatchers.instanceOf(ErrorResponse.class));
         ErrorResponse errorResponse = (ErrorResponse) genericResponse;
-        Assertions.assertEquals(errorResponse.getType(), ErrorType.NOT_JSON);
+        Assertions.assertEquals(errorResponse.type(), ErrorType.NOT_JSON);
     }
 
     @Test
@@ -33,6 +33,6 @@ public class ErrorResponseDeserializationTest extends AbstractGsonTest {
         GenericResponse genericResponse = parseFromResource("response-error/not-request.json", GenericResponse.class);
         MatcherAssert.assertThat(genericResponse, CoreMatchers.instanceOf(ErrorResponse.class));
         ErrorResponse errorResponse = (ErrorResponse) genericResponse;
-        Assertions.assertEquals(errorResponse.getType(), ErrorType.NOT_REQUEST);
+        Assertions.assertEquals(errorResponse.type(), ErrorType.NOT_REQUEST);
     }
 }

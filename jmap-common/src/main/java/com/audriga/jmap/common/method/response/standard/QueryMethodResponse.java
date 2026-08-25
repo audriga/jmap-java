@@ -49,7 +49,7 @@ public abstract class QueryMethodResponse<T extends Identifiable> implements Met
         this.limit = limit;
     }
 
-    public TypedState<T> getTypedQueryState() {
+    public TypedState<T> typedQueryState() {
         return TypedState.of(queryState);
     }
 

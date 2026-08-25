@@ -47,7 +47,7 @@ public class QueryTest {
                     .cache(myInMemoryCache)
                     .username(mockMailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(mockMailServer.getAccountId())
+                    .accountId(mockMailServer.accountId())
                     .queryPageSize(5)
                     .build()) {
 
@@ -86,7 +86,7 @@ public class QueryTest {
                     .cache(myInMemoryCache)
                     .username(mockMailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(mockMailServer.getAccountId())
+                    .accountId(mockMailServer.accountId())
                     .build()) {
 
                 mua.query(emailQuery, true).get();
@@ -109,7 +109,7 @@ public class QueryTest {
                     .cache(myInMemoryCache)
                     .username(mockMailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(mockMailServer.getAccountId())
+                    .accountId(mockMailServer.accountId())
                     .queryPageSize(5)
                     .build()) {
 
@@ -148,7 +148,7 @@ public class QueryTest {
                     .cache(myInMemoryCache)
                     .username(mockMailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(mockMailServer.getAccountId())
+                    .accountId(mockMailServer.accountId())
                     .queryPageSize(5)
                     .build()) {
 
@@ -193,7 +193,7 @@ public class QueryTest {
                     .cache(myInMemoryCache)
                     .username(mockMailServer.getUsername())
                     .password(JmapDispatcher.PASSWORD)
-                    .accountId(mockMailServer.getAccountId())
+                    .accountId(mockMailServer.accountId())
                     .queryPageSize(5)
                     .build()) {
 
@@ -227,9 +227,7 @@ public class QueryTest {
         private final AtomicBoolean hadTotal = new AtomicBoolean(false);
 
         public List<String> getThreadIdsInQuery(final String queryHash) {
-            return getItems(queryHash).stream()
-                    .map(QueryResultItem::getThreadId)
-                    .collect(Collectors.toList());
+            return getItems(queryHash).stream().map(QueryResultItem::threadId).collect(Collectors.toList());
         }
 
         public List<QueryResultItem> getItems(final String queryHash) {

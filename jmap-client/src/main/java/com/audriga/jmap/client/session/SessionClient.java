@@ -154,7 +154,7 @@ public class SessionClient {
     }
 
     private void validateSessionResource(final SessionResource sessionResource) throws InvalidSessionResourceException {
-        if (sessionResource.getApiUrl() == null) {
+        if (sessionResource.apiUrl() == null) {
             throw new InvalidSessionResourceException("Missing API URL");
         }
     }

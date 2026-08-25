@@ -75,7 +75,7 @@ public class JmapDispatcherTest {
             MatcherAssert.assertThat(genericResponse, CoreMatchers.instanceOf(ErrorResponse.class));
 
             ErrorResponse errorResponse = (ErrorResponse) genericResponse;
-            Assertions.assertEquals(ErrorType.NOT_JSON, errorResponse.getType());
+            Assertions.assertEquals(ErrorType.NOT_JSON, errorResponse.type());
         }
     }
 
@@ -126,7 +126,7 @@ public class JmapDispatcherTest {
             MatcherAssert.assertThat(genericResponse, CoreMatchers.instanceOf(ErrorResponse.class));
 
             ErrorResponse errorResponse = (ErrorResponse) genericResponse;
-            Assertions.assertEquals(ErrorType.NOT_REQUEST, errorResponse.getType());
+            Assertions.assertEquals(ErrorType.NOT_REQUEST, errorResponse.type());
         }
     }
 
@@ -157,7 +157,7 @@ public class JmapDispatcherTest {
             MatcherAssert.assertThat(genericResponse, CoreMatchers.instanceOf(ErrorResponse.class));
 
             ErrorResponse errorResponse = (ErrorResponse) genericResponse;
-            Assertions.assertEquals(ErrorType.NOT_JSON, errorResponse.getType());
+            Assertions.assertEquals(ErrorType.NOT_JSON, errorResponse.type());
         }
     }
 
@@ -176,7 +176,7 @@ public class JmapDispatcherTest {
                             .build())
                     .get()
                     .getMain(EchoMethodResponse.class);
-            Assertions.assertEquals(Version.getUserAgent(), response.getLibraryName());
+            Assertions.assertEquals(Version.getUserAgent(), response.libraryName());
         }
     }
 
@@ -196,7 +196,7 @@ public class JmapDispatcherTest {
                             .build())
                     .get()
                     .getMain(EchoMethodResponse.class);
-            Assertions.assertEquals(Version.getUserAgent(), response.getLibraryName());
+            Assertions.assertEquals(Version.getUserAgent(), response.libraryName());
         }
     }
 }

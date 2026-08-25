@@ -167,7 +167,7 @@ public class WebSocketPushService extends WebSocketJmapApiClient
         }
         if (message instanceof StateChangeWebSocketMessage) {
             final StateChangeWebSocketMessage stateChange = (StateChangeWebSocketMessage) message;
-            final String pushState = stateChange.getPushState();
+            final String pushState = stateChange.pushState();
             if (this.onStateChangeListenerManager.onStateChange(stateChange)) {
                 this.pushState = pushState;
             }

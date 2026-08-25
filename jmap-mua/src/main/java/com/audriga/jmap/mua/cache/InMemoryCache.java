@@ -91,7 +91,7 @@ public class InMemoryCache implements Cache {
         synchronized (this.mailboxes) {
             this.mailboxes.clear();
             for (Mailbox mailbox : mailboxes) {
-                this.mailboxes.put(mailbox.getId(), mailbox);
+                this.mailboxes.put(mailbox.id(), mailbox);
             }
             this.mailboxState = state.getState();
         }
@@ -101,14 +101,14 @@ public class InMemoryCache implements Cache {
     public void updateMailboxes(Update<Mailbox> mailboxUpdate, final String[] updatedProperties)
             throws CacheWriteException {
         synchronized (this.mailboxes) {
-            for (Mailbox mailbox : mailboxUpdate.getCreated()) {
-                this.mailboxes.put(mailbox.getId(), mailbox);
+            for (Mailbox mailbox : mailboxUpdate.created()) {
+                this.mailboxes.put(mailbox.id(), mailbox);
             }
-            for (Mailbox mailbox : mailboxUpdate.getUpdated()) {
-                Mailbox target = mailboxes.get(mailbox.getId());
+            for (Mailbox mailbox : mailboxUpdate.updated()) {
+                Mailbox target = mailboxes.get(mailbox.id());
                 if (target == null) {
                     throw new CacheWriteException(
-                            String.format("Unable to update Mailbox(%s). Can not find in cache", mailbox.getId()));
+                            String.format("Unable to update Mailbox(%s). Can not find in cache", mailbox.id()));
                 }
                 if (updatedProperties != null) {
                     for (String property : updatedProperties) { // can be null
@@ -118,15 +118,15 @@ public class InMemoryCache implements Cache {
                             throw new CacheWriteException(
                                     String.format(
                                             "Unable to update Mailbox(%s). Can not update field %s",
-                                            mailbox.getId(), property),
+                                            mailbox.id(), property),
                                     e);
                         }
                     }
                 } else {
-                    this.mailboxes.put(mailbox.getId(), mailbox);
+                    this.mailboxes.put(mailbox.id(), mailbox);
                 }
             }
-            for (String id : mailboxUpdate.getDestroyed()) {
+            for (String id : mailboxUpdate.destroyed()) {
                 this.mailboxes.remove(id);
             }
             this.mailboxState = mailboxUpdate.getNewTypedState().getState();
@@ -151,7 +151,7 @@ public class InMemoryCache implements Cache {
                 throw new NotSynchronizedException("Mailboxes have not been synchronized yet. Run refresh() first.");
             }
             return this.mailboxes.values().stream()
-                    .filter(mailbox -> mailbox.getName().equals(name) && matches(mailbox.getParentId(), parentId))
+                    .filter(mailbox -> mailbox.name().equals(name) && matches(mailbox.parentId(), parentId))
                     .findFirst()
                     .orElse(null);
         }
@@ -161,7 +161,7 @@ public class InMemoryCache implements Cache {
     public Collection<IdentifiableMailboxWithRoleAndName> getMailboxesByNames(final String[] names) {
         final List<String> filter = Arrays.asList(names);
         return this.mailboxes.values().stream()
-                .filter(mailbox -> filter.contains(mailbox.getName()))
+                .filter(mailbox -> filter.contains(mailbox.name()))
                 .collect(Collectors.toList());
     }
 
@@ -187,7 +187,7 @@ public class InMemoryCache implements Cache {
         synchronized (this.threads) {
             this.threads.clear();
             for (Thread thread : threads) {
-                this.threads.put(thread.getId(), thread);
+                this.threads.put(thread.id(), thread);
             }
             this.threadState = typedState.getState();
         }
@@ -202,7 +202,7 @@ public class InMemoryCache implements Cache {
                         this.threadState, typedState.getState()));
             }
             for (Thread thread : threads) {
-                this.threads.put(thread.getId(), thread);
+                this.threads.put(thread.id(), thread);
             }
         }
     }
@@ -213,22 +213,22 @@ public class InMemoryCache implements Cache {
 
             // TODO check state
 
-            for (Thread thread : threadUpdate.getCreated()) {
-                if (threads.containsKey(thread.getId())) {
+            for (Thread thread : threadUpdate.created()) {
+                if (threads.containsKey(thread.id())) {
                     throw new CacheWriteException(
-                            String.format("Unable to create Thread(%s). Thread already exists", thread.getId()));
+                            String.format("Unable to create Thread(%s). Thread already exists", thread.id()));
                 } else {
-                    this.threads.put(thread.getId(), thread);
+                    this.threads.put(thread.id(), thread);
                 }
             }
-            for (Thread thread : threadUpdate.getUpdated()) {
-                if (!this.threads.containsKey(thread.getId())) {
+            for (Thread thread : threadUpdate.updated()) {
+                if (!this.threads.containsKey(thread.id())) {
                     throw new CacheWriteException(
-                            String.format("Unable to update Thread(%s). Thread doesnt exists", thread.getId()));
+                            String.format("Unable to update Thread(%s). Thread doesnt exists", thread.id()));
                 }
-                this.threads.put(thread.getId(), thread);
+                this.threads.put(thread.id(), thread);
             }
-            for (String id : threadUpdate.getDestroyed()) {
+            for (String id : threadUpdate.destroyed()) {
                 this.threads.remove(id);
             }
             this.threadState = threadUpdate.getNewTypedState().getState();
@@ -239,7 +239,7 @@ public class InMemoryCache implements Cache {
         synchronized (this.emails) {
             this.emails.clear();
             for (Email email : emails) {
-                this.emails.put(email.getId(), email);
+                this.emails.put(email.id(), email);
             }
             this.emailState = typedState.getState();
         }
@@ -254,7 +254,7 @@ public class InMemoryCache implements Cache {
                         this.emailState, typedState.getState()));
             }
             for (Email email : emails) {
-                this.emails.put(email.getId(), email);
+                this.emails.put(email.id(), email);
             }
         }
     }
@@ -265,14 +265,14 @@ public class InMemoryCache implements Cache {
 
             // TODO check state
 
-            for (Email email : emailUpdate.getCreated()) {
-                this.emails.put(email.getId(), email);
+            for (Email email : emailUpdate.created()) {
+                this.emails.put(email.id(), email);
             }
-            for (Email email : emailUpdate.getUpdated()) {
-                Email target = emails.get(email.getId());
+            for (Email email : emailUpdate.updated()) {
+                Email target = emails.get(email.id());
                 if (target == null) {
                     throw new CacheWriteException(
-                            String.format("Unable to update Email(%s). Can not find in cache", email.getId()));
+                            String.format("Unable to update Email(%s). Can not find in cache", email.id()));
                 }
                 for (String property : updatedProperties) {
                     try {
@@ -280,13 +280,12 @@ public class InMemoryCache implements Cache {
                     } catch (NoSuchFieldException | IllegalAccessException e) {
                         throw new CacheWriteException(
                                 String.format(
-                                        "Unable to update Mailbox(%s). Can not update field %s",
-                                        email.getId(), property),
+                                        "Unable to update Mailbox(%s). Can not update field %s", email.id(), property),
                                 e);
                     }
                 }
             }
-            for (String id : emailUpdate.getDestroyed()) {
+            for (String id : emailUpdate.destroyed()) {
                 this.emails.remove(id);
             }
             this.emailState = emailUpdate.getNewTypedState().getState();
@@ -298,7 +297,7 @@ public class InMemoryCache implements Cache {
         synchronized (this.identities) {
             this.identities.clear();
             for (Identity identity : identities) {
-                this.identities.put(identity.getId(), identity);
+                this.identities.put(identity.id(), identity);
             }
             if (typedState.getState() == null) {
                 LOGGER.warn("Identity state was null");
@@ -311,22 +310,22 @@ public class InMemoryCache implements Cache {
     @Override
     public void updateIdentities(Update<Identity> identityUpdate) throws CacheWriteException {
         synchronized (this.identities) {
-            for (Identity identity : identityUpdate.getCreated()) {
-                if (this.identities.containsKey(identity.getId())) {
+            for (Identity identity : identityUpdate.created()) {
+                if (this.identities.containsKey(identity.id())) {
                     throw new CacheWriteException(
-                            String.format("Unable to create Identity(%s). Identity already exists", identity.getId()));
+                            String.format("Unable to create Identity(%s). Identity already exists", identity.id()));
                 } else {
-                    this.identities.put(identity.getId(), identity);
+                    this.identities.put(identity.id(), identity);
                 }
             }
-            for (Identity identity : identityUpdate.getUpdated()) {
-                if (!this.identities.containsKey(identity.getId())) {
+            for (Identity identity : identityUpdate.updated()) {
+                if (!this.identities.containsKey(identity.id())) {
                     throw new CacheWriteException(
-                            String.format("Unable to update Identity(%s). Identity doesnt exists", identity.getId()));
+                            String.format("Unable to update Identity(%s). Identity doesnt exists", identity.id()));
                 }
-                this.identities.put(identity.getId(), identity);
+                this.identities.put(identity.id(), identity);
             }
-            for (String id : identityUpdate.getDestroyed()) {
+            for (String id : identityUpdate.destroyed()) {
                 this.identities.remove(id);
             }
             this.identityState = identityUpdate.getNewTypedState().getState();
@@ -418,11 +417,11 @@ public class InMemoryCache implements Cache {
                         "OldState (%s) did not match our expectation ",
                         update.getOldTypedState().getState()));
             }
-            for (String removed : update.getRemoved()) {
+            for (String removed : update.removed()) {
                 LOGGER.info("no removing id " + removed);
                 queryResult.remove(removed);
             }
-            for (AddedItem<QueryResultItem> addedItem : update.getAdded()) {
+            for (AddedItem<QueryResultItem> addedItem : update.added()) {
                 // TODO it is probably save to just not add an item that exceeds the range (position
                 // > length) but this indicates a broken uper layer
                 LOGGER.info("now adding " + addedItem.getItem().getEmailId() + " on index " + addedItem.getIndex());
@@ -471,7 +470,7 @@ public class InMemoryCache implements Cache {
                 throw new CacheReadException("Unable to find cached version");
             }
             for (QueryResultItem item : queryResult.items) {
-                threadIds.add(item.getThreadId());
+                threadIds.add(item.threadId());
             }
         }
         synchronized (this.threads) {

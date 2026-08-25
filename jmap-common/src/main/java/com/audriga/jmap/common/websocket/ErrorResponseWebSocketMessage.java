@@ -29,7 +29,7 @@ public class ErrorResponseWebSocketMessage extends AbstractApiWebSocketMessage {
         this.response = response;
     }
 
-    public String getRequestId() {
+    public String requestId() {
         return this.requestId;
     }
 

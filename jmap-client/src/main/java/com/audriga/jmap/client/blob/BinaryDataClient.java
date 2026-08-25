@@ -164,13 +164,13 @@ public class BinaryDataClient {
     }
 
     private void validate(final Upload upload) {
-        if (Strings.isNullOrEmpty(upload.getBlobId())) {
+        if (Strings.isNullOrEmpty(upload.blobId())) {
             throw new IllegalStateException("Upload object is missing blobId");
         }
-        if (upload.getSize() == null) {
+        if (upload.size() == null) {
             throw new IllegalStateException("Upload object is missing size");
         }
-        if (Strings.isNullOrEmpty(upload.getType())) {
+        if (Strings.isNullOrEmpty(upload.type())) {
             throw new IllegalStateException("Upload object is missing type");
         }
     }
