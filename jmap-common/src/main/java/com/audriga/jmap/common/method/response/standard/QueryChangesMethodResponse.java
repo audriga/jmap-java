@@ -7,19 +7,23 @@ import com.audriga.jmap.common.method.MethodResponse;
 import java.util.List;
 
 public interface QueryChangesMethodResponse<T extends Identifiable> extends MethodResponse {
-    TypedState<T> getOldTypedQueryState();
-
-    TypedState<T> getNewTypedQueryState();
-
     String accountId();
 
     String oldQueryState();
 
+    default TypedState<T> oldTypedQueryState() {
+        return TypedState.of(oldQueryState());
+    }
+
     String newQueryState();
+
+    default TypedState<T> newTypedQueryState() {
+        return TypedState.of(newQueryState());
+    }
 
     long total();
 
-    String[] removed();
+    List<String> removed();
 
     List<AddedItem<String>> added();
 }

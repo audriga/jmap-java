@@ -16,21 +16,38 @@
 
 package com.audriga.jmap.client;
 
+import com.audriga.jmap.annotation.Default;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.Comparator;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.method.call.standard.QueryMethodCall;
+import java.util.List;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-public class QueryDummyMethodCall extends QueryMethodCall<Dummy> {
+@RecordBuilder
+public record QueryDummyMethodCall(
+        @NonNull Arg<String> accountId,
+        @Nullable Arg<Filter<Dummy>> filter,
+        @Nullable Arg<List<Comparator>> sort,
+        @Default("0") @Nullable Arg<Long> position,
+        @Nullable Arg<String> anchor,
+        @Default("0") @Nullable Arg<Long> anchorOffset,
+        @Nullable Arg<Long> limit,
+        @Default("false") @Nullable Arg<Boolean> calculateTotal)
+        implements QueryMethodCall<Dummy> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    public QueryDummyMethodCall(
-            String accountId,
-            Filter<Dummy> filter,
-            List<Comparator> sort,
-            Long position,
-            String anchor,
-            Long anchorOffset,
-            Long limit,
-            Boolean calculateTotal) {
-        super(accountId, filter, sort, position, anchor, anchorOffset, limit, calculateTotal);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends QueryDummyMethodCallBuilder {
+        @Override
+        public Builder __this() {
+            return this;
+        }
     }
 }

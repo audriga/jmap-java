@@ -17,22 +17,34 @@
 package com.audriga.jmap.common.method.response.email;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.AddedItem;
 import com.audriga.jmap.common.entity.Email;
-import com.audriga.jmap.common.method.response.standard.AbstractQueryChangesMethodResponse;
+import com.audriga.jmap.common.method.response.standard.QueryChangesMethodResponse;
 import java.util.List;
 
 @JmapMethod("Email/queryChanges")
-public class QueryChangesEmailMethodResponse extends AbstractQueryChangesMethodResponse<Email> {
+@RecordBuilder
+public record QueryChangesEmailMethodResponse(
+        String accountId,
+        String oldQueryState,
+        String newQueryState,
+        long total,
+        List<String> removed,
+        List<AddedItem<String>> added)
+        implements QueryChangesMethodResponse<Email> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @lombok.Builder
-    public QueryChangesEmailMethodResponse(
-            String accountId,
-            String oldQueryState,
-            String newQueryState,
-            long total,
-            String[] removed,
-            List<AddedItem<String>> added) {
-        super(accountId, oldQueryState, newQueryState, total, removed, added);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends QueryChangesEmailMethodResponseBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

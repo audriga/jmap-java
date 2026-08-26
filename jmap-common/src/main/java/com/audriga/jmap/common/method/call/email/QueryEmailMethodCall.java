@@ -16,41 +16,49 @@
 
 package com.audriga.jmap.common.method.call.email;
 
+import com.audriga.jmap.annotation.Default;
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.Comparator;
 import com.audriga.jmap.common.entity.Email;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.entity.query.EmailQuery;
 import com.audriga.jmap.common.method.call.standard.QueryMethodCall;
 import java.util.List;
-import lombok.Getter;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @JmapMethod("Email/query")
-@Getter
-public class QueryEmailMethodCall extends QueryMethodCall<Email> {
-
-    private Boolean collapseThreads;
-
-    @lombok.Builder
-    public QueryEmailMethodCall(
-            String accountId,
-            Filter<Email> filter,
-            List<Comparator> sort,
-            Long position,
-            String anchor,
-            Long anchorOffset,
-            Long limit,
-            Boolean collapseThreads,
-            Boolean calculateTotal) {
-        super(accountId, filter, sort, position, anchor, anchorOffset, limit, calculateTotal);
-        this.collapseThreads = collapseThreads;
+@RecordBuilder
+public record QueryEmailMethodCall(
+        @NonNull Arg<String> accountId,
+        @Nullable Arg<Filter<Email>> filter,
+        @Nullable Arg<List<Comparator>> sort,
+        @Default("0") @Nullable Arg<Long> position,
+        @Nullable Arg<String> anchor,
+        @Default("0") @Nullable Arg<Long> anchorOffset,
+        @Nullable Arg<Long> limit,
+        @Default("false") @Nullable Arg<Boolean> calculateTotal,
+        @Default("false") @Nullable Arg<Boolean> collapseThreads)
+        implements QueryMethodCall<Email> {
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public static class Builder {
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends QueryEmailMethodCallBuilder {
         public Builder query(EmailQuery query) {
             filter(query.filter);
             sort(query.sort);
             collapseThreads(query.collapseThreads);
+            return this;
+        }
+
+        @Override
+        protected Builder __this() {
             return this;
         }
     }

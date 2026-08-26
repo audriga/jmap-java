@@ -25,7 +25,7 @@ import java.util.List;
 
 public class QueryUpdate<T extends Identifiable, U> extends AbstractUpdate<T> {
 
-    private final String[] removed;
+    private final List<String> removed;
 
     private final List<AddedItem<U>> added;
 
@@ -34,7 +34,7 @@ public class QueryUpdate<T extends Identifiable, U> extends AbstractUpdate<T> {
     private QueryUpdate(
             final TypedState<T> oldState,
             final TypedState<T> newState,
-            final String[] removed,
+            final List<String> removed,
             final List<AddedItem<U>> added,
             final Long total) {
         super(oldState, newState, false);
@@ -46,14 +46,14 @@ public class QueryUpdate<T extends Identifiable, U> extends AbstractUpdate<T> {
     public static <T extends Identifiable, U> QueryUpdate<T, U> of(
             QueryChangesMethodResponse<T> queryChangesMethodResponse, List<AddedItem<U>> added) {
         return new QueryUpdate<>(
-                queryChangesMethodResponse.getOldTypedQueryState(),
-                queryChangesMethodResponse.getNewTypedQueryState(),
+                queryChangesMethodResponse.oldTypedQueryState(),
+                queryChangesMethodResponse.newTypedQueryState(),
                 queryChangesMethodResponse.removed(),
                 added,
                 queryChangesMethodResponse.total());
     }
 
-    public String[] removed() {
+    public List<String> removed() {
         return this.removed;
     }
 
@@ -67,7 +67,7 @@ public class QueryUpdate<T extends Identifiable, U> extends AbstractUpdate<T> {
 
     @Override
     public boolean hasChanges() {
-        final boolean modifiedItems = removed.length + added.size() > 0;
+        final boolean modifiedItems = removed.size() + added.size() > 0;
         return modifiedItems || hasStateChange();
     }
 

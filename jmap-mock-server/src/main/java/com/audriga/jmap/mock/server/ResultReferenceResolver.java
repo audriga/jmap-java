@@ -23,7 +23,6 @@ import com.audriga.jmap.common.entity.Thread;
 import com.audriga.jmap.common.method.MethodResponse;
 import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.method.response.email.GetEmailMethodResponse;
-import com.audriga.jmap.common.method.response.standard.AbstractQueryChangesMethodResponse;
 import com.audriga.jmap.common.method.response.standard.ChangesMethodResponse;
 import com.audriga.jmap.common.method.response.standard.QueryChangesMethodResponse;
 import com.audriga.jmap.common.method.response.standard.QueryMethodResponse;
@@ -42,39 +41,36 @@ public class ResultReferenceResolver {
         final String path = resultReference.path();
         switch (resultReference.path()) {
             case ResultReference.Path.IDS:
-                if (methodResponse instanceof QueryMethodResponse) {
-                    return ((QueryMethodResponse<?>) methodResponse).ids();
+                if (methodResponse instanceof QueryMethodResponse<?> query) {
+                    return query.ids();
                 }
                 break;
             case ResultReference.Path.LIST_THREAD_IDS:
-                if (methodResponse instanceof GetEmailMethodResponse) {
-                    return Arrays.stream(((GetEmailMethodResponse) methodResponse).list())
-                            .map(Email::threadId)
-                            .toArray(String[]::new);
+                if (methodResponse instanceof GetEmailMethodResponse getEmail) {
+                    return Arrays.stream(getEmail.list()).map(Email::threadId).toArray(String[]::new);
                 }
                 break;
             case ResultReference.Path.LIST_EMAIL_IDS:
-                if (methodResponse instanceof GetThreadMethodResponse) {
-                    return Arrays.stream(((GetThreadMethodResponse) methodResponse).list())
+                if (methodResponse instanceof GetThreadMethodResponse getThread) {
+                    return Arrays.stream(getThread.list())
                             .map(Thread::emailIds)
                             .flatMap(Collection::stream)
                             .toArray(String[]::new);
                 }
                 break;
             case ResultReference.Path.CREATED:
-                if (methodResponse instanceof ChangesMethodResponse) {
-                    return nullToEmpty(((ChangesMethodResponse<?>) methodResponse).created());
+                if (methodResponse instanceof ChangesMethodResponse<?> changes) {
+                    return nullToEmpty(changes.created());
                 }
                 break;
             case ResultReference.Path.UPDATED:
-                if (methodResponse instanceof ChangesMethodResponse) {
-                    return nullToEmpty(((ChangesMethodResponse<?>) methodResponse).updated());
+                if (methodResponse instanceof ChangesMethodResponse<?> changes) {
+                    return nullToEmpty(changes.updated());
                 }
                 break;
             case ResultReference.Path.ADDED_IDS:
-                if (methodResponse instanceof AbstractQueryChangesMethodResponse) {
-                    return ((QueryChangesMethodResponse<?>) methodResponse)
-                            .added().stream().map(AddedItem::getItem).toArray(String[]::new);
+                if (methodResponse instanceof QueryChangesMethodResponse<?> queryChanges) {
+                    return queryChanges.added().stream().map(AddedItem::getItem).toArray(String[]::new);
                 }
                 break;
             default:

@@ -16,6 +16,8 @@
 
 package com.audriga.jmap.common.method;
 
+import org.jspecify.annotations.Nullable;
+
 public interface MethodCall {
     sealed interface Arg<T> {
         record Value<T>(T value) implements Arg<T> {}
@@ -28,6 +30,21 @@ public interface MethodCall {
 
         static <T> Reference<T> of(ResultReference reference) {
             return new Reference<>(reference);
+        }
+
+        static <T> @Nullable T unwrapValue(Arg<T> arg) {
+            if (arg == null) return null;
+            return ((Value<T>) arg).value();
+        }
+
+        static <T> T unwrapValueOr(Arg<T> arg, T defaultValue) {
+            var unwrapped = unwrapValue(arg);
+            return unwrapped != null ? unwrapped : defaultValue;
+        }
+
+        static @Nullable ResultReference unwrapReference(Arg<?> arg) {
+            if (arg == null) return null;
+            return ((Reference<?>) arg).reference();
         }
     }
 }

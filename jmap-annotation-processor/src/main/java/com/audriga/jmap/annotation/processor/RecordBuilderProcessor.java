@@ -94,6 +94,7 @@ public final class RecordBuilderProcessor extends AbstractProcessor {
                                 .returns(publicBuilderName)
                                 .addParameter(innerType, "value")
                                 .addStatement("$N($T.of(value))", methodSpec, MethodCall.Arg.class)
+                                .addStatement("return __this()")
                                 .build());
                     }
                 }

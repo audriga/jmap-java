@@ -10,7 +10,7 @@ import com.audriga.jmap.common.entity.SetError;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.method.call.standard.AbstractGetMethodCall;
-import com.audriga.jmap.common.method.call.standard.QueryMethodCall;
+import com.audriga.jmap.common.method.call.standard.AbstractQueryMethodCall;
 import com.audriga.jmap.common.method.call.standard.SetMethodCall;
 import com.audriga.jmap.common.method.response.standard.GetMethodResponse;
 import com.audriga.jmap.common.method.response.standard.QueryMethodResponse;
@@ -85,7 +85,7 @@ public record EntityInfo(String description, String permissionPrefix, boolean si
                             p(Types.map(Types.STRING, ClassName.get(SetError.class)), "notDestroyed"))),
             new Method(
                     "query",
-                    _ -> ClassName.get(QueryMethodCall.class),
+                    _ -> ClassName.get(AbstractQueryMethodCall.class),
                     entityClass -> List.of(
                             p(Types.STRING, "accountId"),
                             p(

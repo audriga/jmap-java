@@ -16,44 +16,51 @@
 
 package com.audriga.jmap.common.method.call.mailbox;
 
+import com.audriga.jmap.annotation.Default;
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.Comparator;
 import com.audriga.jmap.common.entity.Mailbox;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.entity.query.MailboxQuery;
 import com.audriga.jmap.common.method.call.standard.QueryMethodCall;
 import java.util.List;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @JmapMethod("Mailbox/query")
-public class QueryMailboxMethodCall extends QueryMethodCall<Mailbox> {
-
-    private Boolean sortAsTree;
-    private Boolean filterAsTree;
-
-    @lombok.Builder
-    public QueryMailboxMethodCall(
-            @NonNull String accountId,
-            Filter<Mailbox> filter,
-            List<Comparator> sort,
-            Long position,
-            String anchor,
-            Long anchorOffset,
-            Long limit,
-            Boolean sortAsTree,
-            Boolean filterAsTree,
-            Boolean calculateTotal) {
-        super(accountId, filter, sort, position, anchor, anchorOffset, limit, calculateTotal);
-        this.sortAsTree = sortAsTree;
-        this.filterAsTree = filterAsTree;
+@RecordBuilder
+public record QueryMailboxMethodCall(
+        @NonNull Arg<String> accountId,
+        @Nullable Arg<Filter<Mailbox>> filter,
+        @Nullable Arg<List<Comparator>> sort,
+        @Default("0") @Nullable Arg<Long> position,
+        @Nullable Arg<String> anchor,
+        @Default("0") @Nullable Arg<Long> anchorOffset,
+        @Nullable Arg<Long> limit,
+        @Default("false") @Nullable Arg<Boolean> calculateTotal,
+        @Default("false") @Nullable Arg<Boolean> sortAsTree,
+        @Default("false") @Nullable Arg<Boolean> filterAsTree)
+        implements QueryMethodCall<Mailbox> {
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public static class Builder {
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends QueryMailboxMethodCallBuilder {
         public Builder query(MailboxQuery query) {
             filter(query.filter);
             sort(query.sort);
             sortAsTree(query.sortAsTree);
             filterAsTree(query.filterAsTree);
+            return this;
+        }
+
+        @Override
+        protected Builder __this() {
             return this;
         }
     }

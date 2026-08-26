@@ -11,24 +11,24 @@ import org.jspecify.annotations.Nullable;
 
 public interface QueryChangesMethodCall<T extends Identifiable> extends MethodCall {
     @NonNull
-    String accountId();
+    Arg<String> accountId();
 
     @Nullable
-    Filter<T> filter();
+    Arg<Filter<T>> filter();
 
     @Nullable
-    List<Comparator> sort();
+    Arg<List<Comparator>> sort();
 
     @NonNull
-    String sinceQueryState();
+    Arg<String> sinceQueryState();
 
     @Nullable
-    Long maxChanges();
+    Arg<Long> maxChanges();
 
     @Nullable
-    String upToId();
+    Arg<String> upToId();
 
     @Default("false")
     @Nullable
-    Boolean calculateTotal();
+    Arg<Boolean> calculateTotal();
 }

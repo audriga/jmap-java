@@ -5,13 +5,15 @@ import com.audriga.jmap.common.method.MethodCall;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import java.util.List;
+
 public interface GetMethodCall<T extends Identifiable> extends MethodCall {
     @NonNull
-    String accountId();
+    Arg<String> accountId();
 
     @Nullable
-    String[] ids();
+    Arg<List<String>> ids();
 
     @Nullable
-    String[] properties();
+    Arg<List<String>> properties();
 }

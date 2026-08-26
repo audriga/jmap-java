@@ -16,6 +16,9 @@
 
 package com.audriga.jmap.mock.server;
 
+import static com.audriga.jmap.common.method.MethodCall.Arg.unwrapValue;
+import static com.audriga.jmap.common.method.MethodCall.Arg.unwrapValueOr;
+
 import com.audriga.jmap.common.Response;
 import com.audriga.jmap.common.entity.*;
 import com.audriga.jmap.common.entity.Thread;
@@ -142,8 +145,8 @@ public class MockMailServer extends StubMailServer {
         changedBuilder.put(Thread.class, update.getNewVersion());
         changedBuilder.put(Email.class, update.getNewVersion());
         changedBuilder.put(Mailbox.class, update.getNewVersion());
-        final StateChangeWebSocketMessage stateChange = new StateChangeWebSocketMessage(
-                ImmutableMap.of(accountId(), changedBuilder.build()), update.getNewVersion());
+        final StateChangeWebSocketMessage stateChange =
+                new StateChangeWebSocketMessage(Map.of(accountId(), changedBuilder.build()), update.getNewVersion());
         final StateChange stateChangeMessage = StateChange.builder()
                 .changed(accountId(), changedBuilder.build())
                 .build();
@@ -330,14 +333,14 @@ public class MockMailServer extends StubMailServer {
     @Override
     protected MethodResponse[] execute(
             QueryChangesEmailMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
-        final String since = methodCall.sinceQueryState();
+        final String since = Objects.requireNonNull(unwrapValue(methodCall.sinceQueryState()));
         if (since.equals(getState())) {
             return new MethodResponse[] {
                 QueryChangesEmailMethodResponse.builder()
                         .oldQueryState(getState())
                         .newQueryState(getState())
-                        .added(Collections.emptyList())
-                        .removed(new String[0])
+                        .added(List.of())
+                        .removed(List.of())
                         .build()
             };
         } else {
@@ -348,30 +351,30 @@ public class MockMailServer extends StubMailServer {
     @Override
     protected MethodResponse[] execute(
             QueryEmailMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
-        final Filter<Email> filter = methodCall.filter();
+        final Filter<Email> filter = unwrapValue(methodCall.filter());
         Stream<Email> stream = emails.values().stream();
         stream = applyFilter(filter, stream);
 
         // sort
         stream = stream.sorted(Comparator.comparing(Email::receivedAt).reversed());
 
-        if (Boolean.TRUE.equals(methodCall.collapseThreads())) {
+        if (Boolean.TRUE.equals(unwrapValue(methodCall.collapseThreads()))) {
             stream = stream.filter(distinctByKey(Email::threadId));
         }
         final List<String> ids = stream.map(Email::id).toList();
-        final String anchor = methodCall.anchor();
+        final String anchor = unwrapValue(methodCall.anchor());
         final int position;
         if (anchor != null) {
-            final Long anchorOffset = methodCall.anchorOffset();
+            final Long anchorOffset = unwrapValue(methodCall.anchorOffset());
             final int anchorPosition = ids.indexOf(anchor);
             if (anchorPosition == -1) {
                 return new MethodResponse[] {new AnchorNotFoundMethodErrorResponse()};
             }
             position = Math.toIntExact(anchorPosition + (anchorOffset == null ? 0 : anchorOffset));
         } else {
-            position = Math.toIntExact(methodCall.position() == null ? 0 : methodCall.position());
+            position = Math.toIntExact(unwrapValueOr(methodCall.position(), 0L));
         }
-        final int limit = Math.toIntExact(methodCall.limit() == null ? 40 : methodCall.limit());
+        final int limit = Math.toIntExact(unwrapValueOr(methodCall.limit(), 40L));
         final int endPosition = Math.min(position + limit, ids.size());
         final String[] page = ids.subList(position, endPosition).toArray(new String[0]);
         LOGGER.info(
@@ -379,7 +382,7 @@ public class MockMailServer extends StubMailServer {
                 position,
                 endPosition - 1,
                 page.length);
-        final Long total = Boolean.TRUE.equals(methodCall.calculateTotal()) ? (long) ids.size() : null;
+        final Long total = unwrapValueOr(methodCall.calculateTotal(), false) ? (long) ids.size() : null;
         return new MethodResponse[] {
             QueryEmailMethodResponse.builder()
                     .canCalculateChanges(this.reportCanCalculateQueryChanges)

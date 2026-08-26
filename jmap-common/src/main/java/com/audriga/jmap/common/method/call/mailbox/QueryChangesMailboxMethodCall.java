@@ -16,33 +16,46 @@
 
 package com.audriga.jmap.common.method.call.mailbox;
 
+import com.audriga.jmap.annotation.Default;
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.Comparator;
 import com.audriga.jmap.common.entity.Mailbox;
 import com.audriga.jmap.common.entity.filter.Filter;
 import com.audriga.jmap.common.entity.query.MailboxQuery;
-import com.audriga.jmap.common.method.call.standard.AbstractQueryChangesMethodCall;
+import com.audriga.jmap.common.method.call.standard.QueryChangesMethodCall;
 import java.util.List;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @JmapMethod("Mailbox/queryChanges")
-public class QueryChangesMailboxMethodCall extends AbstractQueryChangesMethodCall<Mailbox> {
-
-    @lombok.Builder
-    public QueryChangesMailboxMethodCall(
-            String accountId,
-            Filter<Mailbox> filter,
-            List<Comparator> sort,
-            String sinceQueryState,
-            Long maxChanges,
-            String upToId,
-            Boolean calculateTotal) {
-        super(accountId, filter, sort, sinceQueryState, maxChanges, upToId, calculateTotal);
+@RecordBuilder
+public record QueryChangesMailboxMethodCall(
+        @NonNull Arg<String> accountId,
+        @Nullable Arg<Filter<Mailbox>> filter,
+        @Nullable Arg<List<Comparator>> sort,
+        @NonNull Arg<String> sinceQueryState,
+        @Nullable Arg<Long> maxChanges,
+        @Nullable Arg<String> upToId,
+        @Default("false") @Nullable Arg<Boolean> calculateTotal)
+        implements QueryChangesMethodCall<Mailbox> {
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public static class Builder {
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends QueryChangesMailboxMethodCallBuilder {
         public Builder query(MailboxQuery query) {
             filter(query.filter);
             sort(query.sort);
+            return this;
+        }
+
+        @Override
+        protected Builder __this() {
             return this;
         }
     }

@@ -31,14 +31,14 @@ import org.jspecify.annotations.Nullable;
 @JmapMethod("Email/queryChanges")
 @RecordBuilder
 public record QueryChangesEmailMethodCall(
-        @NonNull String accountId,
-        @Nullable Filter<Email> filter,
-        @Nullable List<Comparator> sort,
-        @NonNull String sinceQueryState,
-        @Nullable Long maxChanges,
-        @Nullable String upToId,
-        @Default("false") @Nullable Boolean calculateTotal,
-        @Default("false") @Nullable Boolean collapseThreads)
+        @NonNull Arg<String> accountId,
+        @Nullable Arg<Filter<Email>> filter,
+        @Nullable Arg<List<Comparator>> sort,
+        @NonNull Arg<String> sinceQueryState,
+        @Nullable Arg<Long> maxChanges,
+        @Nullable Arg<String> upToId,
+        @Default("false") @Nullable Arg<Boolean> calculateTotal,
+        @Default("false") @Nullable Arg<Boolean> collapseThreads)
         implements QueryChangesMethodCall<Email> {
     public static Builder builder() {
         return new Builder();
