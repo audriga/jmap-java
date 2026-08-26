@@ -24,7 +24,6 @@ import com.audriga.jmap.common.entity.TypedState;
 import com.audriga.jmap.common.method.response.email.GetEmailMethodResponse;
 import com.audriga.jmap.common.method.response.email.QueryChangesEmailMethodResponse;
 import com.audriga.jmap.common.method.response.email.QueryEmailMethodResponse;
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -35,30 +34,13 @@ import java.util.Collections;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
 
-public class QueryResult {
-
-    public final QueryResultItem[] items;
-    public final TypedState<Email> queryState;
-    public final boolean canCalculateChanges;
-    public final long position;
-    public final Long total;
-    public final TypedState<Email> objectState;
-
-    private QueryResult(
-            @NonNull final QueryResultItem[] items,
-            final TypedState<Email> queryState,
-            final boolean canCalculateChanges,
-            final long position,
-            final Long total,
-            final TypedState<Email> objectState) {
-        this.items = items;
-        this.queryState = queryState;
-        this.canCalculateChanges = canCalculateChanges;
-        this.position = position;
-        this.total = total;
-        this.objectState = objectState;
-    }
-
+public record QueryResult(
+        @NonNull List<QueryResultItem> items,
+        TypedState<Email> queryState,
+        boolean canCalculateChanges,
+        long position,
+        Long total,
+        TypedState<Email> objectState) {
     @NonNull
     public static ListenableFuture<QueryResult> of(
             final ListenableFuture<MethodResponses> queryResponsesFuture,
@@ -67,7 +49,7 @@ public class QueryResult {
                 Futures.allAsList(queryResponsesFuture, getThreadIdsResponsesFuture),
                 methodResponses -> {
                     Preconditions.checkState(
-                            methodResponses != null && methodResponses.size() == 2,
+                            methodResponses.size() == 2,
                             "Unable to create QueryResult. Invalid number of input method" + " responses");
                     final QueryEmailMethodResponse queryResponse =
                             methodResponses.get(0).getMain(QueryEmailMethodResponse.class);
@@ -81,13 +63,11 @@ public class QueryResult {
 
     public static QueryResult of(
             QueryEmailMethodResponse queryEmailMethodResponse, GetEmailMethodResponse emailMethodResponse) {
-        final String[] emailIds = queryEmailMethodResponse.ids();
-        final QueryResultItem[] resultItems = new QueryResultItem[emailIds.length];
-        final ImmutableMap<String, String> emailIdToThreadIdMap = map(emailMethodResponse);
-        for (int i = 0; i < emailIds.length; ++i) {
-            final String emailId = emailIds[i];
-            resultItems[i] = QueryResultItem.of(emailId, emailIdToThreadIdMap.get(emailId));
-        }
+        final var emailIds = queryEmailMethodResponse.ids();
+        final var emailIdToThreadIdMap = map(emailMethodResponse);
+        final var resultItems = emailIds.stream()
+                .map(id -> QueryResultItem.of(id, emailIdToThreadIdMap.get(id)))
+                .toList();
         return new QueryResult(
                 resultItems,
                 queryEmailMethodResponse.typedQueryState(),
@@ -121,17 +101,5 @@ public class QueryResult {
 
     private static <T> List<AddedItem<T>> nullToEmpty(final List<AddedItem<T>> value) {
         return value == null ? Collections.emptyList() : value;
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("items", items)
-                .add("queryState", queryState)
-                .add("canCalculateChanges", canCalculateChanges)
-                .add("position", position)
-                .add("total", total)
-                .add("objectState", objectState)
-                .toString();
     }
 }

@@ -17,14 +17,28 @@
 package com.audriga.jmap.common.method.response.submission;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.EmailSubmission;
 import com.audriga.jmap.common.method.response.standard.GetMethodResponse;
+import java.util.List;
 
 @JmapMethod("EmailSubmission/get")
-public class GetEmailSubmissionMethodResponse extends GetMethodResponse<EmailSubmission> {
+@RecordBuilder
+public record GetEmailSubmissionMethodResponse(
+        String accountId, String state, List<EmailSubmission> list, List<String> notFound)
+        implements GetMethodResponse<EmailSubmission> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @lombok.Builder
-    public GetEmailSubmissionMethodResponse(String accountId, String state, String[] notFound, EmailSubmission[] list) {
-        super(accountId, state, notFound, list);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends GetEmailSubmissionMethodResponseBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

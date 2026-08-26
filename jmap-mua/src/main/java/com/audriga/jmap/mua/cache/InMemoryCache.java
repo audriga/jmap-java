@@ -66,7 +66,7 @@ public class InMemoryCache implements Cache {
                 return new QueryStateWrapper(null, false, null, objectsState);
             } else {
                 final QueryStateWrapper.UpTo upTo;
-                if (queryResult.items.size() > 0) {
+                if (!queryResult.items.isEmpty()) {
                     final int lastPosition = queryResult.items.size() - 1;
                     final QueryResultItem lastItem = queryResult.items.get(lastPosition);
                     final String id = lastItem.getEmailId();
@@ -343,7 +343,7 @@ public class InMemoryCache implements Cache {
     @Override
     public void setQueryResult(String query, QueryResult queryResult) {
         synchronized (this.queryResults) {
-            final String emailState = queryResult.objectState.getState();
+            final String emailState = queryResult.objectState().getState();
             if (emailState == null || !emailState.equals(this.emailState)) {
                 throw new CacheConflictException(String.format(
                         "Email state must match when updating query results. Cached" + " state=%s. Your state=%s",
@@ -352,7 +352,9 @@ public class InMemoryCache implements Cache {
             this.queryResults.put(
                     query,
                     new InMemoryQueryResult(
-                            queryResult.queryState.getState(), queryResult.canCalculateChanges, queryResult.items));
+                            queryResult.queryState().getState(),
+                            queryResult.canCalculateChanges(),
+                            queryResult.items()));
         }
     }
 
@@ -360,8 +362,8 @@ public class InMemoryCache implements Cache {
     public void addQueryResult(String queryString, String afterEmailId, QueryResult queryResult)
             throws CacheWriteException, CacheConflictException {
         synchronized (this.queryResults) {
-            final String emailState = queryResult.objectState.getState();
-            final String queryState = queryResult.queryState.getState();
+            final String emailState = queryResult.objectState().getState();
+            final String queryState = queryResult.queryState().getState();
 
             // TODO simply ignore if already applied
 
@@ -388,12 +390,12 @@ public class InMemoryCache implements Cache {
                         currentLastItemId, afterEmailId));
             }
 
-            if (currentItemCount != queryResult.position) {
+            if (currentItemCount != queryResult.position()) {
                 throw new CorruptCacheException(String.format(
                         "Unexpected QueryPage. Cache has %d items. Page starts at position" + " %d",
-                        currentItemCount, queryResult.position));
+                        currentItemCount, queryResult.position()));
             }
-            inMemoryQueryResult.items.addAll(Arrays.asList(queryResult.items));
+            inMemoryQueryResult.items.addAll(queryResult.items());
         }
     }
 
@@ -418,13 +420,13 @@ public class InMemoryCache implements Cache {
                         update.getOldTypedState().getState()));
             }
             for (String removed : update.removed()) {
-                LOGGER.info("no removing id " + removed);
+                LOGGER.info("no removing id {}", removed);
                 queryResult.remove(removed);
             }
             for (AddedItem<QueryResultItem> addedItem : update.added()) {
                 // TODO it is probably save to just not add an item that exceeds the range (position
                 // > length) but this indicates a broken uper layer
-                LOGGER.info("now adding " + addedItem.getItem().getEmailId() + " on index " + addedItem.getIndex());
+                LOGGER.info("now adding {} on index {}", addedItem.getItem().getEmailId(), addedItem.getIndex());
                 queryResult.items.add((int) addedItem.getIndex(), addedItem.getItem());
             }
             queryResult.queryState = update.getNewTypedState().getState();
@@ -492,10 +494,10 @@ public class InMemoryCache implements Cache {
         private final boolean canCalculateChanges;
         private final ArrayList<QueryResultItem> items;
 
-        InMemoryQueryResult(String queryState, boolean canCalculateChanges, QueryResultItem[] items) {
+        InMemoryQueryResult(String queryState, boolean canCalculateChanges, List<QueryResultItem> items) {
             this.queryState = queryState;
             this.canCalculateChanges = canCalculateChanges;
-            this.items = new ArrayList<>(Arrays.asList(items));
+            this.items = new ArrayList<>(items);
         }
 
         private void remove(String emailId) {

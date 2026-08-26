@@ -17,26 +17,39 @@
 package com.audriga.jmap.common.method.response.mailbox;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.Mailbox;
 import com.audriga.jmap.common.entity.SetError;
 import com.audriga.jmap.common.method.response.standard.SetMethodResponse;
+import java.util.List;
 import java.util.Map;
-import lombok.Singular;
+import org.jspecify.annotations.Nullable;
 
 @JmapMethod("Mailbox/set")
-public class SetMailboxMethodResponse extends SetMethodResponse<Mailbox> {
+@RecordBuilder
+public record SetMailboxMethodResponse(
+        String accountId,
+        @Nullable String oldState,
+        String newState,
+        @Nullable Map<String, Mailbox> created,
+        @Nullable Map<String, Mailbox> updated,
+        @Nullable List<String> destroyed,
+        @Nullable Map<String, SetError> notCreated,
+        @Nullable Map<String, SetError> notUpdated,
+        @Nullable Map<String, SetError> notDestroyed)
+        implements SetMethodResponse<Mailbox> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @lombok.Builder
-    public SetMailboxMethodResponse(
-            String accountId,
-            String oldState,
-            String newState,
-            @Singular("created") Map<String, Mailbox> created,
-            @Singular("updated") Map<String, Mailbox> updated,
-            String[] destroyed,
-            @Singular("notCreated") Map<String, SetError> notCreated,
-            @Singular("notUpdated") Map<String, SetError> notUpdated,
-            Map<String, SetError> notDestroyed) {
-        super(accountId, oldState, newState, created, updated, destroyed, notCreated, notUpdated, notDestroyed);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends SetMailboxMethodResponseBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

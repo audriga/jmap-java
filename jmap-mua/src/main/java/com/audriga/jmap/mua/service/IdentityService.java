@@ -69,9 +69,9 @@ public class IdentityService extends AbstractMuaService {
                 responseFuture,
                 methodResponses -> {
                     final GetIdentityMethodResponse response = methodResponses.getMain(GetIdentityMethodResponse.class);
-                    final Identity[] identities = response.list();
-                    cache.setIdentities(response.typedState(), identities);
-                    return Futures.immediateFuture(Status.of(identities.length > 0));
+                    final var identities = response.list();
+                    cache.setIdentities(response.typedState(), identities.toArray(Identity[]::new));
+                    return Futures.immediateFuture(Status.of(!identities.isEmpty()));
                 },
                 ioExecutorService);
     }

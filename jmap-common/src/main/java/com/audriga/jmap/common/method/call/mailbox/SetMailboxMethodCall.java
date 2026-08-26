@@ -16,27 +16,38 @@
 
 package com.audriga.jmap.common.method.call.mailbox;
 
+import com.audriga.jmap.annotation.Default;
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.Mailbox;
-import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.method.call.standard.SetMethodCall;
+import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @JmapMethod("Mailbox/set")
-public class SetMailboxMethodCall extends SetMethodCall<Mailbox> {
+@RecordBuilder
+public record SetMailboxMethodCall(
+        @NonNull Arg<String> accountId,
+        @Nullable Arg<String> ifInState,
+        @Nullable Arg<Map<String, Mailbox>> create,
+        @Nullable Arg<Map<String, Map<String, Object>>> update,
+        @Nullable Arg<List<String>> destroy,
+        @Default("false") @Nullable Boolean onDestroyRemoveEmails)
+        implements SetMethodCall<Mailbox> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    private Boolean onDestroyRemoveEmails;
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
 
-    @lombok.Builder
-    public SetMailboxMethodCall(
-            String accountId,
-            String ifInState,
-            Map<String, Mailbox> create,
-            Map<String, Map<String, Object>> update,
-            String[] destroy,
-            ResultReference destroyReference,
-            Boolean onDestroyRemoveEmails) {
-        super(accountId, ifInState, create, update, destroy, destroyReference);
-        this.onDestroyRemoveEmails = onDestroyRemoveEmails;
+    public static final class Builder extends SetMailboxMethodCallBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

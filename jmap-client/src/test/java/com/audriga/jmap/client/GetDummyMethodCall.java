@@ -17,12 +17,30 @@
 package com.audriga.jmap.client;
 
 import com.audriga.jmap.annotation.JmapMethod;
-import com.audriga.jmap.common.method.call.standard.AbstractGetMethodCall;
+import com.audriga.jmap.annotation.RecordBuilder;
+import com.audriga.jmap.common.method.call.standard.GetMethodCall;
+import java.util.List;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @JmapMethod("Dummy/get")
-public class GetDummyMethodCall extends AbstractGetMethodCall<Dummy> {
+@RecordBuilder
+public record GetDummyMethodCall(
+        @NonNull Arg<String> accountId,
+        @Nullable Arg<List<String>> ids,
+        @Nullable Arg<List<String>> properties) implements GetMethodCall<Dummy> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    public GetDummyMethodCall(String accountId) {
-        super(accountId, null, null, null);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends GetDummyMethodCallBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

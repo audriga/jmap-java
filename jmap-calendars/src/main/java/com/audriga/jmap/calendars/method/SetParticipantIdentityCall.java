@@ -1,29 +1,36 @@
 package com.audriga.jmap.calendars.method;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.calendars.entity.ParticipantIdentity;
-import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.method.call.standard.SetMethodCall;
+import java.util.List;
 import java.util.Map;
-import lombok.Getter;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-@Getter
 @JmapMethod("ParticipantIdentity/set")
-public class SetParticipantIdentityCall extends SetMethodCall<ParticipantIdentity> {
-    private @Nullable String onSuccessSetIsDefault;
+@RecordBuilder
+public record SetParticipantIdentityCall(
+        @NonNull Arg<String> accountId,
+        @Nullable Arg<String> ifInState,
+        @Nullable Arg<Map<String, ParticipantIdentity>> create,
+        @Nullable Arg<Map<String, Map<String, Object>>> update,
+        @Nullable Arg<List<String>> destroy,
+        @Nullable String onSuccessSetIsDefault)
+        implements SetMethodCall<ParticipantIdentity> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @lombok.Builder
-    public SetParticipantIdentityCall(
-            @NonNull String accountId,
-            String ifInState,
-            Map<String, ParticipantIdentity> create,
-            Map<String, Map<String, Object>> update,
-            String[] destroy,
-            ResultReference destroyReference,
-            @Nullable String onSuccessSetIsDefault) {
-        super(accountId, ifInState, create, update, destroy, destroyReference);
-        this.onSuccessSetIsDefault = onSuccessSetIsDefault;
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends SetParticipantIdentityCallBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

@@ -66,7 +66,7 @@ public abstract class AbstractMuaService {
     protected void registerCacheInvalidationCallback(
             UpdateUtil.MethodResponsesFuture methodResponsesFuture, Runnable runnable) {
         methodResponsesFuture.addChangesCallback(
-                new FutureCallback<MethodResponses>() {
+                new FutureCallback<>() {
                     @Override
                     public void onSuccess(@Nullable MethodResponses methodResponses) {
                         final ChangesMethodResponse<?> changesMethodResponse =

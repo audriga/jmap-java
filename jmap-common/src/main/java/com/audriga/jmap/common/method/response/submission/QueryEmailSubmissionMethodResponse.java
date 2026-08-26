@@ -17,20 +17,35 @@
 package com.audriga.jmap.common.method.response.submission;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.EmailSubmission;
 import com.audriga.jmap.common.method.response.standard.QueryMethodResponse;
+import java.util.List;
+import org.jspecify.annotations.Nullable;
 
 @JmapMethod("EmailSubmission/query")
-public class QueryEmailSubmissionMethodResponse extends QueryMethodResponse<EmailSubmission> {
-    @lombok.Builder
-    public QueryEmailSubmissionMethodResponse(
-            String accountId,
-            String queryState,
-            boolean canCalculateChanges,
-            Long position,
-            String[] ids,
-            Long total,
-            Long limit) {
-        super(accountId, queryState, canCalculateChanges, position, ids, total, limit);
+@RecordBuilder
+public record QueryEmailSubmissionMethodResponse(
+        String accountId,
+        String queryState,
+        boolean canCalculateChanges,
+        Long position,
+        List<String> ids,
+        @Nullable Long total,
+        @Nullable Long limit)
+        implements QueryMethodResponse<EmailSubmission> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends QueryEmailSubmissionMethodResponseBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

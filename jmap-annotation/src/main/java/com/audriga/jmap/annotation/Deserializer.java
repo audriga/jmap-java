@@ -6,5 +6,5 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.RECORD_COMPONENT, ElementType.PARAMETER})
-public @interface Inline {}
+@Target({ElementType.CONSTRUCTOR, ElementType.METHOD})
+public @interface Deserializer {}

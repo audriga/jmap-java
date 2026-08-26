@@ -17,14 +17,30 @@
 package com.audriga.jmap.common.method.call.submission;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.EmailSubmission;
 import com.audriga.jmap.common.method.call.standard.ChangesMethodCall;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @JmapMethod("EmailSubmission/changes")
-public class ChangesEmailSubmissionMethodCall extends ChangesMethodCall<EmailSubmission> {
+@RecordBuilder
+public record ChangesEmailSubmissionMethodCall(
+        @NonNull Arg<String> accountId,
+        @NonNull Arg<String> sinceState,
+        @Nullable Arg<Long> maxChanges) implements ChangesMethodCall<EmailSubmission> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @lombok.Builder
-    public ChangesEmailSubmissionMethodCall(String accountId, String sinceState, Long maxChanges) {
-        super(accountId, sinceState, maxChanges);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends ChangesEmailSubmissionMethodCallBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

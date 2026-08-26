@@ -61,7 +61,7 @@ public class PluginService extends AbstractMuaService {
         return currentFuture;
     }
 
-    public void executeEmailCacheStagePlugins(final Email[] emails) {
+    public void executeEmailCacheStagePlugins(final Iterable<Email> emails) {
         for (final Email email : emails) {
             executeEmailCacheStagePlugins(email);
         }

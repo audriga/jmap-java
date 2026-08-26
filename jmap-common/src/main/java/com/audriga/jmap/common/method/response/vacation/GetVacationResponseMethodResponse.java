@@ -17,15 +17,28 @@
 package com.audriga.jmap.common.method.response.vacation;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.VacationResponse;
 import com.audriga.jmap.common.method.response.standard.GetMethodResponse;
+import java.util.List;
 
 @JmapMethod("VacationResponse/get")
-public class GetVacationResponseMethodResponse extends GetMethodResponse<VacationResponse> {
+@RecordBuilder
+public record GetVacationResponseMethodResponse(
+        String accountId, String state, List<VacationResponse> list, List<String> notFound)
+        implements GetMethodResponse<VacationResponse> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @lombok.Builder
-    public GetVacationResponseMethodResponse(
-            String accountId, String state, String[] notFound, VacationResponse[] list) {
-        super(accountId, state, notFound, list);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends GetVacationResponseMethodResponseBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

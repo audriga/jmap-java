@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.audriga.jmap.common.Response;
 import com.audriga.jmap.common.entity.Email;
-import com.audriga.jmap.common.entity.Identity;
 import com.audriga.jmap.common.method.response.email.GetEmailMethodResponse;
 import com.audriga.jmap.common.method.response.identity.GetIdentityMethodResponse;
 import java.io.IOException;
@@ -37,9 +36,9 @@ public class RfcExamplesDeserializerTest extends AbstractGsonTest {
         assertEquals(1, responseInvocation.length);
         MatcherAssert.assertThat(responseInvocation[0].methodResponse(), instanceOf(GetEmailMethodResponse.class));
         final GetEmailMethodResponse methodResponse = (GetEmailMethodResponse) responseInvocation[0].methodResponse();
-        final Email[] emails = methodResponse.list();
-        assertEquals(1, emails.length);
-        final Email email = emails[0];
+        final var emails = methodResponse.list();
+        assertEquals(1, emails.size());
+        final Email email = emails.get(0);
         assertEquals("f123u457", email.id());
         assertEquals(2, email.bodyValues().size());
         assertEquals(1, email.from().size());
@@ -53,8 +52,8 @@ public class RfcExamplesDeserializerTest extends AbstractGsonTest {
                 parseFromResource("rfc-example/identity-get-response.json", Response.Invocation.class);
         MatcherAssert.assertThat(invocation.methodResponse(), instanceOf(GetIdentityMethodResponse.class));
         GetIdentityMethodResponse methodResponse = (GetIdentityMethodResponse) invocation.methodResponse();
-        Identity[] identities = methodResponse.list();
-        assertEquals(2, identities.length);
-        assertEquals("Joe Bloggs", identities[0].name());
+        var identities = methodResponse.list();
+        assertEquals(2, identities.size());
+        assertEquals("Joe Bloggs", identities.get(0).name());
     }
 }

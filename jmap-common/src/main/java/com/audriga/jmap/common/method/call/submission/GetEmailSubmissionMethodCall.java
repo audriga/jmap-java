@@ -17,16 +17,31 @@
 package com.audriga.jmap.common.method.call.submission;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.EmailSubmission;
-import com.audriga.jmap.common.method.ResultReference;
-import com.audriga.jmap.common.method.call.standard.AbstractGetMethodCall;
+import com.audriga.jmap.common.method.call.standard.GetMethodCall;
+import java.util.List;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @JmapMethod("EmailSubmission/get")
-public class GetEmailSubmissionMethodCall extends AbstractGetMethodCall<EmailSubmission> {
+@RecordBuilder
+public record GetEmailSubmissionMethodCall(
+        @NonNull Arg<String> accountId,
+        @Nullable Arg<List<String>> ids,
+        @Nullable Arg<List<String>> properties) implements GetMethodCall<EmailSubmission> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @lombok.Builder
-    public GetEmailSubmissionMethodCall(
-            String accountId, String[] ids, String[] properties, ResultReference idsReference) {
-        super(accountId, ids, properties, idsReference);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends GetEmailSubmissionMethodCallBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

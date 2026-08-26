@@ -16,30 +16,38 @@
 
 package com.audriga.jmap.common.method.call.email;
 
+import com.audriga.jmap.annotation.Default;
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.Email;
 import com.audriga.jmap.common.method.call.standard.CopyMethodCall;
 import java.util.Map;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @JmapMethod("Email/copy")
-public class CopyEmailMethodCall extends CopyMethodCall<Email> {
+@RecordBuilder
+public record CopyEmailMethodCall(
+        @NonNull Arg<String> fromAccountId,
+        @Nullable Arg<String> ifFromInState,
+        @NonNull Arg<String> accountId,
+        @Nullable Arg<String> ifInState,
+        @NonNull Arg<Map<String, Email>> create,
+        @Default("false") @Nullable Arg<Boolean> onSuccessDestroyOriginal,
+        @Nullable Arg<String> destroyFromIfInState)
+        implements CopyMethodCall<Email> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @lombok.Builder
-    public CopyEmailMethodCall(
-            String fromAccountId,
-            String ifFromInState,
-            String accountId,
-            String ifInState,
-            Map<String, Email> create,
-            Boolean onSuccessDestroyOriginal,
-            String destroyFromIfInState) {
-        super(
-                fromAccountId,
-                ifFromInState,
-                accountId,
-                ifInState,
-                create,
-                onSuccessDestroyOriginal,
-                destroyFromIfInState);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends CopyEmailMethodCallBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

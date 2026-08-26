@@ -17,14 +17,30 @@
 package com.audriga.jmap.common.method.call.thread;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.Thread;
 import com.audriga.jmap.common.method.call.standard.ChangesMethodCall;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @JmapMethod("Thread/changes")
-public class ChangesThreadMethodCall extends ChangesMethodCall<Thread> {
+@RecordBuilder
+public record ChangesThreadMethodCall(
+        @NonNull Arg<String> accountId,
+        @NonNull Arg<String> sinceState,
+        @Nullable Arg<Long> maxChanges) implements ChangesMethodCall<Thread> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @lombok.Builder
-    public ChangesThreadMethodCall(String accountId, String sinceState, Long maxChanges) {
-        super(accountId, sinceState, maxChanges);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends ChangesThreadMethodCallBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

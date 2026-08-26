@@ -237,7 +237,7 @@ public class QueryTest {
 
         @Override
         public void setQueryResult(String query, QueryResult queryResult) {
-            this.hadTotal.compareAndSet(false, queryResult.total != null);
+            this.hadTotal.compareAndSet(false, queryResult.total() != null);
             super.setQueryResult(query, queryResult);
         }
     }

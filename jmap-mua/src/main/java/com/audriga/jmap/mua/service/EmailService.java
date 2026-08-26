@@ -55,7 +55,6 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("UnstableApiUsage")
 public class EmailService extends AbstractMuaService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
@@ -247,7 +246,7 @@ public class EmailService extends AbstractMuaService {
                     SetEmailSubmissionMethodResponse setEmailSubmissionMethodResponse =
                             methodResponses.getMain(SetEmailSubmissionMethodResponse.class);
                     SetEmailSubmissionException.throwIfFailed(setEmailSubmissionMethodResponse);
-                    return Futures.immediateFuture(setEmailSubmissionMethodResponse.getUpdatedCreatedCount() > 0);
+                    return Futures.immediateFuture(setEmailSubmissionMethodResponse.updatedCreatedCount() > 0);
                 },
                 MoreExecutors.directExecutor());
     }
@@ -355,7 +354,7 @@ public class EmailService extends AbstractMuaService {
 
     private ListenableFuture<Boolean> applyEmailPatches(
             final Map<String, Map<String, Object>> patches, final ObjectsState objectsState) {
-        if (patches.size() == 0) {
+        if (patches.isEmpty()) {
             return Futures.immediateFuture(false);
         }
         JmapClient.MultiCall multiCall = jmapClient.newMultiCall();
@@ -403,7 +402,7 @@ public class EmailService extends AbstractMuaService {
                     SetEmailMethodResponse setEmailMethodResponse =
                             methodResponses.getMain(SetEmailMethodResponse.class);
                     SetEmailException.throwIfFailed(setEmailMethodResponse);
-                    return Futures.immediateFuture(setEmailMethodResponse.getUpdatedCreatedCount() > 0);
+                    return Futures.immediateFuture(setEmailMethodResponse.updatedCreatedCount() > 0);
                 },
                 ioExecutorService);
     }
@@ -424,7 +423,7 @@ public class EmailService extends AbstractMuaService {
                     final Update<Email> update = Update.of(changesResponse, createdResponse, updatedResponse);
                     getService(PluginService.class).executeEmailCacheStagePlugins(update.created());
                     if (update.hasChanges()) {
-                        cache.updateEmails(update, Email.Properties.MUTABLE);
+                        cache.updateEmails(update, Email.Properties.MUTABLE.toArray(String[]::new));
                     }
                     return Futures.immediateFuture(Status.of(update));
                 },
@@ -460,7 +459,7 @@ public class EmailService extends AbstractMuaService {
                 .call(SetEmailMethodCall.builder()
                         .accountId(accountId)
                         .ifInState(objectsState.emailState)
-                        .destroy(new String[] {email.id()})
+                        .destroy(List.of(email.id()))
                         .build())
                 .getMethodResponses();
         if (objectsState.emailState != null) {
@@ -472,8 +471,8 @@ public class EmailService extends AbstractMuaService {
                     SetEmailMethodResponse setEmailMethodResponse =
                             methodResponses.getMain(SetEmailMethodResponse.class);
                     SetEmailException.throwIfFailed(setEmailMethodResponse);
-                    final String[] destroyed = setEmailMethodResponse.destroyed();
-                    return Futures.immediateFuture(destroyed != null && destroyed.length > 0);
+                    final var destroyed = setEmailMethodResponse.destroyed();
+                    return Futures.immediateFuture(destroyed != null && destroyed.size() > 0);
                 },
                 MoreExecutors.directExecutor());
     }
@@ -1058,7 +1057,7 @@ public class EmailService extends AbstractMuaService {
         final ListenableFuture<MethodResponses> setFuture = multiCall
                 .call(SetEmailMethodCall.builder()
                         .accountId(accountId)
-                        .destroyReference(queryCall.createResultReference(ResultReference.Path.IDS))
+                        .destroy(queryCall.createResultReference(ResultReference.Path.IDS))
                         .build())
                 .getMethodResponses();
         multiCall.execute();
@@ -1068,8 +1067,8 @@ public class EmailService extends AbstractMuaService {
                     SetEmailMethodResponse setEmailMethodResponse =
                             setFuture.get().getMain(SetEmailMethodResponse.class);
                     SetEmailException.throwIfFailed(setEmailMethodResponse);
-                    final String[] destroyed = setEmailMethodResponse.destroyed();
-                    LOGGER.info("Deleted {} emails", destroyed == null ? 0 : destroyed.length);
+                    final var destroyed = setEmailMethodResponse.destroyed();
+                    LOGGER.info("Deleted {} emails", destroyed == null ? 0 : destroyed.size());
                     return Futures.immediateFuture(true);
                 },
                 MoreExecutors.directExecutor());

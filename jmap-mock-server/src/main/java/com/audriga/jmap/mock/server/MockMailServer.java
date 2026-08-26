@@ -24,8 +24,8 @@ import com.audriga.jmap.common.entity.*;
 import com.audriga.jmap.common.entity.Thread;
 import com.audriga.jmap.common.entity.filter.EmailFilterCondition;
 import com.audriga.jmap.common.entity.filter.Filter;
+import com.audriga.jmap.common.method.MethodCall;
 import com.audriga.jmap.common.method.MethodResponse;
-import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.method.call.core.SetPushSubscriptionMethodCall;
 import com.audriga.jmap.common.method.call.email.*;
 import com.audriga.jmap.common.method.call.identity.GetIdentityMethodCall;
@@ -252,15 +252,15 @@ public class MockMailServer extends StubMailServer {
     @Override
     protected MethodResponse[] execute(
             ChangesEmailMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
-        final String since = methodCall.sinceState();
+        final String since = unwrapValue(methodCall.sinceState());
         if (since.equals(getState())) {
             return new MethodResponse[] {
                 ChangesEmailMethodResponse.builder()
                         .oldState(getState())
                         .newState(getState())
-                        .updated(new String[0])
-                        .created(new String[0])
-                        .destroyed(new String[0])
+                        .updated(List.of())
+                        .created(List.of())
+                        .destroyed(List.of())
                         .build()
             };
         } else {
@@ -273,9 +273,9 @@ public class MockMailServer extends StubMailServer {
                     ChangesEmailMethodResponse.builder()
                             .oldState(since)
                             .newState(update.getNewVersion())
-                            .updated(changes == null ? new String[0] : changes.updated)
-                            .created(changes == null ? new String[0] : changes.created)
-                            .destroyed(new String[0])
+                            .updated(changes == null ? List.of() : changes.updated())
+                            .created(changes == null ? List.of() : changes.created())
+                            .destroyed(List.of())
                             .hasMoreChanges(!update.getNewVersion().equals(getState()))
                             .build()
                 };
@@ -299,23 +299,25 @@ public class MockMailServer extends StubMailServer {
     @Override
     protected MethodResponse[] execute(
             GetEmailMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
-        final ResultReference idsReference = methodCall.idsReference();
+        final var idsArg = methodCall.ids();
         final List<String> ids;
-        if (idsReference != null) {
+        if (idsArg instanceof MethodCall.Arg.Reference<?> ref) {
             try {
-                ids = Arrays.asList(ResultReferenceResolver.resolve(idsReference, previousResponses));
+                ids = ResultReferenceResolver.resolve(ref.reference(), previousResponses);
             } catch (final IllegalArgumentException e) {
                 return new MethodResponse[] {new InvalidResultReferenceMethodErrorResponse()};
             }
+        } else if (idsArg instanceof MethodCall.Arg.Value<List<String>> v) {
+            ids = v.value();
         } else {
-            ids = Arrays.asList(methodCall.ids());
+            ids = null;
         }
-        final String[] properties = methodCall.properties();
+        final var properties = unwrapValue(methodCall.properties());
         Stream<Email> emailStream = ids.stream().map(emails::get);
-        if (Arrays.equals(properties, Email.Properties.THREAD_ID)) {
+        if (Email.Properties.THREAD_ID.equals(properties)) {
             emailStream = emailStream.map(email ->
                     Email.builder().id(email.id()).threadId(email.threadId()).build());
-        } else if (Arrays.equals(properties, Email.Properties.MUTABLE)) {
+        } else if (Email.Properties.MUTABLE.equals(properties)) {
             emailStream = emailStream.map(email -> Email.builder()
                     .id(email.id())
                     .keywords(email.keywords())
@@ -324,7 +326,7 @@ public class MockMailServer extends StubMailServer {
         }
         return new MethodResponse[] {
             GetEmailMethodResponse.builder()
-                    .list(emailStream.toArray(Email[]::new))
+                    .list(emailStream.toList())
                     .state(getState())
                     .build()
         };
@@ -376,12 +378,12 @@ public class MockMailServer extends StubMailServer {
         }
         final int limit = Math.toIntExact(unwrapValueOr(methodCall.limit(), 40L));
         final int endPosition = Math.min(position + limit, ids.size());
-        final String[] page = ids.subList(position, endPosition).toArray(new String[0]);
+        final var page = ids.subList(position, endPosition);
         LOGGER.info(
                 "query email page between {} and {} (inclusive). Page contains {} items",
                 position,
                 endPosition - 1,
-                page.length);
+                page.size());
         final Long total = unwrapValueOr(methodCall.calculateTotal(), false) ? (long) ids.size() : null;
         return new MethodResponse[] {
             QueryEmailMethodResponse.builder()
@@ -416,11 +418,11 @@ public class MockMailServer extends StubMailServer {
     @Override
     protected MethodResponse[] execute(
             SetEmailMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
-        final String ifInState = methodCall.ifInState();
-        final Map<String, Map<String, Object>> update = methodCall.update();
-        final Map<String, Email> create = methodCall.create();
-        final String[] destroy = methodCall.destroy();
-        if (destroy != null && destroy.length > 0) {
+        final var ifInState = unwrapValue(methodCall.ifInState());
+        final var update = unwrapValue(methodCall.update());
+        final var create = unwrapValue(methodCall.create());
+        final var destroy = unwrapValue(methodCall.destroy());
+        if (destroy != null && !destroy.isEmpty()) {
             throw new IllegalStateException("MockMailServer does not know how to destroy");
         }
         final var responseBuilder = SetEmailMethodResponse.builder();
@@ -432,16 +434,20 @@ public class MockMailServer extends StubMailServer {
         }
         if (update != null) {
             final List<Email> modifiedEmails = new ArrayList<>();
+            var updated = ImmutableMap.<String, Email>builder();
+            var notUpdated = ImmutableMap.<String, SetError>builder();
             for (final Map.Entry<String, Map<String, Object>> entry : update.entrySet()) {
                 final String id = entry.getKey();
                 try {
                     final Email modifiedEmail = patchEmail(id, entry.getValue(), previousResponses);
                     modifiedEmails.add(modifiedEmail);
-                    responseBuilder.updated(id, modifiedEmail);
+                    updated.put(id, modifiedEmail);
                 } catch (final IllegalArgumentException e) {
-                    responseBuilder.notUpdated(id, new SetError(SetErrorType.INVALID_PROPERTIES, e.getMessage()));
+                    notUpdated.put(id, new SetError(SetErrorType.INVALID_PROPERTIES, e.getMessage()));
                 }
             }
+            responseBuilder.updated(updated.build());
+            responseBuilder.notUpdated(notUpdated.build());
             for (final Email email : modifiedEmails) {
                 emails.put(email.id(), email);
             }
@@ -459,6 +465,7 @@ public class MockMailServer extends StubMailServer {
             Map<String, Email> create,
             SetEmailMethodResponse.Builder responseBuilder,
             ListMultimap<String, Response.Invocation> previousResponses) {
+        var created = ImmutableMap.<String, Email>builder();
         for (final Map.Entry<String, Email> entry : create.entrySet()) {
             final String createId = entry.getKey();
             final String id = UUID.randomUUID().toString();
@@ -494,8 +501,9 @@ public class MockMailServer extends StubMailServer {
             final Email email = emailBuilder.build();
 
             createEmail(email);
-            responseBuilder.created(createId, email);
+            created.put(createId, email);
         }
+        responseBuilder.created(created.build());
     }
 
     private static EmailBodyPart injectId(final Attachment attachment) {
@@ -513,13 +521,11 @@ public class MockMailServer extends StubMailServer {
             GetIdentityMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
         return new MethodResponse[] {
             GetIdentityMethodResponse.builder()
-                    .list(new Identity[] {
-                        Identity.builder()
-                                .id(accountId())
-                                .email(account.email())
-                                .name(account.name())
-                                .build()
-                    })
+                    .list(List.of(Identity.builder()
+                            .id(accountId())
+                            .email(account.email())
+                            .name(account.name())
+                            .build()))
                     .build()
         };
     }
@@ -527,16 +533,16 @@ public class MockMailServer extends StubMailServer {
     @Override
     protected MethodResponse[] execute(
             ChangesMailboxMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
-        final String since = methodCall.sinceState();
+        final var since = unwrapValue(methodCall.sinceState());
         if (since != null && since.equals(getState())) {
             return new MethodResponse[] {
                 ChangesMailboxMethodResponse.builder()
                         .oldState(getState())
                         .newState(getState())
-                        .updated(new String[0])
-                        .created(new String[0])
-                        .destroyed(new String[0])
-                        .updatedProperties(new String[0])
+                        .updated(List.of())
+                        .created(List.of())
+                        .destroyed(List.of())
+                        .updatedProperties(List.of())
                         .build()
             };
         } else {
@@ -549,9 +555,9 @@ public class MockMailServer extends StubMailServer {
                     ChangesMailboxMethodResponse.builder()
                             .oldState(since)
                             .newState(update.getNewVersion())
-                            .updated(changes.updated)
-                            .created(changes.created)
-                            .destroyed(new String[0])
+                            .updated(changes.updated())
+                            .created(changes.created())
+                            .destroyed(List.of())
                             .hasMoreChanges(!update.getNewVersion().equals(getState()))
                             .build()
                 };
@@ -562,24 +568,25 @@ public class MockMailServer extends StubMailServer {
     @Override
     protected MethodResponse[] execute(
             GetMailboxMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
-        final ResultReference idsReference = methodCall.idsReference();
+        final var idsArg = methodCall.ids();
         final List<String> ids;
-        if (idsReference != null) {
+        if (idsArg instanceof MethodCall.Arg.Reference<List<String>> ref) {
             try {
-                ids = Arrays.asList(ResultReferenceResolver.resolve(idsReference, previousResponses));
+                ids = ResultReferenceResolver.resolve(ref.reference(), previousResponses);
             } catch (final IllegalArgumentException e) {
                 return new MethodResponse[] {new InvalidResultReferenceMethodErrorResponse()};
             }
+        } else if (idsArg instanceof MethodCall.Arg.Value<List<String>> val) {
+            ids = val.value();
         } else {
-            final String[] idsParameter = methodCall.ids();
-            ids = idsParameter == null ? null : Arrays.asList(idsParameter);
+            ids = null;
         }
         Stream<Mailbox> mailboxStream = mailboxes.values().stream().map(this::toMailbox);
         return new MethodResponse[] {
             GetMailboxMethodResponse.builder()
                     .list(mailboxStream
                             .filter(m -> ids == null || ids.contains(m.id()))
-                            .toArray(Mailbox[]::new))
+                            .toList())
                     .state(getState())
                     .build()
         };
@@ -613,10 +620,10 @@ public class MockMailServer extends StubMailServer {
 
     protected MethodResponse[] execute(
             final SetMailboxMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
-        final String ifInState = methodCall.ifInState();
+        final var ifInState = unwrapValue(methodCall.ifInState());
         final var responseBuilder = SetMailboxMethodResponse.builder();
-        final Map<String, Mailbox> create = methodCall.create();
-        final Map<String, Map<String, Object>> update = methodCall.update();
+        final var create = unwrapValue(methodCall.create());
+        final var update = unwrapValue(methodCall.update());
         final String oldState = getState();
         if (ifInState != null) {
             if (!ifInState.equals(oldState)) {
@@ -638,13 +645,15 @@ public class MockMailServer extends StubMailServer {
 
     private void processCreateMailbox(
             final Map<String, Mailbox> create, final SetMailboxMethodResponse.Builder responseBuilder) {
+        var created = ImmutableMap.<String, Mailbox>builder();
+        var notCreated = ImmutableMap.<String, SetError>builder();
         for (Map.Entry<String, Mailbox> entry : create.entrySet()) {
             final String createId = entry.getKey();
             final Mailbox mailbox = entry.getValue();
             final String name = mailbox.name();
             if (mailboxes.values().stream()
                     .anyMatch(mailboxInfo -> mailboxInfo.name().equals(name))) {
-                responseBuilder.notCreated(
+                notCreated.put(
                         createId,
                         new SetError(
                                 SetErrorType.INVALID_PROPERTIES,
@@ -654,24 +663,30 @@ public class MockMailServer extends StubMailServer {
             final String id = UUID.randomUUID().toString();
             final MailboxInfo mailboxInfo = new MailboxInfo(id, name, mailbox.role());
             this.mailboxes.put(id, mailboxInfo);
-            responseBuilder.created(createId, toMailbox(mailboxInfo));
+            created.put(createId, toMailbox(mailboxInfo));
         }
+        responseBuilder.created(created.build());
+        responseBuilder.notCreated(notCreated.build());
     }
 
     private void processUpdateMailbox(
             Map<String, Map<String, Object>> update,
             SetMailboxMethodResponse.Builder responseBuilder,
             ListMultimap<String, Response.Invocation> previousResponses) {
+        var updated = ImmutableMap.<String, Mailbox>builder();
+        var notUpdated = ImmutableMap.<String, SetError>builder();
         for (final Map.Entry<String, Map<String, Object>> entry : update.entrySet()) {
             final String id = entry.getKey();
             try {
                 final MailboxInfo modifiedMailbox = patchMailbox(id, entry.getValue(), previousResponses);
-                responseBuilder.updated(id, toMailbox(modifiedMailbox));
+                updated.put(id, toMailbox(modifiedMailbox));
                 this.mailboxes.put(modifiedMailbox.id(), modifiedMailbox);
             } catch (final IllegalArgumentException e) {
-                responseBuilder.notUpdated(id, new SetError(SetErrorType.INVALID_PROPERTIES, e.getMessage()));
+                notUpdated.put(id, new SetError(SetErrorType.INVALID_PROPERTIES, e.getMessage()));
             }
         }
+        responseBuilder.updated(updated.build());
+        responseBuilder.notUpdated(notUpdated.build());
     }
 
     private MailboxInfo patchMailbox(
@@ -697,15 +712,15 @@ public class MockMailServer extends StubMailServer {
     @Override
     protected MethodResponse[] execute(
             ChangesThreadMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
-        final String since = methodCall.sinceState();
+        final var since = unwrapValue(methodCall.sinceState());
         if (since != null && since.equals(getState())) {
             return new MethodResponse[] {
                 ChangesThreadMethodResponse.builder()
                         .oldState(getState())
                         .newState(getState())
-                        .updated(new String[0])
-                        .created(new String[0])
-                        .destroyed(new String[0])
+                        .updated(List.of())
+                        .created(List.of())
+                        .destroyed(List.of())
                         .build()
             };
         } else {
@@ -718,9 +733,9 @@ public class MockMailServer extends StubMailServer {
                     ChangesThreadMethodResponse.builder()
                             .oldState(since)
                             .newState(update.getNewVersion())
-                            .updated(changes == null ? new String[0] : changes.updated)
-                            .created(changes == null ? new String[0] : changes.created)
-                            .destroyed(new String[0])
+                            .updated(changes == null ? List.of() : changes.updated())
+                            .created(changes == null ? List.of() : changes.created())
+                            .destroyed(List.of())
                             .hasMoreChanges(!update.getNewVersion().equals(getState()))
                             .build()
                 };
@@ -731,18 +746,20 @@ public class MockMailServer extends StubMailServer {
     @Override
     protected MethodResponse[] execute(
             GetThreadMethodCall methodCall, ListMultimap<String, Response.Invocation> previousResponses) {
-        final ResultReference idsReference = methodCall.idsReference();
+        final var idsArg = methodCall.ids();
         final List<String> ids;
-        if (idsReference != null) {
+        if (idsArg instanceof MethodCall.Arg.Reference<List<String>> ref) {
             try {
-                ids = Arrays.asList(ResultReferenceResolver.resolve(idsReference, previousResponses));
+                ids = ResultReferenceResolver.resolve(ref.reference(), previousResponses);
             } catch (final IllegalArgumentException e) {
                 return new MethodResponse[] {new InvalidResultReferenceMethodErrorResponse()};
             }
+        } else if (idsArg instanceof MethodCall.Arg.Value<List<String>> val) {
+            ids = val.value();
         } else {
-            ids = Arrays.asList(methodCall.ids());
+            ids = null;
         }
-        final Thread[] threads = ids.stream()
+        final var threads = ids.stream()
                 .map(threadId -> Thread.builder()
                         .id(threadId)
                         .emailIds(emails.values().stream()
@@ -751,7 +768,7 @@ public class MockMailServer extends StubMailServer {
                                 .map(Email::id)
                                 .collect(Collectors.toList()))
                         .build())
-                .toArray(Thread[]::new);
+                .toList();
         return new MethodResponse[] {
             GetThreadMethodResponse.builder().list(threads).state(getState()).build()
         };

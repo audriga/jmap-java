@@ -16,20 +16,34 @@
 
 package com.audriga.jmap.client.dummy;
 
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.client.Dummy;
-import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.method.call.standard.SetMethodCall;
+import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-public class SetDummyMethodCall extends SetMethodCall<Dummy> {
+@RecordBuilder
+public record SetDummyMethodCall(
+        @NonNull Arg<String> accountId,
+        @Nullable Arg<String> ifInState,
+        @Nullable Arg<Map<String, Dummy>> create,
+        @Nullable Arg<Map<String, Map<String, Object>>> update,
+        @Nullable Arg<List<String>> destroy)
+        implements SetMethodCall<Dummy> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    public SetDummyMethodCall(
-            String accountId,
-            String ifInState,
-            Map<String, Dummy> create,
-            Map<String, Map<String, Object>> update,
-            String[] destroy,
-            ResultReference destroyReference) {
-        super(accountId, ifInState, create, update, destroy, destroyReference);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends SetDummyMethodCallBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

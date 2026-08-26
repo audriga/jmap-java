@@ -22,7 +22,7 @@ import com.audriga.jmap.common.method.response.standard.ChangesMethodResponse;
 import com.audriga.jmap.common.method.response.standard.GetMethodResponse;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableSet;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -33,16 +33,16 @@ public class Update<T extends Identifiable> extends AbstractUpdate<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Update.class);
 
-    private final T[] created;
-    private final T[] updated;
-    private final String[] destroyed;
+    private final List<T> created;
+    private final List<T> updated;
+    private final List<String> destroyed;
 
     private Update(
             TypedState<T> oldState,
             TypedState<T> newState,
-            T[] created,
-            T[] updated,
-            String[] destroyed,
+            List<T> created,
+            List<T> updated,
+            List<String> destroyed,
             boolean hasMore) {
         super(oldState, newState, hasMore);
         this.created = created;
@@ -56,21 +56,17 @@ public class Update<T extends Identifiable> extends AbstractUpdate<T> {
             GetMethodResponse<T> updatedMethodResponse) {
         checkEquals(
                 changesMethodResponse.created(),
-                Arrays.stream(createdMethodResponse.list())
-                        .map(Identifiable::id)
-                        .collect(Collectors.toSet()),
+                createdMethodResponse.list().stream().map(Identifiable::id).collect(Collectors.toSet()),
                 String.format(
                         "IDs returned by %s.created does not match ids found in Get call",
                         changesMethodResponse.getClass().getSimpleName()));
         checkEquals(
                 changesMethodResponse.updated(),
-                Arrays.stream(updatedMethodResponse.list())
-                        .map(Identifiable::id)
-                        .collect(Collectors.toSet()),
+                updatedMethodResponse.list().stream().map(Identifiable::id).collect(Collectors.toSet()),
                 String.format(
                         "IDs returned by %s.updated does not match ids found in Get call",
                         changesMethodResponse.getClass().getSimpleName()));
-        return new Update<T>(
+        return new Update<>(
                 changesMethodResponse.typedOldState(),
                 changesMethodResponse.typedNewState(),
                 createdMethodResponse.list(),
@@ -79,22 +75,22 @@ public class Update<T extends Identifiable> extends AbstractUpdate<T> {
                 changesMethodResponse.hasMoreChanges());
     }
 
-    private static void checkEquals(final String[] a, final Set<String> b, String message) {
+    private static void checkEquals(final List<String> a, final Set<String> b, String message) {
         if (!ImmutableSet.copyOf(a).equals(b)) {
             LOGGER.warn("Failed to compare {} and {}", a, b);
             throw new IllegalStateException(message);
         }
     }
 
-    public T[] created() {
+    public List<T> created() {
         return created;
     }
 
-    public T[] updated() {
+    public List<T> updated() {
         return updated;
     }
 
-    public String[] destroyed() {
+    public List<String> destroyed() {
         return destroyed;
     }
 
@@ -112,7 +108,7 @@ public class Update<T extends Identifiable> extends AbstractUpdate<T> {
 
     @Override
     public boolean hasChanges() {
-        final boolean modifiedItems = created.length + updated.length + destroyed.length > 0;
+        final boolean modifiedItems = created.size() + updated.size() + destroyed.size() > 0;
         return modifiedItems || hasStateChange();
     }
 }

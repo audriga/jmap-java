@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.annotations.SerializedName;
 import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
@@ -246,47 +245,44 @@ public class Email extends AbstractIdentifiableEntity
     }
 
     public static final class Properties {
-        public static final String[] THREAD_ID = new String[] {Property.THREAD_ID};
-        public static final String[] MUTABLE = new String[] {Property.KEYWORDS, Property.MAILBOX_IDS};
-        private static final String[] BASE = new String[] {
-            Property.ID,
-            Property.BLOB_ID,
-            Property.THREAD_ID,
-            Property.MAILBOX_IDS,
-            Property.KEYWORDS,
-            Property.SIZE,
-            Property.RECEIVED_AT,
-            Property.MESSAGE_ID,
-            Property.IN_REPLY_TO,
-            Property.REFERENCES,
-            Property.SENDER,
-            Property.FROM,
-            Property.TO,
-            Property.CC,
-            Property.BCC,
-            Property.REPLY_TO,
-            Property.SUBJECT,
-            Property.BODY_VALUES,
-            Property.TEXT_BODY,
-            Property.HTML_BODY,
-            Property.ATTACHMENTS
-        };
-        public static final String[] RFC_8621_DEFAULT = new ImmutableList.Builder<String>()
-                .addAll(Arrays.asList(BASE))
+        public static final List<String> THREAD_ID = List.of(Property.THREAD_ID);
+        public static final List<String> MUTABLE = List.of(Property.KEYWORDS, Property.MAILBOX_IDS);
+        private static final List<String> BASE = List.of(
+                Property.ID,
+                Property.BLOB_ID,
+                Property.THREAD_ID,
+                Property.MAILBOX_IDS,
+                Property.KEYWORDS,
+                Property.SIZE,
+                Property.RECEIVED_AT,
+                Property.MESSAGE_ID,
+                Property.IN_REPLY_TO,
+                Property.REFERENCES,
+                Property.SENDER,
+                Property.FROM,
+                Property.TO,
+                Property.CC,
+                Property.BCC,
+                Property.REPLY_TO,
+                Property.SUBJECT,
+                Property.BODY_VALUES,
+                Property.TEXT_BODY,
+                Property.HTML_BODY,
+                Property.ATTACHMENTS);
+        public static final List<String> RFC_8621_DEFAULT = ImmutableList.<String>builder()
+                .addAll(BASE)
                 .add(Property.HAS_ATTACHMENT)
                 .add(Property.PREVIEW)
-                .build()
-                .toArray(new String[0]);
-        public static final String[] LTTRS_DEFAULT = new ImmutableList.Builder<String>()
-                .addAll(Arrays.asList(BASE))
+                .build();
+        public static final List<String> LTTRS_DEFAULT = ImmutableList.<String>builder()
+                .addAll(BASE)
                 .add(Property.SENT_AT)
                 .add(Property.BODY_STRUCTURE)
                 .add(Property.USER_AGENT)
                 .add(Property.AUTOCRYPT)
                 .add(Property.AUTOCRYPT_DRAFT_STATE)
                 .add(Property.AUTOCRYPT_SETUP_MESSAGE)
-                .build()
-                .toArray(new String[0]);
+                .build();
 
         private Properties() {}
     }

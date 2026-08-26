@@ -17,14 +17,27 @@
 package com.audriga.jmap.common.method.response.mailbox;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.Mailbox;
 import com.audriga.jmap.common.method.response.standard.GetMethodResponse;
+import java.util.List;
 
 @JmapMethod("Mailbox/get")
-public class GetMailboxMethodResponse extends GetMethodResponse<Mailbox> {
+@RecordBuilder
+public record GetMailboxMethodResponse(String accountId, String state, List<Mailbox> list, List<String> notFound)
+        implements GetMethodResponse<Mailbox> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @lombok.Builder
-    public GetMailboxMethodResponse(String accountId, String state, String[] notFound, Mailbox[] list) {
-        super(accountId, state, notFound, list);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends GetMailboxMethodResponseBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

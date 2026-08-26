@@ -17,25 +17,39 @@
 package com.audriga.jmap.common.method.response.submission;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.EmailSubmission;
 import com.audriga.jmap.common.entity.SetError;
 import com.audriga.jmap.common.method.response.standard.SetMethodResponse;
+import java.util.List;
 import java.util.Map;
+import org.jspecify.annotations.Nullable;
 
 @JmapMethod("EmailSubmission/set")
-public class SetEmailSubmissionMethodResponse extends SetMethodResponse<EmailSubmission> {
+@RecordBuilder
+public record SetEmailSubmissionMethodResponse(
+        String accountId,
+        @Nullable String oldState,
+        String newState,
+        @Nullable Map<String, EmailSubmission> created,
+        @Nullable Map<String, EmailSubmission> updated,
+        @Nullable List<String> destroyed,
+        @Nullable Map<String, SetError> notCreated,
+        @Nullable Map<String, SetError> notUpdated,
+        @Nullable Map<String, SetError> notDestroyed)
+        implements SetMethodResponse<EmailSubmission> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @lombok.Builder
-    public SetEmailSubmissionMethodResponse(
-            String accountId,
-            String oldState,
-            String newState,
-            Map<String, EmailSubmission> created,
-            Map<String, EmailSubmission> updated,
-            String[] destroyed,
-            Map<String, SetError> notCreated,
-            Map<String, SetError> notUpdated,
-            Map<String, SetError> notDestroyed) {
-        super(accountId, oldState, newState, created, updated, destroyed, notCreated, notUpdated, notDestroyed);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends SetEmailSubmissionMethodResponseBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

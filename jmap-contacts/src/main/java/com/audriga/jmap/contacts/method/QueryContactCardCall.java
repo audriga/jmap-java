@@ -23,5 +23,18 @@ public record QueryContactCardCall(
         @Nullable Arg<Long> limit,
         @Default("false") @Nullable Arg<Boolean> calculateTotal)
         implements QueryMethodCall<ContactCard> {
-    public static final class Builder extends QueryContactCardCallBuilder {}
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends QueryContactCardCallBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
+    }
 }

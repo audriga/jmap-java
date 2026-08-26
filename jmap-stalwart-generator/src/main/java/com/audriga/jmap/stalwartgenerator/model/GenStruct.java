@@ -5,6 +5,7 @@ import static com.google.common.html.HtmlEscapers.htmlEscaper;
 
 import com.audriga.jmap.annotation.Default;
 import com.audriga.jmap.annotation.Immutable;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.annotation.ServerSet;
 import com.audriga.jmap.gson.GsonUtils;
 import com.audriga.jmap.stalwartgenerator.Context;
@@ -114,5 +115,32 @@ public record GenStruct(
                 .addStatement("this.$L = value", fieldName)
                 .addStatement("return this")
                 .build();
+    }
+
+    public static TypeSpec.Builder recordBuilder(TypeSpec.Builder recordBuilder, ClassName record) {
+        var self = record.nestedClass("Builder");
+        return recordBuilder
+                .addAnnotation(RecordBuilder.class)
+                .addMethod(MethodSpec.methodBuilder("builder")
+                        .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                        .returns(self)
+                        .addStatement("return new $T()", self)
+                        .build())
+                .addMethod(MethodSpec.methodBuilder("toBuilder")
+                        .addModifiers(Modifier.PUBLIC)
+                        .returns(self)
+                        .addStatement("return $T.of(this)", self)
+                        .build())
+                .addType(TypeSpec.classBuilder("Builder")
+                        .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                        .superclass(
+                                ClassName.get(record.packageName(), String.join("", record.simpleNames()) + "Builder"))
+                        .addMethod(MethodSpec.methodBuilder("__this")
+                                .addModifiers(Modifier.PROTECTED)
+                                .addAnnotation(Override.class)
+                                .returns(self)
+                                .addStatement("return this")
+                                .build())
+                        .build());
     }
 }

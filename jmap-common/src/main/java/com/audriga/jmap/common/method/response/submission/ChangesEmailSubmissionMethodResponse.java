@@ -17,21 +17,35 @@
 package com.audriga.jmap.common.method.response.submission;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.EmailSubmission;
 import com.audriga.jmap.common.method.response.standard.ChangesMethodResponse;
+import java.util.List;
+import org.jspecify.annotations.NonNull;
 
 @JmapMethod("EmailSubmission/changes")
-public class ChangesEmailSubmissionMethodResponse extends ChangesMethodResponse<EmailSubmission> {
+@RecordBuilder
+public record ChangesEmailSubmissionMethodResponse(
+        @NonNull String accountId,
+        @NonNull String oldState,
+        @NonNull String newState,
+        boolean hasMoreChanges,
+        @NonNull List<String> created,
+        @NonNull List<String> updated,
+        @NonNull List<String> destroyed)
+        implements ChangesMethodResponse<EmailSubmission> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @lombok.Builder
-    public ChangesEmailSubmissionMethodResponse(
-            String accountId,
-            String oldState,
-            String newState,
-            Boolean hasMoreChanges,
-            String[] created,
-            String[] updated,
-            String[] destroyed) {
-        super(accountId, oldState, newState, hasMoreChanges, created, updated, destroyed);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends ChangesEmailSubmissionMethodResponseBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

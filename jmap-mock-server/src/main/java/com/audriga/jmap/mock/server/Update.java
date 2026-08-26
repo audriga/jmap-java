@@ -27,6 +27,7 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Maps;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class Update {
@@ -45,12 +46,11 @@ public class Update {
                 ImmutableMap.of(
                         Mailbox.class,
                         new Changes(
-                                nullToEmpty(setMailboxMethodResponse.updated())
-                                        .keySet()
-                                        .toArray(new String[0]),
+                                List.copyOf(nullToEmpty(setMailboxMethodResponse.updated())
+                                        .keySet()),
                                 nullToEmpty(setMailboxMethodResponse.created()).values().stream()
                                         .map(Mailbox::id)
-                                        .toArray(String[]::new))),
+                                        .toList())),
                 newVersion);
     }
 
@@ -77,18 +77,18 @@ public class Update {
 
     public static Update created(Email email, String newVersion) {
         final ImmutableMap.Builder<Class<? extends Identifiable>, Changes> builder = new ImmutableMap.Builder<>();
-        builder.put(Email.class, new Changes(new String[0], new String[] {email.id()}));
-        builder.put(Thread.class, new Changes(new String[0], new String[] {email.threadId()}));
-        builder.put(Mailbox.class, new Changes(email.mailboxIds().keySet().toArray(new String[0]), new String[0]));
+        builder.put(Email.class, new Changes(List.of(), List.of(email.id())));
+        builder.put(Thread.class, new Changes(List.of(), List.of(email.threadId())));
+        builder.put(Mailbox.class, new Changes(List.copyOf(email.mailboxIds().keySet()), List.of()));
         return new Update(builder.build(), newVersion);
     }
 
     public static Update updated(
             final Collection<Email> emails, final Collection<String> mailboxes, String newVersion) {
         final ImmutableMap.Builder<Class<? extends Identifiable>, Changes> builder = new ImmutableMap.Builder<>();
-        builder.put(Email.class, new Changes(emails.stream().map(Email::id).toArray(String[]::new), new String[0]));
-        builder.put(Thread.class, new Changes(new String[0], new String[0]));
-        builder.put(Mailbox.class, new Changes(mailboxes.toArray(new String[0]), new String[0]));
+        builder.put(Email.class, new Changes(emails.stream().map(Email::id).toList(), List.of()));
+        builder.put(Thread.class, new Changes(List.of(), List.of()));
+        builder.put(Mailbox.class, new Changes(List.copyOf(mailboxes), List.of()));
         return new Update(builder.build(), newVersion);
     }
 

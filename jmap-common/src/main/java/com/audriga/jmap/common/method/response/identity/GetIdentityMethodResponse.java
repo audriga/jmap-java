@@ -17,14 +17,27 @@
 package com.audriga.jmap.common.method.response.identity;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.Identity;
 import com.audriga.jmap.common.method.response.standard.GetMethodResponse;
+import java.util.List;
 
 @JmapMethod("Identity/get")
-public class GetIdentityMethodResponse extends GetMethodResponse<Identity> {
+@RecordBuilder
+public record GetIdentityMethodResponse(String accountId, String state, List<Identity> list, List<String> notFound)
+        implements GetMethodResponse<Identity> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @lombok.Builder
-    public GetIdentityMethodResponse(String accountId, String state, String[] notFound, Identity[] list) {
-        super(accountId, state, notFound, list);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends GetIdentityMethodResponseBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

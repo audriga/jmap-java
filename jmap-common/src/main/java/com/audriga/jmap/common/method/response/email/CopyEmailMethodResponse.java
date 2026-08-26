@@ -17,8 +17,36 @@
 package com.audriga.jmap.common.method.response.email;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.Email;
+import com.audriga.jmap.common.entity.SetError;
 import com.audriga.jmap.common.method.response.standard.CopyMethodResponse;
+import java.util.Map;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @JmapMethod("Email/copy")
-public class CopyEmailMethodResponse extends CopyMethodResponse<Email> {}
+@RecordBuilder
+public record CopyEmailMethodResponse(
+        @NonNull String fromAccountId,
+        @NonNull String accountId,
+        @Nullable String oldState,
+        @NonNull String newState,
+        @Nullable Map<String, Email> created,
+        @Nullable Map<String, SetError> notCreated)
+        implements CopyMethodResponse<Email> {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends CopyEmailMethodResponseBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
+    }
+}

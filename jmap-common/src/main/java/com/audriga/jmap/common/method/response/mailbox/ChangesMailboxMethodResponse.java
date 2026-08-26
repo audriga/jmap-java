@@ -17,29 +17,37 @@
 package com.audriga.jmap.common.method.response.mailbox;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.Mailbox;
 import com.audriga.jmap.common.method.response.standard.ChangesMethodResponse;
+import java.util.List;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @JmapMethod("Mailbox/changes")
-public class ChangesMailboxMethodResponse extends ChangesMethodResponse<Mailbox> {
-
-    private String[] updatedProperties;
-
-    @lombok.Builder
-    public ChangesMailboxMethodResponse(
-            String accountId,
-            String oldState,
-            String newState,
-            boolean hasMoreChanges,
-            String[] created,
-            String[] updated,
-            String[] destroyed,
-            String[] updatedProperties) {
-        super(accountId, oldState, newState, hasMoreChanges, created, updated, destroyed);
-        this.updatedProperties = updatedProperties;
+@RecordBuilder
+public record ChangesMailboxMethodResponse(
+        @NonNull String accountId,
+        @NonNull String oldState,
+        @NonNull String newState,
+        boolean hasMoreChanges,
+        @NonNull List<String> created,
+        @NonNull List<String> updated,
+        @NonNull List<String> destroyed,
+        @Nullable List<String> updatedProperties)
+        implements ChangesMethodResponse<Mailbox> {
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public String[] getUpdatedProperties() {
-        return updatedProperties;
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends ChangesMailboxMethodResponseBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

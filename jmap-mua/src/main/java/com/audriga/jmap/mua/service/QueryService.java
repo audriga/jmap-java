@@ -23,6 +23,7 @@ import com.audriga.jmap.client.api.MethodErrorResponseException;
 import com.audriga.jmap.client.session.Session;
 import com.audriga.jmap.common.entity.AddedItem;
 import com.audriga.jmap.common.entity.Email;
+import com.audriga.jmap.common.entity.Thread;
 import com.audriga.jmap.common.entity.capability.CoreCapability;
 import com.audriga.jmap.common.entity.query.EmailQuery;
 import com.audriga.jmap.common.method.MethodErrorResponse;
@@ -173,7 +174,7 @@ public class QueryService extends AbstractMuaService {
         final ListenableFuture<MethodResponses> getThreadIdsResponsesFuture = multiCall
                 .call(GetEmailMethodCall.builder()
                         .accountId(accountId)
-                        .idsReference(queryCall.createResultReference(ResultReference.Path.IDS))
+                        .ids(queryCall.createResultReference(ResultReference.Path.IDS))
                         .properties(Email.Properties.THREAD_ID)
                         .build())
                 .getMethodResponses();
@@ -241,7 +242,7 @@ public class QueryService extends AbstractMuaService {
         final ListenableFuture<MethodResponses> getThreadIdResponsesFuture = multiCall
                 .call(GetEmailMethodCall.builder()
                         .accountId(accountId)
-                        .idsReference(queryChangesCall.createResultReference(ResultReference.Path.ADDED_IDS))
+                        .ids(queryChangesCall.createResultReference(ResultReference.Path.ADDED_IDS))
                         .properties(Email.Properties.THREAD_ID)
                         .build())
                 .getMethodResponses();
@@ -364,7 +365,7 @@ public class QueryService extends AbstractMuaService {
         final ListenableFuture<MethodResponses> queryResponsesFuture = queryCall.getMethodResponses();
         final JmapRequest.Call threadIdsCall = multiCall.call(GetEmailMethodCall.builder()
                 .accountId(accountId)
-                .idsReference(queryCall.createResultReference(ResultReference.Path.IDS))
+                .ids(queryCall.createResultReference(ResultReference.Path.IDS))
                 .properties(Email.Properties.THREAD_ID)
                 .build());
         final ListenableFuture<MethodResponses> getThreadIdsResponsesFuture = threadIdsCall.getMethodResponses();
@@ -377,13 +378,13 @@ public class QueryService extends AbstractMuaService {
         if (queryStateWrapper.objectsState.threadState == null || queryStateWrapper.objectsState.emailState == null) {
             final JmapRequest.Call threadCall = multiCall.call(GetThreadMethodCall.builder()
                     .accountId(accountId)
-                    .idsReference(threadIdsCall.createResultReference(ResultReference.Path.LIST_THREAD_IDS))
+                    .ids(threadIdsCall.createResultReference(ResultReference.Path.LIST_THREAD_IDS))
                     .build());
             getThreadsResponsesFuture = threadCall.getMethodResponses();
             getEmailResponsesFuture = multiCall
                     .call(GetEmailMethodCall.builder()
                             .accountId(accountId)
-                            .idsReference(threadCall.createResultReference(ResultReference.Path.LIST_EMAIL_IDS))
+                            .ids(threadCall.createResultReference(ResultReference.Path.LIST_EMAIL_IDS))
                             .fetchTextBodyValues(true)
                             .properties(Email.Properties.LTTRS_DEFAULT)
                             .build())
@@ -413,14 +414,14 @@ public class QueryService extends AbstractMuaService {
                         getService(PluginService.class).executeEmailCacheStagePlugins(getEmailResponse.list());
                         cache.setThreadsAndEmails(
                                 getThreadsResponse.typedState(),
-                                getThreadsResponse.list(),
+                                getThreadsResponse.list().toArray(Thread[]::new),
                                 getEmailResponse.typedState(),
-                                getEmailResponse.list());
+                                getEmailResponse.list().toArray(Email[]::new));
                     }
 
-                    if (queryResult.position != 0) {
+                    if (queryResult.position() != 0) {
                         throw new IllegalStateException("Server reported position "
-                                + queryResult.position
+                                + queryResult.position()
                                 + " in response to initial query. We expected 0");
                     }
 
@@ -486,13 +487,13 @@ public class QueryService extends AbstractMuaService {
                 getService(EmailService.class).updateEmails(missing.emailState, multiCall);
         final JmapRequest.Call threadsCall = multiCall.call(GetThreadMethodCall.builder()
                 .accountId(accountId)
-                .ids(missing.threadIds.toArray(new String[0]))
+                .ids(missing.threadIds)
                 .build());
         final ListenableFuture<MethodResponses> getThreadsResponsesFuture = threadsCall.getMethodResponses();
         final ListenableFuture<MethodResponses> getEmailsResponsesFuture = multiCall
                 .call(GetEmailMethodCall.builder()
                         .accountId(accountId)
-                        .idsReference(threadsCall.createResultReference(ResultReference.Path.LIST_EMAIL_IDS))
+                        .ids(threadsCall.createResultReference(ResultReference.Path.LIST_EMAIL_IDS))
                         .fetchTextBodyValues(true)
                         .properties(Email.Properties.LTTRS_DEFAULT)
                         .build())
@@ -518,9 +519,9 @@ public class QueryService extends AbstractMuaService {
                     getService(PluginService.class).executeEmailCacheStagePlugins(getEmailMethodResponse.list());
                     cache.addThreadsAndEmail(
                             getThreadMethodResponse.typedState(),
-                            getThreadMethodResponse.list(),
+                            getThreadMethodResponse.list().toArray(Thread[]::new),
                             getEmailMethodResponse.typedState(),
-                            getEmailMethodResponse.list());
+                            getEmailMethodResponse.list().toArray(Email[]::new));
 
                     return Futures.immediateFuture(Status.UPDATED);
                 },

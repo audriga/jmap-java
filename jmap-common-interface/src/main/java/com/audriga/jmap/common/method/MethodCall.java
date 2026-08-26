@@ -16,13 +16,14 @@
 
 package com.audriga.jmap.common.method;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public interface MethodCall {
     sealed interface Arg<T> {
-        record Value<T>(T value) implements Arg<T> {}
+        record Value<T>(@NonNull T value) implements Arg<T> {}
 
-        record Reference<T>(ResultReference reference) implements Arg<T> {}
+        record Reference<T>(@NonNull ResultReference reference) implements Arg<T> {}
 
         static <T> Value<T> of(T value) {
             return new Value<>(value);

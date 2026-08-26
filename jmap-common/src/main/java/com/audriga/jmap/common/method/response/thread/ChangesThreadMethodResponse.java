@@ -17,21 +17,35 @@
 package com.audriga.jmap.common.method.response.thread;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.Thread;
 import com.audriga.jmap.common.method.response.standard.ChangesMethodResponse;
+import java.util.List;
+import org.jspecify.annotations.NonNull;
 
 @JmapMethod("Thread/changes")
-public class ChangesThreadMethodResponse extends ChangesMethodResponse<Thread> {
+@RecordBuilder
+public record ChangesThreadMethodResponse(
+        @NonNull String accountId,
+        @NonNull String oldState,
+        @NonNull String newState,
+        boolean hasMoreChanges,
+        @NonNull List<String> created,
+        @NonNull List<String> updated,
+        @NonNull List<String> destroyed)
+        implements ChangesMethodResponse<Thread> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @lombok.Builder
-    public ChangesThreadMethodResponse(
-            String accountId,
-            String oldState,
-            String newState,
-            boolean hasMoreChanges,
-            String[] created,
-            String[] updated,
-            String[] destroyed) {
-        super(accountId, oldState, newState, hasMoreChanges, created, updated, destroyed);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends ChangesThreadMethodResponseBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

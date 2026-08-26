@@ -19,34 +19,37 @@ package com.audriga.jmap.common.method.call.submission;
 import com.audriga.jmap.Namespace;
 import com.audriga.jmap.annotation.JmapImplicitNamespace;
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.EmailSubmission;
-import com.audriga.jmap.common.method.ResultReference;
 import com.audriga.jmap.common.method.call.standard.SetMethodCall;
 import java.util.List;
 import java.util.Map;
-import lombok.Getter;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @JmapMethod("EmailSubmission/set")
-@Getter
-public class SetEmailSubmissionMethodCall extends SetMethodCall<EmailSubmission> {
+@RecordBuilder
+public record SetEmailSubmissionMethodCall(
+        @NonNull Arg<String> accountId,
+        @Nullable Arg<String> ifInState,
+        @Nullable Arg<Map<String, EmailSubmission>> create,
+        @Nullable Arg<Map<String, Map<String, Object>>> update,
+        @Nullable Arg<List<String>> destroy,
+        @JmapImplicitNamespace(Namespace.MAIL) @Nullable Map<String, Map<String, Object>> onSuccessUpdateEmail,
+        @JmapImplicitNamespace(Namespace.MAIL) @Nullable List<String> onSuccessDestroyEmail)
+        implements SetMethodCall<EmailSubmission> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @JmapImplicitNamespace(Namespace.MAIL)
-    private Map<String, Map<String, Object>> onSuccessUpdateEmail;
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
 
-    private List<String> onSuccessDestroyEmail;
-
-    @lombok.Builder
-    public SetEmailSubmissionMethodCall(
-            String accountId,
-            String ifInState,
-            Map<String, EmailSubmission> create,
-            Map<String, Map<String, Object>> update,
-            String[] destroy,
-            ResultReference destroyReference,
-            Map<String, Map<String, Object>> onSuccessUpdateEmail,
-            List<String> onSuccessDestroyEmail) {
-        super(accountId, ifInState, create, update, destroy, destroyReference);
-        this.onSuccessUpdateEmail = onSuccessUpdateEmail;
-        this.onSuccessDestroyEmail = onSuccessDestroyEmail;
+    public static final class Builder extends SetEmailSubmissionMethodCallBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

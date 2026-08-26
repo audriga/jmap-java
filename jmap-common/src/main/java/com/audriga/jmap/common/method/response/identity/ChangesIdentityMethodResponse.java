@@ -17,21 +17,35 @@
 package com.audriga.jmap.common.method.response.identity;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.Identity;
 import com.audriga.jmap.common.method.response.standard.ChangesMethodResponse;
+import java.util.List;
+import org.jspecify.annotations.NonNull;
 
 @JmapMethod("Identity/changes")
-public class ChangesIdentityMethodResponse extends ChangesMethodResponse<Identity> {
+@RecordBuilder
+public record ChangesIdentityMethodResponse(
+        @NonNull String accountId,
+        @NonNull String oldState,
+        @NonNull String newState,
+        boolean hasMoreChanges,
+        @NonNull List<String> created,
+        @NonNull List<String> updated,
+        @NonNull List<String> destroyed)
+        implements ChangesMethodResponse<Identity> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @lombok.Builder
-    public ChangesIdentityMethodResponse(
-            String accountId,
-            String oldState,
-            String newState,
-            boolean hasMoreChanges,
-            String[] created,
-            String[] updated,
-            String[] destroyed) {
-        super(accountId, oldState, newState, hasMoreChanges, created, updated, destroyed);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends ChangesIdentityMethodResponseBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

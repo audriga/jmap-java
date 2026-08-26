@@ -16,38 +16,47 @@
 
 package com.audriga.jmap.common.method.call.email;
 
+import com.audriga.jmap.annotation.Default;
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.Email;
-import com.audriga.jmap.common.method.ResultReference;
-import com.audriga.jmap.common.method.call.standard.AbstractGetMethodCall;
-import lombok.Getter;
+import com.audriga.jmap.common.method.call.standard.GetMethodCall;
+import java.util.List;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @JmapMethod("Email/get")
-@Getter
-public class GetEmailMethodCall extends AbstractGetMethodCall<Email> {
+@RecordBuilder
+public record GetEmailMethodCall(
+        @NonNull Arg<String> accountId,
+        @Nullable Arg<List<String>> ids,
+        @Default("""
+                [ "id", "blobId", "threadId", "mailboxIds", "keywords", "size",
+                "receivedAt", "messageId", "inReplyTo", "references", "sender", "from",
+                "to", "cc", "bcc", "replyTo", "subject", "sentAt", "hasAttachment",
+                "preview", "bodyValues", "textBody", "htmlBody", "attachments" ]
+                """) @Nullable Arg<List<String>> properties,
+        @Default("""
+                [ "partId", "blobId", "size", "name", "type", "charset",
+                  "disposition", "cid", "language", "location" ]
+                """) @Nullable Arg<List<String>> bodyProperties,
+        @Default("false") @Nullable Boolean fetchTextBodyValues,
+        @Default("false") @Nullable Boolean fetchHTMLBodyValues,
+        @Default("false") @Nullable Boolean fetchAllBodyValues,
+        @Default("0") @Nullable Long maxBodyValueBytes)
+        implements GetMethodCall<Email> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    private String[] bodyProperties;
-    private Boolean fetchTextBodyValues;
-    private Boolean fetchHTMLBodyValues;
-    private Boolean fetchAllBodyValues;
-    private Long maxBodyValueBytes;
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
 
-    @lombok.Builder
-    public GetEmailMethodCall(
-            String accountId,
-            String[] ids,
-            String[] properties,
-            ResultReference idsReference,
-            String[] bodyProperties,
-            Boolean fetchTextBodyValues,
-            Boolean fetchHTMLBodyValues,
-            Boolean fetchAllBodyValues,
-            Long maxBodyValueBytes) {
-        super(accountId, ids, properties, idsReference);
-        this.bodyProperties = bodyProperties;
-        this.fetchTextBodyValues = fetchTextBodyValues;
-        this.fetchHTMLBodyValues = fetchHTMLBodyValues;
-        this.fetchAllBodyValues = fetchAllBodyValues;
-        this.maxBodyValueBytes = maxBodyValueBytes;
+    public static final class Builder extends GetEmailMethodCallBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

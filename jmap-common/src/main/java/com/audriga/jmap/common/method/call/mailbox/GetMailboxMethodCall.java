@@ -17,29 +17,31 @@
 package com.audriga.jmap.common.method.call.mailbox;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.Mailbox;
-import com.audriga.jmap.common.method.ResultReference;
-import com.audriga.jmap.common.method.call.standard.AbstractGetMethodCall;
-import com.google.common.base.Preconditions;
-import com.google.gson.annotations.SerializedName;
+import com.audriga.jmap.common.method.call.standard.GetMethodCall;
+import java.util.List;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 @JmapMethod("Mailbox/get")
-public class GetMailboxMethodCall extends AbstractGetMethodCall<Mailbox> {
+@RecordBuilder
+public record GetMailboxMethodCall(
+        @NonNull Arg<String> accountId,
+        @Nullable Arg<List<String>> ids,
+        @Nullable Arg<List<String>> properties) implements GetMethodCall<Mailbox> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @SerializedName("#properties")
-    private ResultReference propertiesReference;
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
 
-    @lombok.Builder
-    public GetMailboxMethodCall(
-            String accountId,
-            String[] ids,
-            String[] properties,
-            ResultReference idsReference,
-            ResultReference propertiesReference) {
-        super(accountId, ids, properties, idsReference);
-        Preconditions.checkArgument(
-                properties == null || propertiesReference == null,
-                "Can't set both 'properties' and 'propertiesReference'");
-        this.propertiesReference = propertiesReference;
+    public static final class Builder extends GetMailboxMethodCallBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

@@ -17,12 +17,26 @@
 package com.audriga.jmap.client;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.method.response.standard.GetMethodResponse;
+import java.util.List;
 
 @JmapMethod("Dummy/get")
-public class GetDummyMethodResponse extends GetMethodResponse<Dummy> {
+@RecordBuilder
+public record GetDummyMethodResponse(String accountId, String state, List<Dummy> list, List<String> notFound)
+        implements GetMethodResponse<Dummy> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    public GetDummyMethodResponse(String accountId, String state, String[] notFound, Dummy[] list) {
-        super(accountId, state, notFound, list);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends GetDummyMethodResponseBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

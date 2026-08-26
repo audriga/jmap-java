@@ -29,13 +29,12 @@ import com.audriga.jmap.common.method.response.standard.QueryMethodResponse;
 import com.audriga.jmap.common.method.response.thread.GetThreadMethodResponse;
 import com.audriga.jmap.common.util.Mapper;
 import com.google.common.collect.ListMultimap;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 public class ResultReferenceResolver {
 
-    public static String[] resolve(
+    public static List<String> resolve(
             final ResultReference resultReference, final ListMultimap<String, Response.Invocation> previousResponses) {
         final MethodResponse methodResponse = find(resultReference, previousResponses);
         final String path = resultReference.path();
@@ -47,15 +46,15 @@ public class ResultReferenceResolver {
                 break;
             case ResultReference.Path.LIST_THREAD_IDS:
                 if (methodResponse instanceof GetEmailMethodResponse getEmail) {
-                    return Arrays.stream(getEmail.list()).map(Email::threadId).toArray(String[]::new);
+                    return getEmail.list().stream().map(Email::threadId).toList();
                 }
                 break;
             case ResultReference.Path.LIST_EMAIL_IDS:
                 if (methodResponse instanceof GetThreadMethodResponse getThread) {
-                    return Arrays.stream(getThread.list())
+                    return getThread.list().stream()
                             .map(Thread::emailIds)
                             .flatMap(Collection::stream)
-                            .toArray(String[]::new);
+                            .toList();
                 }
                 break;
             case ResultReference.Path.CREATED:
@@ -70,7 +69,7 @@ public class ResultReferenceResolver {
                 break;
             case ResultReference.Path.ADDED_IDS:
                 if (methodResponse instanceof QueryChangesMethodResponse<?> queryChanges) {
-                    return queryChanges.added().stream().map(AddedItem::getItem).toArray(String[]::new);
+                    return queryChanges.added().stream().map(AddedItem::getItem).toList();
                 }
                 break;
             default:
@@ -99,7 +98,7 @@ public class ResultReferenceResolver {
         throw new IllegalArgumentException("Unable to find matching response for " + methodCallName);
     }
 
-    private static String[] nullToEmpty(final String[] value) {
-        return value == null ? new String[0] : value;
+    private static List<String> nullToEmpty(final List<String> value) {
+        return value == null ? List.of() : value;
     }
 }

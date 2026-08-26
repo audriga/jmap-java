@@ -88,9 +88,9 @@ public class MailboxService extends AbstractMuaService {
                 getMailboxMethodResponsesFuture,
                 methodResponses -> {
                     GetMailboxMethodResponse response = methodResponses.getMain(GetMailboxMethodResponse.class);
-                    Mailbox[] mailboxes = response.list();
-                    cache.setMailboxes(response.typedState(), mailboxes);
-                    return Futures.immediateFuture(Status.of(mailboxes.length > 0));
+                    var mailboxes = response.list();
+                    cache.setMailboxes(response.typedState(), mailboxes.toArray(Mailbox[]::new));
+                    return Futures.immediateFuture(Status.of(!mailboxes.isEmpty()));
                 },
                 ioExecutorService);
     }
@@ -118,7 +118,9 @@ public class MailboxService extends AbstractMuaService {
                             methodResponsesFuture.updated(GetMailboxMethodResponse.class);
                     final Update<Mailbox> update = Update.of(changesResponse, createdResponse, updatedResponse);
                     if (update.hasChanges()) {
-                        cache.updateMailboxes(update, changesResponse.getUpdatedProperties());
+                        var updatedProps = changesResponse.updatedProperties();
+                        cache.updateMailboxes(
+                                update, updatedProps != null ? updatedProps.toArray(String[]::new) : null);
                     }
                     return Futures.immediateFuture(Status.of(update));
                 },
@@ -144,7 +146,7 @@ public class MailboxService extends AbstractMuaService {
                 methodResponses -> {
                     SetMailboxMethodResponse response = methodResponses.getMain(SetMailboxMethodResponse.class);
                     SetMailboxException.throwIfFailed(response);
-                    return Futures.immediateFuture(response.getUpdatedCreatedCount() > 0);
+                    return Futures.immediateFuture(response.updatedCreatedCount() > 0);
                 },
                 MoreExecutors.directExecutor());
     }
@@ -220,7 +222,7 @@ public class MailboxService extends AbstractMuaService {
                     final SetMailboxMethodResponse setMailboxMethodResponse =
                             methodResponses.getMain(SetMailboxMethodResponse.class);
                     SetMailboxException.throwIfFailed(setMailboxMethodResponse);
-                    return Futures.immediateFuture(setMailboxMethodResponse.getUpdatedCreatedCount() > 0);
+                    return Futures.immediateFuture(setMailboxMethodResponse.updatedCreatedCount() > 0);
                 },
                 ioExecutorService);
     }

@@ -17,14 +17,27 @@
 package com.audriga.jmap.common.method.response.thread;
 
 import com.audriga.jmap.annotation.JmapMethod;
+import com.audriga.jmap.annotation.RecordBuilder;
 import com.audriga.jmap.common.entity.Thread;
 import com.audriga.jmap.common.method.response.standard.GetMethodResponse;
+import java.util.List;
 
 @JmapMethod("Thread/get")
-public class GetThreadMethodResponse extends GetMethodResponse<Thread> {
+@RecordBuilder
+public record GetThreadMethodResponse(String accountId, String state, List<Thread> list, List<String> notFound)
+        implements GetMethodResponse<Thread> {
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    @lombok.Builder
-    public GetThreadMethodResponse(String accountId, String state, String[] notFound, Thread[] list) {
-        super(accountId, state, notFound, list);
+    public Builder toBuilder() {
+        return Builder.of(this);
+    }
+
+    public static final class Builder extends GetThreadMethodResponseBuilder {
+        @Override
+        protected Builder __this() {
+            return this;
+        }
     }
 }

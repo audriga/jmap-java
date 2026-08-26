@@ -6,6 +6,7 @@ import com.audriga.jmap.common.entity.filter.FilterOperator;
 import com.audriga.jmap.common.entity.filter.MailboxFilterCondition;
 import com.audriga.jmap.common.entity.query.EmailQuery;
 import com.audriga.jmap.common.entity.query.MailboxQuery;
+import com.audriga.jmap.common.method.MethodCall;
 import com.audriga.jmap.common.method.call.email.QueryChangesEmailMethodCall;
 import com.audriga.jmap.common.method.call.email.QueryEmailMethodCall;
 import com.audriga.jmap.common.method.call.mailbox.QueryMailboxMethodCall;
@@ -44,7 +45,9 @@ public class QueryCallTest extends AbstractGsonTest {
                         .build()));
         Assertions.assertEquals(
                 query.filter.toQueryString(),
-                gson.fromJson(json, QueryChangesEmailMethodCall.class).filter().toQueryString());
+                MethodCall.Arg.unwrapValue(gson.fromJson(json, QueryChangesEmailMethodCall.class)
+                                .filter())
+                        .toQueryString());
     }
 
     @Test
@@ -64,7 +67,9 @@ public class QueryCallTest extends AbstractGsonTest {
                         .build()));
         Assertions.assertEquals(
                 query.filter.toQueryString(),
-                gson.fromJson(json, QueryEmailMethodCall.class).filter().toQueryString());
+                MethodCall.Arg.unwrapValue(
+                                gson.fromJson(json, QueryEmailMethodCall.class).filter())
+                        .toQueryString());
     }
 
     @Test
@@ -82,6 +87,8 @@ public class QueryCallTest extends AbstractGsonTest {
                         .build()));
         Assertions.assertEquals(
                 query.filter.toQueryString(),
-                gson.fromJson(json, QueryMailboxMethodCall.class).filter().toQueryString());
+                MethodCall.Arg.unwrapValue(gson.fromJson(json, QueryMailboxMethodCall.class)
+                                .filter())
+                        .toQueryString());
     }
 }

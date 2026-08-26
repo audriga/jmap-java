@@ -116,7 +116,7 @@ Call queryEmailCall = multiCall.call(
 Call getEmailCall = multiCall.call(
         GetMailboxMethodCall.builder()
                 .accountId(accountId)
-                .idsReference(queryEmailCall.createResultReference(Request.Invocation.ResultReference.Path.IDS))
+                .ids(queryEmailCall.createResultReference(Request.Invocation.ResultReference.Path.IDS))
                 .build()
 );
 

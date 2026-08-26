@@ -37,9 +37,8 @@ public class CreationIdResolver {
         final String strippedId = creationId.substring(1);
         for (final Response.Invocation invocation : previousResponses.values()) {
             final MethodResponse methodResponse = invocation.methodResponse();
-            if (methodResponse instanceof SetMethodResponse) {
-                final Identifiable entity =
-                        ((SetMethodResponse<?>) methodResponse).created().get(strippedId);
+            if (methodResponse instanceof SetMethodResponse<?> setMethodResponse) {
+                final Identifiable entity = setMethodResponse.created().get(strippedId);
                 if (entity != null) {
                     return entity.id();
                 }
