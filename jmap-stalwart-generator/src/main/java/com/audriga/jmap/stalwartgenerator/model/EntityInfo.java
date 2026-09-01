@@ -55,11 +55,11 @@ public record EntityInfo(String description, String permissionPrefix, boolean si
                             .addMethod(
                                     recordCtorImplementing(Method.SET.callInterface, selfType, Method.SET.callMethods)
                                             .addCode("""
-                                            this(accountId, ifInState, asUpdateSingle(update));
+                                            this(accountId, ifInState, $T.asUpdateSingle(update));
                                             if (create != null || destroy != null) {
                                                 throw new $T("cannot create or update singleton data type");
                                             }
-                                            """, IllegalArgumentException.class)
+                                            """, SingletonSetMethodCall.class, IllegalArgumentException.class)
                                             .build())
                             .build());
 
