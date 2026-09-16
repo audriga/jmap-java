@@ -2,16 +2,20 @@ package com.audriga.jmap.calendars.entity;
 
 import com.audriga.jmap.annotation.Default;
 import com.audriga.jmap.annotation.Immutable;
+import com.audriga.jmap.annotation.Inline;
 import com.audriga.jmap.annotation.ServerSet;
 import com.audriga.jmap.annotation.Type;
 import com.audriga.jmap.common.DateTimePeriod;
 import com.audriga.jmap.common.entity.Identifiable;
+import com.audriga.jmap.common.entity.VendorExtension;
+import com.google.gson.JsonElement;
 import java.net.URI;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Map;
 import java.util.Set;
+import lombok.Singular;
 import org.jspecify.annotations.Nullable;
 
 @lombok.Builder(toBuilder = true)
@@ -66,5 +70,6 @@ public record CalendarEvent(
         LocalDateTime start,
         @Default("\"PT0S\"") DateTimePeriod duration,
         @Nullable ZoneId endTimeZone,
-        @Default("\"confirmed\"") String status)
+        @Default("\"confirmed\"") String status,
+        @Inline @Singular Map<VendorExtension, JsonElement> vendorProperties)
         implements Identifiable {}
