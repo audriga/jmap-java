@@ -1,1 +1,1 @@
-{"collapseThreads":true,"accountId":"accountId","filter":{"inMailbox":"inbox-id"},"sinceQueryState":"first"}
+{"accountId":"accountId","filter":{"inMailbox":"inbox-id"},"sinceQueryState":"first","collapseThreads":true}

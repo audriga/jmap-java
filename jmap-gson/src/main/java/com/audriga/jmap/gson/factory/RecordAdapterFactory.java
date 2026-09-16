@@ -163,6 +163,7 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                         .map(c -> {
                             MethodHandle accessor;
                             try {
+                                c.getAccessor().setAccessible(true);
                                 accessor = LOOKUP.unreflect(c.getAccessor());
                             } catch (IllegalAccessException e) {
                                 throw new IllegalArgumentException(
@@ -188,7 +189,9 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                                 .<Class<?>>map(RecordComponent::getType)
                                 .toList());
                 try {
-                    ctor = LOOKUP.findConstructor(raw, ctorType);
+                    var rawCtor = raw.getDeclaredConstructor(ctorType.parameterArray());
+                    rawCtor.setAccessible(true);
+                    ctor = LOOKUP.unreflectConstructor(rawCtor);
                 } catch (IllegalAccessException | NoSuchMethodException e) {
                     throw new IllegalArgumentException(
                             "failed to find primary record constructor for " + raw.getName(), e);
@@ -202,6 +205,7 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                             MethodHandle accessor;
                             try {
                                 accessorMethod = raw.getMethod(p.getName());
+                                accessorMethod.setAccessible(true);
                                 accessor = LOOKUP.unreflect(accessorMethod);
                             } catch (NoSuchMethodException e) {
                                 throw new IllegalArgumentException(
@@ -228,8 +232,10 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                         .toList();
                 try {
                     if (deserializer instanceof Constructor<?> c) {
+                        c.setAccessible(true);
                         ctor = LOOKUP.unreflectConstructor(c);
                     } else if (deserializer instanceof Method m) {
+                        m.setAccessible(true);
                         ctor = LOOKUP.unreflect(m);
                     } else {
                         throw new AssertionError();
@@ -336,7 +342,7 @@ public final class RecordAdapterFactory implements TypeAdapterFactory {
                 var comp = components.get(i);
                 if (fields[i] == EMPTY_SLOT) {
                     if (comp.defaultJson != null) {
-                        fields[i] = comp.adapter.fromJsonTree(comp.defaultJson);
+                        fields[i] = comp.nvAdapter.read(new JsonTreeReader(comp.defaultJson), "$default");
                     } else if (comp.nullable) {
                         // we disallow nullable on primitive types, so this is safe
                         fields[i] = null;

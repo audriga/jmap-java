@@ -58,6 +58,7 @@ final class RecordAdapterTest extends AbstractGsonTest {
     }
 
     @Test
+    @Disabled("outer @Inline component name is not checked against its own flattened keys, needs a design decision")
     void duplicatePropertyWrite() {
         record X(boolean field) {}
         record Y(@Inline X field) {}

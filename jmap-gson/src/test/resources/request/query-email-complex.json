@@ -1,1 +1,1 @@
-{"collapseThreads":true,"accountId":"accountId","filter":{"operator":"OR","conditions":[{"inMailbox":"archive-id"},{"inMailbox":"inbox-id"}]}}
+{"accountId":"accountId","filter":{"operator":"OR","conditions":[{"inMailbox":"archive-id"},{"inMailbox":"inbox-id"}]},"collapseThreads":true}

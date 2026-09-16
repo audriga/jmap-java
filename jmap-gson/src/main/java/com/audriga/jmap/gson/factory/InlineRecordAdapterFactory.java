@@ -11,7 +11,6 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 
 public final class InlineRecordAdapterFactory implements TypeAdapterFactory {
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
@@ -30,12 +29,15 @@ public final class InlineRecordAdapterFactory implements TypeAdapterFactory {
         var component = components[0];
         MethodHandle ctor;
         try {
-            ctor = LOOKUP.findConstructor(raw, MethodType.methodType(void.class, component.getType()));
+            var rawCtor = raw.getDeclaredConstructor(component.getType());
+            rawCtor.setAccessible(true);
+            ctor = LOOKUP.unreflectConstructor(rawCtor);
         } catch (IllegalAccessException | NoSuchMethodException e) {
             throw new IllegalArgumentException("failed to find primary record constructor for " + raw.getName(), e);
         }
         MethodHandle accessor;
         try {
+            component.getAccessor().setAccessible(true);
             accessor = LOOKUP.unreflect(component.getAccessor());
         } catch (IllegalAccessException e) {
             throw new IllegalArgumentException("failed to unreflect record accessor for " + raw.getName(), e);
