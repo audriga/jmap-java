@@ -60,6 +60,7 @@
         <module>jmap-mock-server</module>
         <module>jmap-mua</module>
         <module>jmap-mua-util</module>
+        <module>jmap-sieve</module>
         <module>jmap-stalwart</module>
         <module>jmap-stalwart-generator</module>
     </modules>

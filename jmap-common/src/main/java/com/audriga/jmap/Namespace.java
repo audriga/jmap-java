@@ -27,6 +27,7 @@ public final class Namespace {
     public static final String FILE_NODE = "urn:ietf:params:jmap:filenode";
     public static final String WEB_SOCKET = "urn:ietf:params:jmap:websocket";
     public static final String WEB_PUSH_VAPID = "urn:ietf:params:jmap:webpush-vapid";
+    public static final String SIEVE = "urn:ietf:params:jmap:sieve";
 
     private Namespace() {}
 }
