@@ -20,6 +20,7 @@ import static com.audriga.jmap.client.HttpJmapClientTest.WELL_KNOWN_PATH;
 import static com.audriga.jmap.client.HttpJmapClientTest.readResourceAsString;
 
 import com.audriga.jmap.client.dummy.SetDummyMethodCall;
+import com.audriga.jmap.common.method.MethodCall;
 import com.audriga.jmap.common.method.call.core.EchoMethodCall;
 import com.audriga.jmap.common.method.response.core.EchoMethodResponse;
 import com.audriga.jmap.common.util.Mapper;
@@ -60,7 +61,8 @@ public class CustomExtensionTest {
     public void failOnCallWithoutNamespace() {
         final JmapClient client = new JmapClient(USERNAME, PASSWORD);
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            client.call(new GetDummyMethodCall(ACCOUNT_ID)).get();
+            client.call(GetDummyMethodCall.builder().accountId(ACCOUNT_ID).build())
+                    .get();
         });
     }
 
@@ -74,7 +76,7 @@ public class CustomExtensionTest {
 
             final JmapClient client = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
             final ExecutionException executionException = Assertions.assertThrows(ExecutionException.class, () -> {
-                client.call(new SetDummyMethodCall(ACCOUNT_ID, null, null, null, null, null))
+                client.call(SetDummyMethodCall.builder().accountId(ACCOUNT_ID).build())
                         .get();
             });
             MatcherAssert.assertThat(executionException.getCause(), CoreMatchers.instanceOf(JsonIOException.class));
@@ -86,8 +88,10 @@ public class CustomExtensionTest {
         final GsonBuilder gsonBuilder = new GsonBuilder();
         JmapAdapters.register(gsonBuilder);
         final Gson gson = gsonBuilder.create();
-        final QueryDummyMethodCall queryDummyMethodCall = new QueryDummyMethodCall(
-                "accountId", new DummyFilterCondition(true), null, null, null, null, null, null);
+        final QueryDummyMethodCall queryDummyMethodCall = QueryDummyMethodCall.builder()
+                .accountId("accountId")
+                .filter(new DummyFilterCondition(true))
+                .build();
         Assertions.assertEquals(EXPECTED_JSON_QUERY_CALL, gson.toJson(queryDummyMethodCall));
     }
 
@@ -98,6 +102,8 @@ public class CustomExtensionTest {
         final Gson gson = gsonBuilder.create();
         final QueryDummyMethodCall queryMethodCall =
                 gson.fromJson(EXPECTED_JSON_QUERY_CALL, QueryDummyMethodCall.class);
-        MatcherAssert.assertThat(queryMethodCall.filter(), CoreMatchers.instanceOf(DummyFilterCondition.class));
+        MatcherAssert.assertThat(
+                MethodCall.Arg.unwrapValue(queryMethodCall.filter()),
+                CoreMatchers.instanceOf(DummyFilterCondition.class));
     }
 }
