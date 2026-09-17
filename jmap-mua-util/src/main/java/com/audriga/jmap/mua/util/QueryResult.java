@@ -79,8 +79,11 @@ public record QueryResult(
 
     private static ImmutableMap<String, String> map(GetEmailMethodResponse emailMethodResponse) {
         ImmutableMap.Builder<String, String> builder = new ImmutableMap.Builder<>();
-        for (Email email : emailMethodResponse.list()) {
-            builder.put(email.id(), email.threadId());
+        final List<Email> list = emailMethodResponse.list();
+        if (list != null) {
+            for (Email email : list) {
+                builder.put(email.id(), email.threadId());
+            }
         }
         return builder.build();
     }

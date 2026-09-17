@@ -54,25 +54,33 @@ public class Update<T extends Identifiable> extends AbstractUpdate<T> {
             ChangesMethodResponse<T> changesMethodResponse,
             GetMethodResponse<T> createdMethodResponse,
             GetMethodResponse<T> updatedMethodResponse) {
+        final List<String> changesCreated = nullToEmpty(changesMethodResponse.created());
+        final List<String> changesUpdated = nullToEmpty(changesMethodResponse.updated());
+        final List<T> created = nullToEmpty(createdMethodResponse.list());
+        final List<T> updated = nullToEmpty(updatedMethodResponse.list());
         checkEquals(
-                changesMethodResponse.created(),
-                createdMethodResponse.list().stream().map(Identifiable::id).collect(Collectors.toSet()),
+                changesCreated,
+                created.stream().map(Identifiable::id).collect(Collectors.toSet()),
                 String.format(
                         "IDs returned by %s.created does not match ids found in Get call",
                         changesMethodResponse.getClass().getSimpleName()));
         checkEquals(
-                changesMethodResponse.updated(),
-                updatedMethodResponse.list().stream().map(Identifiable::id).collect(Collectors.toSet()),
+                changesUpdated,
+                updated.stream().map(Identifiable::id).collect(Collectors.toSet()),
                 String.format(
                         "IDs returned by %s.updated does not match ids found in Get call",
                         changesMethodResponse.getClass().getSimpleName()));
         return new Update<>(
                 changesMethodResponse.typedOldState(),
                 changesMethodResponse.typedNewState(),
-                createdMethodResponse.list(),
-                updatedMethodResponse.list(),
-                changesMethodResponse.destroyed(),
+                created,
+                updated,
+                nullToEmpty(changesMethodResponse.destroyed()),
                 changesMethodResponse.hasMoreChanges());
+    }
+
+    private static <E> List<E> nullToEmpty(final List<E> list) {
+        return list == null ? List.of() : list;
     }
 
     private static void checkEquals(final List<String> a, final Set<String> b, String message) {

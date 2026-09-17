@@ -45,11 +45,12 @@ public class QueryUpdate<T extends Identifiable, U> extends AbstractUpdate<T> {
 
     public static <T extends Identifiable, U> QueryUpdate<T, U> of(
             QueryChangesMethodResponse<T> queryChangesMethodResponse, List<AddedItem<U>> added) {
+        final List<String> removed = queryChangesMethodResponse.removed();
         return new QueryUpdate<>(
                 queryChangesMethodResponse.oldTypedQueryState(),
                 queryChangesMethodResponse.newTypedQueryState(),
-                queryChangesMethodResponse.removed(),
-                added,
+                removed == null ? List.of() : removed,
+                added == null ? List.of() : added,
                 queryChangesMethodResponse.total());
     }
 

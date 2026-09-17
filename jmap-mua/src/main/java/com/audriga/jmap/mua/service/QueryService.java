@@ -163,6 +163,7 @@ public class QueryService extends AbstractMuaService {
                 .accountId(accountId)
                 .query(query)
                 .anchor(afterEmailId)
+                .anchorOffset(1L)
                 .limit(getQueryPageSize())
                 .build());
         final ListenableFuture<MethodResponses> queryResponsesFuture = queryCall.getMethodResponses();

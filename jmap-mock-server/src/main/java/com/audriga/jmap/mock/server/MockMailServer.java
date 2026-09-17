@@ -261,6 +261,7 @@ public class MockMailServer extends StubMailServer {
                         .updated(List.of())
                         .created(List.of())
                         .destroyed(List.of())
+                        .hasMoreChanges(false)
                         .build()
             };
         } else {
@@ -343,6 +344,7 @@ public class MockMailServer extends StubMailServer {
                         .newQueryState(getState())
                         .added(List.of())
                         .removed(List.of())
+                        .total(emails.size())
                         .build()
             };
         } else {
@@ -543,6 +545,7 @@ public class MockMailServer extends StubMailServer {
                         .created(List.of())
                         .destroyed(List.of())
                         .updatedProperties(List.of())
+                        .hasMoreChanges(false)
                         .build()
             };
         } else {
@@ -721,6 +724,7 @@ public class MockMailServer extends StubMailServer {
                         .updated(List.of())
                         .created(List.of())
                         .destroyed(List.of())
+                        .hasMoreChanges(false)
                         .build()
             };
         } else {
