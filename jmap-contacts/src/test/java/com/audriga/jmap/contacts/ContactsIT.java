@@ -11,6 +11,7 @@ import com.audriga.jmap.client.JmapClient;
 import com.audriga.jmap.client.http.BasicAuthHttpAuthentication;
 import com.audriga.jmap.common.DateTimePeriod;
 import com.audriga.jmap.common.entity.capability.MailAccountCapability;
+import com.audriga.jmap.common.method.MethodCall;
 import com.audriga.jmap.common.method.call.email.GetEmailMethodCall;
 import com.audriga.jmap.common.method.response.email.GetEmailMethodResponse;
 import com.audriga.jmap.contacts.entity.ContactCard;
@@ -20,7 +21,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -52,15 +52,16 @@ class ContactsIT {
                 InsecureX509TrustManager.INSTANCE))) {
             var session = client.getSession().get();
             String accountId = session.getPrimaryAccount(CalendarsAccountCapability.class);
-            var calId = client.call(new GetCalendarCall(accountId, null, null, null))
+            var calId = client.call(new GetCalendarCall(MethodCall.Arg.of(accountId), null, null))
                     .get()
                     .getMain(GetCalendarResponse.class)
-                    .list()[0]
+                    .list()
+                    .get(0)
                     .id();
             var res = client.call(new SetCalendarEventCall(
-                            accountId,
+                            MethodCall.Arg.of(accountId),
                             null,
-                            Map.of(
+                            MethodCall.Arg.of(Map.of(
                                     "a",
                                     CalendarEvent.builder()
                                             .calendarIds(Set.of(calId))
@@ -77,8 +78,7 @@ class ContactsIT {
                                                             .calendarAddress(URI.create("mailto:foo@stalwart.test"))
                                                             .roles(Set.of("owner", "attendee"))
                                                             .build()))
-                                            .build()),
-                            null,
+                                            .build())),
                             null,
                             null,
                             true))
@@ -89,7 +89,7 @@ class ContactsIT {
                             GetCalendarEventCall.builder().accountId(calId).build())
                     .get()
                     .getMain(GetCalendarEventResponse.class);
-            System.out.println(Arrays.toString(res2.list()));
+            System.out.println(res2.list());
         }
     }
 
@@ -107,13 +107,13 @@ class ContactsIT {
                             GetEmailMethodCall.builder().accountId(accountId).build())
                     .get()
                     .getMain(GetEmailMethodResponse.class);
-            System.out.println(Arrays.toString(emailRes.list()));
+            System.out.println(emailRes.list());
 
             var eventRes = client.call(
                             GetCalendarEventCall.builder().accountId(accountId).build())
                     .get()
                     .getMain(GetCalendarEventResponse.class);
-            System.out.println(Arrays.toString(eventRes.list()));
+            System.out.println(eventRes.list());
         }
     }
 
@@ -128,29 +128,36 @@ class ContactsIT {
                 var session = client.getSession().get();
                 var accountId = session.getPrimaryAccount(ContactsAccountCapability.class);
                 {
-                    var res = client.call(new QueryContactCardCall(accountId, null, null, null, null, null, null, true))
+                    var res = client.call(new QueryContactCardCall(
+                                    MethodCall.Arg.of(accountId),
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    MethodCall.Arg.of(true)))
                             .get()
                             .getMain(QueryContactCardResponse.class);
                     assertEquals(0, res.total());
                 }
                 String addressBookId;
                 {
-                    var res = client.call(new GetAddressBookCall(accountId, null, null, null))
+                    var res = client.call(new GetAddressBookCall(MethodCall.Arg.of(accountId), null, null))
                             .get()
                             .getMain(GetAddressBookResponse.class);
-                    assertEquals(1, res.list().length);
-                    addressBookId = res.list()[0].id();
+                    assertEquals(1, res.list().size());
+                    addressBookId = res.list().get(0).id();
                 }
                 {
                     var res = client.call(new SetContactCardCall(
-                                    accountId,
+                                    MethodCall.Arg.of(accountId),
                                     null,
-                                    Map.of(
+                                    MethodCall.Arg.of(Map.of(
                                             "a",
                                             ContactCard.builder()
                                                     .addressBookIds(Set.of(addressBookId))
-                                                    .build()),
-                                    null,
+                                                    .build())),
                                     null,
                                     null))
                             .get()

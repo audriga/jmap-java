@@ -1,6 +1,7 @@
 package com.audriga.jmap.contacts;
 
 import com.audriga.jmap.client.JmapClient;
+import com.audriga.jmap.common.method.MethodCall;
 import com.audriga.jmap.stalwart.*;
 import java.io.InputStream;
 import java.net.DatagramSocket;
@@ -63,7 +64,7 @@ public final class StalwartContainer extends GenericContainer<StalwartContainer>
                             .encodedPath("/.well-known/jmap")
                             .build())) {
                 res = client.call(new StalwartBootstrap.Set(
-                                "",
+                                MethodCall.Arg.of(""),
                                 null,
                                 Map.of(
                                         "serverHostname",

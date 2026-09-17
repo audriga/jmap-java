@@ -17,7 +17,6 @@
 package com.audriga.jmap.mua;
 
 import com.audriga.jmap.common.Response;
-import com.audriga.jmap.common.entity.Email;
 import com.audriga.jmap.common.entity.Keyword;
 import com.audriga.jmap.common.entity.Mailbox;
 import com.audriga.jmap.common.entity.Role;
@@ -30,7 +29,6 @@ import com.audriga.jmap.mock.server.MockMailServer;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import mockwebserver3.MockWebServer;
@@ -77,8 +75,7 @@ public class GetEmailsOutOfOrderTest {
             GetEmailMethodResponse getEmailMethodResponse = (GetEmailMethodResponse) response[0];
             return new MethodResponse[] {
                 GetEmailMethodResponse.builder()
-                        .list(Lists.reverse(Arrays.asList(getEmailMethodResponse.list()))
-                                .toArray(new Email[0]))
+                        .list(Lists.reverse(getEmailMethodResponse.list()))
                         .state(getState())
                         .build()
             };

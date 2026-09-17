@@ -209,9 +209,8 @@ public class JmapMuaTest {
                 final ListMultimap<String, Response.Invocation> previousResponses) {
             return new MethodResponse[] {
                 GetMailboxMethodResponse.builder()
-                        .list(new Mailbox[] {
-                            Mailbox.builder().name("Inbox").role(Role.INBOX).build()
-                        })
+                        .list(java.util.List.of(
+                                Mailbox.builder().name("Inbox").role(Role.INBOX).build()))
                         .accountId(accountId())
                         .build()
             };

@@ -95,7 +95,7 @@ public class BrokenMailboxChangesTest {
                                         .name(mailboxInfo.name())
                                         .role(mailboxInfo.role())
                                         .build())
-                                .toArray(Mailbox[]::new))
+                                .collect(java.util.stream.Collectors.toList()))
                         .state(getState())
                         .build()
             };
