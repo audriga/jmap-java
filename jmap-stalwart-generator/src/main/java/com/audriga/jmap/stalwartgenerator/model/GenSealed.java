@@ -26,13 +26,21 @@ public record GenSealed(
 
     @Override
     public TypeSpec.Builder generate(Context ctx) {
+        var variantList = variants.toList();
+
+        // Fall back to the first variant if the server omits the "@type" discriminator,
+        // e.g. in a Foo/set create response.
+        var typeAnnotation = AnnotationSpec.builder(Type.class);
+        if (!variantList.isEmpty()) {
+            typeAnnotation.addMember("value", "$S", variantList.get(0).schemaName);
+        }
         var interfaceBuilder = TypeSpec.interfaceBuilder(javaName)
                 .addModifiers(Modifier.PUBLIC, Modifier.SEALED)
-                .addAnnotation(Type.class);
+                .addAnnotation(typeAnnotation.build());
         if (entityInfo != null) {
             entityInfo.apply(ctx, interfaceBuilder, this);
         }
-        variants.forEach(variant -> {
+        variantList.forEach(variant -> {
             var variantBuilder = TypeSpec.recordBuilder(variant.javaName)
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                     .addSuperinterface(ctx.type(javaName))

@@ -10,6 +10,7 @@ import com.audriga.jmap.annotation.ServerSet;
 import com.audriga.jmap.gson.GsonUtils;
 import com.audriga.jmap.stalwartgenerator.Context;
 import com.audriga.jmap.stalwartgenerator.Types;
+import com.audriga.jmap.stalwartgenerator.schema.StalwartFieldUpdate;
 import com.google.gson.reflect.TypeToken;
 import com.palantir.javapoet.*;
 import java.util.StringJoiner;
@@ -49,7 +50,12 @@ public record GenStruct(
             ctorArgs.add("id");
         }
         fields.forEach(field -> {
-            var paramSpec = ParameterSpec.builder(field.typeName(), field.javaName())
+            // Box server-set primitives so they can be left null and omitted from a
+            // create/update request instead of always sending a value like 0.
+            boolean isServerSet = field.update() == StalwartFieldUpdate.serverSet;
+            var fieldType = isServerSet ? field.typeName().box() : field.typeName();
+
+            var paramSpec = ParameterSpec.builder(fieldType, field.javaName())
                     .addJavadoc("$L", htmlEscaper().escape(field.description()));
             if (!field.schemaName().equals(field.javaName())) {
                 paramSpec.addAnnotation(serializedName(field.schemaName()));
@@ -68,12 +74,10 @@ public record GenStruct(
             }
             recordCtor.addParameter(paramSpec.addJavadoc("\n").build());
 
-            var builderField = FieldSpec.builder(Types.nullable(field.typeName()), field.javaName(), Modifier.PRIVATE);
-            builderSpec
-                    .addField(builderField.build())
-                    .addMethod(builderMethod(ctx, field.javaName(), field.typeName()));
+            var builderField = FieldSpec.builder(Types.nullable(fieldType), field.javaName(), Modifier.PRIVATE);
+            builderSpec.addField(builderField.build()).addMethod(builderMethod(ctx, field.javaName(), fieldType));
             if (field.defaultValue() != null) {
-                var type = field.typeName();
+                var type = fieldType;
                 var typeArg = type.isPrimitive() || type instanceof ClassName
                         ? CodeBlock.of("$T.class", type.withoutAnnotations())
                         : CodeBlock.of("new $T<$T>() {}", TypeToken.class, type);
@@ -88,7 +92,7 @@ public record GenStruct(
                         GsonUtils.class,
                         field.defaultValue().toString(),
                         typeArg);
-            } else if (!field.nullable()) {
+            } else if (!field.nullable() && !isServerSet) {
                 buildMethod.addCode(
                         """
                                 if ($L == null) {

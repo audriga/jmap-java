@@ -10,4 +10,4 @@ public record SieveScript(
         @Immutable @ServerSet String id,
         String name,
         @Nullable @ServerSet String blobId,
-        boolean isActive) implements Identifiable {}
+        @ServerSet boolean isActive) implements Identifiable {}

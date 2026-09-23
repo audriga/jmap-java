@@ -16,7 +16,9 @@ public record SetSieveScriptCall(
         @Nullable Arg<String> ifInState,
         @Nullable Arg<Map<String, SieveScript>> create,
         @Nullable Arg<Map<String, Map<String, Object>>> update,
-        @Nullable Arg<List<String>> destroy)
+        @Nullable Arg<List<String>> destroy,
+        @Nullable Arg<String> onSuccessActivateScript,
+        @Nullable Arg<Boolean> onSuccessDeactivateScript)
         implements SetMethodCall<SieveScript> {
     public static Builder builder() {
         return new Builder();
