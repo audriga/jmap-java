@@ -29,6 +29,8 @@ public final class Namespace {
     public static final String WEB_PUSH_VAPID = "urn:ietf:params:jmap:webpush-vapid";
     public static final String SIEVE = "urn:ietf:params:jmap:sieve";
     public static final String STALWART = "urn:stalwart:jmap";
+    public static final String PREFERENCES = "https://www.audriga.eu/jmap/preferences/";
+    public static final String PREFERENCES_FORWARDS = "https://www.audriga.eu/jmap/preferences-forwards/";
 
     private Namespace() {}
 }
