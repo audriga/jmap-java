@@ -10,16 +10,29 @@ import org.jspecify.annotations.Nullable;
 // See https://datatracker.ietf.org/doc/draft-ietf-jmap-filenode/
 @lombok.Builder(toBuilder = true)
 public record FileNodeFilterCondition(
+        @Nullable Boolean isTopLevel,
         @Nullable String parentId,
+        @Nullable String ancestorId,
+        @Nullable String descendantId,
         @Nullable String nodeType,
-        @Nullable String name,
-        @Nullable String type,
+        @Nullable String role,
+        @Nullable Boolean hasAnyRole,
+        @Nullable String blobId,
+        @Nullable Boolean isExecutable,
         @Nullable Instant createdBefore,
         @Nullable Instant createdAfter,
         @Nullable Instant modifiedBefore,
         @Nullable Instant modifiedAfter,
-        @Nullable Boolean isSubscribed,
-        @Nullable String text)
+        @Nullable Instant accessedBefore,
+        @Nullable Instant accessedAfter,
+        @Nullable Long minSize,
+        @Nullable Long maxSize,
+        @Nullable String name,
+        @Nullable String nameMatch,
+        @Nullable String type,
+        @Nullable String typeMatch,
+        @Nullable String text,
+        @Nullable String body)
         implements FilterCondition<FileNode> {
     @Override
     public int compareTo(Filter<FileNode> o) {
@@ -31,15 +44,28 @@ public record FileNodeFilterCondition(
         return QueryStringUtils.toQueryString(
                 L3_DIVIDER,
                 L4_DIVIDER,
+                isTopLevel,
                 parentId,
+                ancestorId,
+                descendantId,
                 nodeType,
-                name,
-                type,
+                role,
+                hasAnyRole,
+                blobId,
+                isExecutable,
                 createdBefore,
                 createdAfter,
                 modifiedBefore,
                 modifiedAfter,
-                isSubscribed,
-                text);
+                accessedBefore,
+                accessedAfter,
+                minSize,
+                maxSize,
+                name,
+                nameMatch,
+                type,
+                typeMatch,
+                text,
+                body);
     }
 }
