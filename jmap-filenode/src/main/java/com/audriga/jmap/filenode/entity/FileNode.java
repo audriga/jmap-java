@@ -5,12 +5,14 @@ import com.audriga.jmap.annotation.Immutable;
 import com.audriga.jmap.annotation.JmapEntity;
 import com.audriga.jmap.annotation.ServerSet;
 import com.audriga.jmap.common.entity.Identifiable;
+import com.audriga.jmap.filenode.method.FileNodeFilterCondition;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import org.jspecify.annotations.Nullable;
 
-@JmapEntity
+// See https://datatracker.ietf.org/doc/draft-ietf-jmap-filenode/
+@JmapEntity(filterCondition = FileNodeFilterCondition.class)
 @lombok.Builder(toBuilder = true)
 public record FileNode(
         @Immutable @ServerSet String id,
