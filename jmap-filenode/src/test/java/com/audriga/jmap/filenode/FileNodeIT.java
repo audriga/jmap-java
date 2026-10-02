@@ -53,6 +53,7 @@ class FileNodeIT {
                             .getMain(GetFileNodeResponse.class);
                     assertTrue(res.list().stream().anyMatch(node -> node.id().equals(createdId)));
                 }
+                String queryState;
                 {
                     var res = client.call(new QueryFileNodeCall(
                                     MethodCall.Arg.of(accountId),
@@ -66,6 +67,41 @@ class FileNodeIT {
                             .get()
                             .getMain(QueryFileNodeResponse.class);
                     assertTrue(res.ids().contains(createdId));
+                    queryState = res.queryState();
+                }
+                String secondId;
+                {
+                    var res = client.call(new SetFileNodeCall(
+                                    MethodCall.Arg.of(accountId),
+                                    null,
+                                    MethodCall.Arg.of(Map.of(
+                                            "b",
+                                            FileNode.builder()
+                                                    .nodeType("directory")
+                                                    .name("test-folder-2")
+                                                    .created(Instant.now())
+                                                    .build())),
+                                    null,
+                                    null))
+                            .get()
+                            .getMain(SetFileNodeResponse.class);
+                    assertNull(res.notCreated());
+                    secondId = res.created().get("b").id();
+                    assertNotNull(secondId);
+                }
+                {
+                    var res = client.call(new QueryChangesFileNodeCall(
+                                    MethodCall.Arg.of(accountId),
+                                    null,
+                                    null,
+                                    MethodCall.Arg.of(queryState),
+                                    null,
+                                    null,
+                                    null))
+                            .get()
+                            .getMain(QueryChangesFileNodeResponse.class);
+                    assertTrue(
+                            res.added().stream().anyMatch(item -> item.getItem().equals(secondId)));
                 }
                 {
                     var res = client.call(new SetFileNodeCall(
@@ -73,11 +109,12 @@ class FileNodeIT {
                                     null,
                                     null,
                                     null,
-                                    MethodCall.Arg.of(java.util.List.of(createdId))))
+                                    MethodCall.Arg.of(java.util.List.of(createdId, secondId))))
                             .get()
                             .getMain(SetFileNodeResponse.class);
                     assertNull(res.notDestroyed());
                     assertTrue(res.destroyed().contains(createdId));
+                    assertTrue(res.destroyed().contains(secondId));
                 }
             }
         }
