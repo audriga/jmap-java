@@ -347,8 +347,14 @@ class FileNodeIT {
                     assertNull(res.notCreated());
                     assertNotNull(res.created());
                     assertEquals(1, res.created().size());
-                    assertEquals(
-                            "to-copy", res.created().values().iterator().next().name());
+                    String copiedId = res.created().values().iterator().next().id();
+
+                    var getRes = secondClient
+                            .call(new GetFileNodeCall(
+                                    MethodCall.Arg.of(toAccountId), MethodCall.Arg.of(List.of(copiedId)), null))
+                            .get()
+                            .getMain(GetFileNodeResponse.class);
+                    assertEquals("to-copy", getRes.list().get(0).name());
                 }
             }
         }
