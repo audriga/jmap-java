@@ -10,6 +10,14 @@ import com.audriga.jmap.common.entity.Downloadable;
 import com.audriga.jmap.common.method.MethodCall;
 import com.audriga.jmap.filenode.entity.FileNode;
 import com.audriga.jmap.filenode.method.*;
+import com.audriga.jmap.stalwart.StalwartAccount;
+import com.audriga.jmap.stalwart.StalwartCredential;
+import com.audriga.jmap.stalwart.StalwartDomain;
+import com.audriga.jmap.stalwart.StalwartEncryptionAtRest;
+import com.audriga.jmap.stalwart.StalwartPasswordCredential;
+import com.audriga.jmap.stalwart.StalwartPermissions;
+import com.audriga.jmap.stalwart.StalwartUserAccount;
+import com.audriga.jmap.stalwart.StalwartUserRoles;
 import com.google.common.net.MediaType;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -19,7 +27,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class FileNodeIT {
@@ -240,9 +247,110 @@ class FileNodeIT {
     }
 
     // FileNode/copy needs two separate accounts, stalwart rejects copy within the same
-    // account. this repo does not have a way to create a second account in tests yet, so this
-    // is left disabled until that exists.
+    // account. The second account is created via the admin-only x:Account/set extension,
+    // then logged into separately to get its own JMAP accountId.
     @Test
-    @Disabled("needs a second account, no account creation helper exists in test infra yet")
-    void copy() {}
+    void copy() throws ExecutionException, InterruptedException {
+        try (var server = StalwartContainer.latest()) {
+            server.start();
+            try (var adminClient = new JmapClient(new ConnectionConfig(
+                    new BasicAuthHttpAuthentication(server.username(), server.password()),
+                    server.publicUrl().resolve("/.well-known/jmap"),
+                    InsecureX509TrustManager.INSTANCE))) {
+                var adminSession = adminClient.getSession().get();
+                var fromAccountId = adminSession.getPrimaryAccount(FileNodeAccountCapability.class);
+
+                String domainId;
+                {
+                    var res = adminClient
+                            .call(new StalwartDomain.Get(MethodCall.Arg.of(fromAccountId), null, null))
+                            .get()
+                            .getMain(StalwartDomain.Get.Response.class);
+                    domainId = res.list().get(0).id();
+                    assertNotNull(domainId);
+                }
+
+                String secondPassword = "correct horse battery staple";
+                var accountRes = adminClient
+                        .call(new StalwartAccount.Set(
+                                MethodCall.Arg.of(fromAccountId),
+                                null,
+                                MethodCall.Arg.of(Map.of(
+                                        "b",
+                                        new StalwartAccount.User(
+                                                null,
+                                                new StalwartUserAccount.Builder()
+                                                        .name("second")
+                                                        .domainId(domainId)
+                                                        .aliases(Map.of())
+                                                        .memberGroupIds(Map.of())
+                                                        .permissions(new StalwartPermissions.Inherit())
+                                                        .quotas(Map.of())
+                                                        .roles(new StalwartUserRoles.User())
+                                                        .encryptionAtRest(new StalwartEncryptionAtRest.Disabled())
+                                                        .credentials(Map.of(
+                                                                0,
+                                                                new StalwartCredential.Password(
+                                                                        new StalwartPasswordCredential.Builder()
+                                                                                .allowedIps(Map.of())
+                                                                                .secret(secondPassword)
+                                                                                .build())))
+                                                        .build()))),
+                                null,
+                                null))
+                        .get()
+                        .getMain(StalwartAccount.Set.Response.class);
+                assertNull(accountRes.notCreated());
+                assertNotNull(accountRes.created().get("b"));
+
+                String folderId;
+                {
+                    var res = adminClient
+                            .call(new SetFileNodeCall(
+                                    MethodCall.Arg.of(fromAccountId),
+                                    null,
+                                    MethodCall.Arg.of(Map.of(
+                                            "a",
+                                            FileNode.builder()
+                                                    .nodeType("directory")
+                                                    .name("to-copy")
+                                                    .created(Instant.now())
+                                                    .build())),
+                                    null,
+                                    null))
+                            .get()
+                            .getMain(SetFileNodeResponse.class);
+                    assertNull(res.notCreated());
+                    folderId = res.created().get("a").id();
+                    assertNotNull(folderId);
+                }
+
+                try (var secondClient = new JmapClient(new ConnectionConfig(
+                        new BasicAuthHttpAuthentication("second@stalwart.test", secondPassword),
+                        server.publicUrl().resolve("/.well-known/jmap"),
+                        InsecureX509TrustManager.INSTANCE))) {
+                    var secondSession = secondClient.getSession().get();
+                    var toAccountId = secondSession.getPrimaryAccount(FileNodeAccountCapability.class);
+
+                    var res = adminClient
+                            .call(new CopyFileNodeCall(
+                                    MethodCall.Arg.of(fromAccountId),
+                                    null,
+                                    MethodCall.Arg.of(toAccountId),
+                                    null,
+                                    MethodCall.Arg.of(
+                                            Map.of(folderId, FileNode.builder().build())),
+                                    null,
+                                    null))
+                            .get()
+                            .getMain(CopyFileNodeResponse.class);
+                    assertNull(res.notCreated());
+                    assertNotNull(res.created());
+                    assertEquals(1, res.created().size());
+                    assertEquals(
+                            "to-copy", res.created().values().iterator().next().name());
+                }
+            }
+        }
+    }
 }
