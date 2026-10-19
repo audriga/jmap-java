@@ -65,6 +65,7 @@
         <module>jmap-sieve</module>
         <module>jmap-stalwart</module>
         <module>jmap-stalwart-generator</module>
+        <module>jmap-tasks</module>
     </modules>
 
     <scm>

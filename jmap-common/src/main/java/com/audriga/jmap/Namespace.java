@@ -30,6 +30,7 @@ public final class Namespace {
     public static final String SIEVE = "urn:ietf:params:jmap:sieve";
     public static final String STALWART = "urn:stalwart:jmap";
     public static final String NOTES = "urn:ietf:params:jmap:notes";
+    public static final String TASKS = "urn:ietf:params:jmap:tasks";
     public static final String PREFERENCES = "https://www.audriga.eu/jmap/preferences/";
     public static final String PREFERENCES_FORWARDS = "https://www.audriga.eu/jmap/preferences-forwards/";
 
