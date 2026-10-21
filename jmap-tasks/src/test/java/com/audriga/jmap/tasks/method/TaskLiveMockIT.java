@@ -15,13 +15,16 @@ import java.util.concurrent.ExecutionException;
 import okhttp3.HttpUrl;
 import org.junit.jupiter.api.Test;
 
-// Runs against the maintained OpenXPort mock deployment at audriga.eu, which has writes enabled.
+// Runs against the maintained OpenXPort mock deployment at audriga.eu. Writes are disabled
+// there by default, so the session URL carries a query parameter to opt in for this test.
+// That parameter gets echoed back into the session's apiUrl and carries over to every call.
 class TaskLiveMockIT {
 
     private static final HttpUrl BASE_URL = new HttpUrl.Builder()
             .scheme("https")
             .host("www.audriga.eu")
             .encodedPath("/test/openxport/mock/jmap.php")
+            .addQueryParameter("Mock-Jmap-Set-Enabled", "true")
             .build();
 
     @Test
