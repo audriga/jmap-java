@@ -8,8 +8,8 @@ import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-// No server implements TaskList/set yet, so this only checks that the call and response
-// classes serialize and deserialize correctly on their own.
+// Only checks that the call and response classes serialize and deserialize correctly
+// on their own; see TaskLiveMockIT and TaskMockServerIT for integration coverage of TaskList/set.
 public class SetTaskListCallTest {
 
     @Test

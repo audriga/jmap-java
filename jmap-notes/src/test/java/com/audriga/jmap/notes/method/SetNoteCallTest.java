@@ -8,8 +8,8 @@ import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-// No server implements Note/set yet, so this only checks that the call and response
-// classes serialize and deserialize correctly on their own.
+// Only checks that the call and response classes serialize and deserialize correctly
+// on their own; see NoteLiveMockIT and NoteMockServerIT for integration coverage of Note/set.
 public class SetNoteCallTest {
 
     @Test

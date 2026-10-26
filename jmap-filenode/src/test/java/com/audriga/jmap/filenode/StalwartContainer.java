@@ -108,6 +108,9 @@ public final class StalwartContainer extends GenericContainer<StalwartContainer>
                 throw new ContainerLaunchException("couldn't update stalwart x:Bootstrap: " + res.notUpdated());
             }
             var updated = res.updated().get("singleton");
+            if (updated == null) {
+                throw new ContainerLaunchException("stalwart bootstrap response had no \"singleton\" entry: " + res);
+            }
             username = updated.username();
             password = updated.secret();
 
@@ -122,7 +125,7 @@ public final class StalwartContainer extends GenericContainer<StalwartContainer>
         try (var socket = new DatagramSocket()) {
             port = socket.getLocalPort();
         } catch (SocketException e) {
-            throw new RuntimeException(e);
+            throw new ContainerLaunchException("couldn't allocate an ephemeral port for stalwart", e);
         }
         addFixedExposedPort(port, 443);
         publicUrl =

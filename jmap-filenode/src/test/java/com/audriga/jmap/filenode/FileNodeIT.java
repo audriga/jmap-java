@@ -88,6 +88,7 @@ class FileNodeIT {
                                     MethodCall.Arg.of(accountId), MethodCall.Arg.of(List.of(createdId)), null))
                             .get()
                             .getMain(GetFileNodeResponse.class);
+                    assertEquals(1, res.list().size());
                     assertEquals("renamed-folder", res.list().get(0).name());
                 }
                 String queryState;
@@ -266,6 +267,7 @@ class FileNodeIT {
                             .call(new StalwartDomain.Get(MethodCall.Arg.of(fromAccountId), null, null))
                             .get()
                             .getMain(StalwartDomain.Get.Response.class);
+                    assertFalse(res.list().isEmpty());
                     domainId = res.list().get(0).id();
                     assertNotNull(domainId);
                 }
@@ -354,6 +356,7 @@ class FileNodeIT {
                                     MethodCall.Arg.of(toAccountId), MethodCall.Arg.of(List.of(copiedId)), null))
                             .get()
                             .getMain(GetFileNodeResponse.class);
+                    assertEquals(1, getRes.list().size());
                     assertEquals("to-copy", getRes.list().get(0).name());
                 }
             }
