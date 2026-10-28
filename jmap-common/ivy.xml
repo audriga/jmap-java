@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated for publishing to the shared SFTP Ivy repo via build.xml's "publish" target.
+     Not used for resolving jmap-common's own dependencies, those are managed by Maven (pom.xml). -->
+<ivy-module version="2.0">
+    <info organisation="com.audriga.jmap" module="jmap-common" revision="0.10.0-SNAPSHOT" status="integration" />
+    <publications>
+        <artifact name="jmap-common" type="jar" ext="jar" />
+    </publications>
+</ivy-module>

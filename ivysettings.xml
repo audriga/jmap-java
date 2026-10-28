@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivysettings>
+  <properties file="${user.home}/.sftp.ivy.properties" />
+  <settings defaultResolver="sftp-publish" />
+  <resolvers>
+    <sftp name="sftp-publish" user="${ivyuser}" userPassword="${ivypass}" host="${ivyhost}" checkmodified="true">
+      <ivy pattern="/upload/libraries/[organisation]/[module]/ivy-[revision].xml" />
+      <artifact pattern="/upload/libraries/[organisation]/[module]/[artifact]-[revision].jar" />
+    </sftp>
+  </resolvers>
+</ivysettings>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="jmap-java-publish" default="publish" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+
+    <!-- Publishes the jmap-java modules that connectorjmap depends on (per its ivy.xml) to the
+         shared SFTP Ivy repo, so connectorjmap can resolve com.audriga.jmap artifacts the normal
+         way instead of the local ~/.m2 workaround in its ivysettings.xml.
+
+         Usage: ant publish
+         (runs "mvn package" first to build the jars, then publishes each module's
+         ivy.xml + jar to the shared repo configured in ivysettings.xml) -->
+
+    <target name="package" description="Build all module jars with Maven">
+        <exec executable="mvn" failonerror="true">
+            <arg value="-q" />
+            <arg value="-DskipTests" />
+            <arg value="package" />
+        </exec>
+    </target>
+
+    <macrodef name="publish-module">
+        <attribute name="module" />
+        <sequential>
+            <ivy:settings file="ivysettings.xml" />
+            <ivy:resolve file="@{module}/ivy.xml" />
+            <ivy:publish resolver="sftp-publish" artifactspattern="@{module}/target/[artifact]-[revision](-[classifier]).[ext]"
+                          overwrite="true" forcedeliver="true" />
+            <echo message="Published @{module} to the shared SFTP Ivy repo" />
+        </sequential>
+    </macrodef>
+
+    <target name="publish" depends="package" description="Build and publish the connectorjmap-dependent modules">
+        <publish-module module="jmap-annotation" />
+        <publish-module module="jmap-annotation-processor" />
+        <publish-module module="jmap-common-interface" />
+        <publish-module module="jmap-client" />
+        <publish-module module="jmap-common" />
+        <publish-module module="jmap-gson" />
+        <publish-module module="jmap-contacts" />
+        <publish-module module="jmap-calendars" />
+        <publish-module module="jmap-sieve" />
+        <publish-module module="jmap-stalwart" />
+        <publish-module module="jmap-preferences" />
+        <publish-module module="jmap-filenode" />
+        <publish-module module="jmap-notes" />
+        <publish-module module="jmap-tasks" />
+    </target>
+
+</project>
