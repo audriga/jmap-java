@@ -32,8 +32,6 @@ import com.google.common.io.Resources;
 import com.google.gson.reflect.TypeToken;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -102,30 +100,26 @@ public final class Mapper {
     }
 
     private static <T> Iterable<BufferedReader> getSystemResources(final Class<T> type) {
-        final List<URL> urls = getSystemResourceUrls(type);
+        List<URL> urls = getSystemResourceUrls(type);
         if (urls.isEmpty()) {
-            final InputStream is = Mapper.class.getClassLoader().getResourceAsStream(Utils.getFilenameFor(type));
-            if (is == null) {
-                LOGGER.error("Unable to find resources for type {}", type.getName());
-                return Collections.emptyList();
-            }
-            return Collections.singletonList(new BufferedReader(new InputStreamReader(is)));
-        } else {
-            return urls.stream()
-                    .map(url -> {
-                        try {
-                            return new BufferedReader(Resources.asCharSource(url, StandardCharsets.UTF_8)
-                                    .openStream());
-                        } catch (IOException e) {
-                            LOGGER.warn(
-                                    "Unable to to read mappings for type {} from url {}",
-                                    type.getName(),
-                                    url.toString());
-                            return null;
-                        }
-                    })
-                    .collect(Collectors.toList());
+            urls = getClassLoaderResourceUrls(type);
         }
+        if (urls.isEmpty()) {
+            LOGGER.error("Unable to find resources for type {}", type.getName());
+            return Collections.emptyList();
+        }
+        return urls.stream()
+                .map(url -> {
+                    try {
+                        return new BufferedReader(Resources.asCharSource(url, StandardCharsets.UTF_8)
+                                .openStream());
+                    } catch (IOException e) {
+                        LOGGER.warn(
+                                "Unable to to read mappings for type {} from url {}", type.getName(), url.toString());
+                        return null;
+                    }
+                })
+                .collect(Collectors.toList());
     }
 
     private static <T> List<URL> getSystemResourceUrls(Class<T> type) {
@@ -133,6 +127,15 @@ public final class Mapper {
             return Collections.list(ClassLoader.getSystemResources(Utils.getFilenameFor(type)));
         } catch (IOException e) {
             LOGGER.warn("Unable to get SystemResources from ClassLoader", e);
+            return Collections.emptyList();
+        }
+    }
+
+    private static <T> List<URL> getClassLoaderResourceUrls(Class<T> type) {
+        try {
+            return Collections.list(Mapper.class.getClassLoader().getResources(Utils.getFilenameFor(type)));
+        } catch (IOException e) {
+            LOGGER.warn("Unable to get resources from ClassLoader", e);
             return Collections.emptyList();
         }
     }
