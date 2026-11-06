@@ -43,6 +43,7 @@
         <publish-module module="jmap-filenode" />
         <publish-module module="jmap-notes" />
         <publish-module module="jmap-tasks" />
+        <publish-module module="jmap-debug" />
     </target>
 
 </project>
