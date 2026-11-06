@@ -16,6 +16,7 @@
 
 package com.audriga.jmap.client;
 
+import com.audriga.jmap.Namespace;
 import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.method.MethodCall;
 import com.audriga.jmap.common.method.ResultReference;
@@ -35,10 +36,13 @@ public class JmapRequest {
     private final Request request;
     private final ArrayList<Future<?>> dependentFutures = new ArrayList<>();
 
-    private JmapRequest(Map<Request.Invocation, SettableFuture<MethodResponses>> map) {
+    private JmapRequest(Map<Request.Invocation, SettableFuture<MethodResponses>> map, boolean sendLogs) {
         final Request.Builder requestBuilder = Request.builder();
         for (Request.Invocation invocation : map.keySet()) {
             requestBuilder.add(invocation);
+        }
+        if (sendLogs) {
+            requestBuilder.using(Namespace.DEBUG);
         }
         this.request = requestBuilder.build();
         this.invocationFutureImmutableMap = ImmutableMap.copyOf(map);
@@ -76,8 +80,14 @@ public class JmapRequest {
 
         private final Map<Request.Invocation, SettableFuture<MethodResponses>> map = new LinkedHashMap<>();
         private int nextMethodCallId = 0;
+        private boolean sendLogs = false;
 
         public Call call(final MethodCall methodCall) {
+            return call(methodCall, false);
+        }
+
+        public Call call(final MethodCall methodCall, final boolean sendLogs) {
+            this.sendLogs = this.sendLogs || sendLogs;
             final Request.Invocation invocation = new Request.Invocation(methodCall, nextMethodCallId());
             final ListenableFuture<MethodResponses> future = add(invocation);
             return new Call(future, invocation);
@@ -95,7 +105,7 @@ public class JmapRequest {
         }
 
         public JmapRequest build() {
-            return new JmapRequest(map);
+            return new JmapRequest(map, sendLogs);
         }
     }
 

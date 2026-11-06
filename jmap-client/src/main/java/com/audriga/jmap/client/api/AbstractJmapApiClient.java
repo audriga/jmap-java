@@ -23,9 +23,11 @@ import com.audriga.jmap.common.ErrorResponse;
 import com.audriga.jmap.common.GenericResponse;
 import com.audriga.jmap.common.Request;
 import com.audriga.jmap.common.Response;
+import com.audriga.jmap.common.entity.LogLine;
 import com.audriga.jmap.common.method.MethodErrorResponse;
 import com.audriga.jmap.common.method.MethodResponse;
 import com.google.common.util.concurrent.SettableFuture;
+import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractJmapApiClient implements JmapApiClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractJmapApiClient.class);
+    private static final Logger DEBUG_LOGGER = LoggerFactory.getLogger("com.audriga.jmap.client.debug");
 
     private final SessionStateListener sessionStateListener;
 
@@ -47,6 +50,8 @@ public abstract class AbstractJmapApiClient implements JmapApiClient {
             final ResponseAnalyzer responseAnalyzer = ResponseAnalyzer.analyse(response);
             final Map<Request.Invocation, SettableFuture<MethodResponses>> map =
                     jmapRequest.getInvocationFutureImmutableMap();
+
+            logDebugLogLines(response.logs(), response.sessionState());
 
             // Notify about potentially updated session state *before* setting the response futures.
             // This way we'll
@@ -75,6 +80,22 @@ public abstract class AbstractJmapApiClient implements JmapApiClient {
             throw new IllegalArgumentException(String.format(
                     "Unable to process response of type %s",
                     genericResponse.getClass().getName()));
+        }
+    }
+
+    private void logDebugLogLines(final List<LogLine> logs, final String sessionState) {
+        if (logs == null || logs.isEmpty()) {
+            return;
+        }
+        for (LogLine logLine : logs) {
+            final String msg = "[%s] (%s, %s, %s): %s"
+                    .formatted(logLine.timestamp(), sessionState, logLine.file(), logLine.line(), logLine.message());
+            switch (logLine.level()) {
+                case emergency, alert, critical, error -> DEBUG_LOGGER.error(msg);
+                case warning, notice -> DEBUG_LOGGER.warn(msg);
+                case info -> DEBUG_LOGGER.info(msg);
+                case debug -> DEBUG_LOGGER.debug(msg);
+            }
         }
     }
 

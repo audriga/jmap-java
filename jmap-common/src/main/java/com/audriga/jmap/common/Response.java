@@ -16,9 +16,18 @@
 
 package com.audriga.jmap.common;
 
+import com.audriga.jmap.common.entity.LogLine;
 import com.audriga.jmap.common.method.MethodResponse;
 import java.util.List;
+import org.jspecify.annotations.Nullable;
 
-public record Response(List<Invocation> methodResponses, String sessionState) implements GenericResponse {
+public record Response(
+        List<Invocation> methodResponses,
+        String sessionState,
+        @Nullable List<LogLine> logs) implements GenericResponse {
+    public Response(List<Invocation> methodResponses, String sessionState) {
+        this(methodResponses, sessionState, null);
+    }
+
     public record Invocation(MethodResponse methodResponse, String id) {}
 }

@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 
 import com.audriga.jmap.common.GenericResponse;
 import com.audriga.jmap.common.Response;
+import com.audriga.jmap.common.entity.LogLevel;
 import com.audriga.jmap.common.method.error.RequestTooLargeMethodErrorResponse;
 import com.audriga.jmap.gson.deserializer.ResponseInvocationDeserializer;
 import com.google.gson.JsonParseException;
@@ -25,6 +26,27 @@ public class ResponseDeserializationTest extends AbstractGsonTest {
         MatcherAssert.assertThat(
                 response.methodResponses().get(1).methodResponse(),
                 instanceOf(RequestTooLargeMethodErrorResponse.class));
+    }
+
+    @Test
+    public void deserializeResponseWithLogs() throws IOException {
+        GenericResponse genericResponse =
+                parseFromResource("response/mailbox-get-with-logs.json", GenericResponse.class);
+        MatcherAssert.assertThat(genericResponse, instanceOf(Response.class));
+        final Response response = (Response) genericResponse;
+        Assertions.assertNotNull(response.logs());
+        Assertions.assertEquals(2, response.logs().size());
+        Assertions.assertEquals(LogLevel.info, response.logs().get(0).level());
+        Assertions.assertEquals("Logger.php", response.logs().get(0).file());
+        Assertions.assertEquals(32L, response.logs().get(0).line());
+    }
+
+    @Test
+    public void deserializeResponseWithoutLogs() throws IOException {
+        GenericResponse genericResponse =
+                parseFromResource("response/mailbox-get-email-get.json", GenericResponse.class);
+        final Response response = (Response) genericResponse;
+        Assertions.assertNull(response.logs());
     }
 
     @Test

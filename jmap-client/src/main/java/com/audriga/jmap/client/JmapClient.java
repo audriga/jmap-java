@@ -84,12 +84,16 @@ public class JmapClient implements Closeable {
     }
 
     public ListenableFuture<MethodResponses> call(MethodCall methodCall) {
+        return call(methodCall, false);
+    }
+
+    public ListenableFuture<MethodResponses> call(MethodCall methodCall, boolean sendLogs) {
         // TODO check if JmapApiClient has been closed
         // Preconditions.checkState(!isShutdown(), "Unable to call method. JmapClient has been
         // closed already");
         final JmapRequest.Builder jmapRequestBuilder = new JmapRequest.Builder();
         final ListenableFuture<MethodResponses> methodResponsesFuture =
-                jmapRequestBuilder.call(methodCall).getMethodResponses();
+                jmapRequestBuilder.call(methodCall, sendLogs).getMethodResponses();
         this.execute(jmapRequestBuilder.build());
         return methodResponsesFuture;
     }

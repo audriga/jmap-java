@@ -33,6 +33,7 @@ public final class Namespace {
     public static final String TASKS = "urn:ietf:params:jmap:tasks";
     public static final String PREFERENCES = "https://www.audriga.eu/jmap/preferences/";
     public static final String PREFERENCES_FORWARDS = "https://www.audriga.eu/jmap/preferences-forwards/";
+    public static final String DEBUG = "https://www.audriga.eu/jmap/debug/";
 
     private Namespace() {}
 }

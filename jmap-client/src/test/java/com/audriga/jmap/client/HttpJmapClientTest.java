@@ -89,6 +89,79 @@ public class HttpJmapClientTest {
         }
     }
 
+    @Test
+    public void fetchMailboxesWithDebugLogs() throws Exception {
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/01-session.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/03-mailboxes-with-logs.json"))
+                    .build());
+            server.start();
+
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+
+            final ListenableFuture<MethodResponses> future = jmapClient.call(
+                    GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
+
+            final GetMailboxMethodResponse mailboxResponse = future.get().getMain(GetMailboxMethodResponse.class);
+
+            Assertions.assertEquals(1, mailboxResponse.list().size());
+        }
+    }
+
+    @Test
+    public void callWithSendLogsAddsDebugNamespaceToUsing() throws Exception {
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/01-session.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/03-mailboxes-with-logs.json"))
+                    .build());
+            server.start();
+
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+
+            final ListenableFuture<MethodResponses> future = jmapClient.call(
+                    GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build(), true);
+            future.get();
+
+            // Skip session request
+            server.takeRequest();
+
+            final String requestBody = server.takeRequest().getBody().utf8();
+            MatcherAssert.assertThat(requestBody, CoreMatchers.containsString("https://www.audriga.eu/jmap/debug/"));
+        }
+    }
+
+    @Test
+    public void callWithoutSendLogsOmitsDebugNamespaceFromUsing() throws Exception {
+        try (var server = new MockWebServer()) {
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/01-session.json"))
+                    .build());
+            server.enqueue(new MockResponse.Builder()
+                    .body(readResourceAsString("fetch-mailboxes/02-mailboxes.json"))
+                    .build());
+            server.start();
+
+            final JmapClient jmapClient = new JmapClient(USERNAME, PASSWORD, server.url(WELL_KNOWN_PATH));
+
+            final ListenableFuture<MethodResponses> future = jmapClient.call(
+                    GetMailboxMethodCall.builder().accountId(ACCOUNT_ID).build());
+            future.get();
+
+            // Skip session request
+            server.takeRequest();
+
+            final String requestBody = server.takeRequest().getBody().utf8();
+            MatcherAssert.assertThat(
+                    requestBody, CoreMatchers.not(CoreMatchers.containsString("https://www.audriga.eu/jmap/debug/")));
+        }
+    }
+
     public static String readResourceAsString(String filename) throws IOException {
         return Resources.asCharSource(Resources.getResource(filename), StandardCharsets.UTF_8)
                 .read()
