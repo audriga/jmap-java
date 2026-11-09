@@ -6,6 +6,7 @@ import com.audriga.jmap.stalwart.*;
 import java.io.InputStream;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import okhttp3.HttpUrl;
@@ -119,19 +120,42 @@ public final class StalwartContainer extends GenericContainer<StalwartContainer>
         }
 
         // We need to set STALWART_PUBLIC_URL to the correct URL before starting the container.
-        // The best solution we have is to allocate an ephemeral port and try to reuse it for the container.
-        // A race condition is possible, but unlikely.
-        int port;
-        try (var socket = new DatagramSocket()) {
-            port = socket.getLocalPort();
-        } catch (SocketException e) {
-            throw new ContainerLaunchException("couldn't allocate an ephemeral port for stalwart", e);
+        // The best solution we have is to allocate an ephemeral port and try to reuse it for the
+        // container. Another process can grab that port between the check and the Docker bind,
+        // so retry with a freshly picked port if that happens.
+        for (int attempt = 1; ; attempt++) {
+            int port;
+            try (var socket = new DatagramSocket()) {
+                port = socket.getLocalPort();
+            } catch (SocketException e) {
+                throw new ContainerLaunchException("couldn't allocate an ephemeral port for stalwart", e);
+            }
+            setPortBindings(List.of());
+            addFixedExposedPort(port, 443);
+            publicUrl = new HttpUrl.Builder()
+                    .scheme("https")
+                    .host(getHost())
+                    .port(port)
+                    .build();
+            addEnv("STALWART_PUBLIC_URL", publicUrl.toString());
+            try {
+                super.doStart();
+                return;
+            } catch (ContainerLaunchException e) {
+                if (attempt >= 5 || !isPortInUse(e)) {
+                    throw e;
+                }
+            }
         }
-        addFixedExposedPort(port, 443);
-        publicUrl =
-                new HttpUrl.Builder().scheme("https").host(getHost()).port(port).build();
-        addEnv("STALWART_PUBLIC_URL", publicUrl.toString());
-        super.doStart();
+    }
+
+    private static boolean isPortInUse(Throwable e) {
+        for (Throwable cause = e; cause != null; cause = cause.getCause()) {
+            if (cause.getMessage() != null && cause.getMessage().contains("address already in use")) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public HttpUrl publicUrl() {
