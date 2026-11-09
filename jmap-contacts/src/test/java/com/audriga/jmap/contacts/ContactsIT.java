@@ -172,6 +172,7 @@ class ContactsIT {
                     assertEquals(
                             ContactCard.builder()
                                     .id(created.id())
+                                    .version("1.0")
                                     .kind("individual")
                                     .build(),
                             created);
