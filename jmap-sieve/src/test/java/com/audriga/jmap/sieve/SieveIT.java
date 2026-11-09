@@ -285,6 +285,7 @@ class SieveIT {
                         null,
                         new StalwartEncryptionAtRest.Disabled(),
                         null,
+                        null,
                         Map.of(),
                         null,
                         memberName,

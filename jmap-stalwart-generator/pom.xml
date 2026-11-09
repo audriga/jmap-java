@@ -12,7 +12,7 @@
 
     <properties>
         <java.version>21</java.version>
-        <schema.version>0.16.18</schema.version>
+        <schema.version>1.0.3</schema.version>
     </properties>
 
     <dependencies>

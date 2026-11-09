@@ -6,6 +6,7 @@ import com.audriga.jmap.annotation.JmapEntity;
 import com.audriga.jmap.annotation.ServerSet;
 import com.audriga.jmap.common.entity.Identifiable;
 import com.audriga.jmap.filenode.method.FileNodeFilterCondition;
+import com.google.gson.annotations.SerializedName;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -17,12 +18,12 @@ import org.jspecify.annotations.Nullable;
 public record FileNode(
         @Immutable @ServerSet String id,
         @Nullable String parentId,
-        @Immutable String nodeType,
+        @Immutable @SerializedName("@type") String type,
         @Nullable String blobId,
         @Nullable List<String> target,
         @ServerSet @Nullable Long size,
         String name,
-        @Nullable String type,
+        @Nullable String mediaType,
         Instant created,
         @Nullable Instant modified,
         @Nullable Instant accessed,

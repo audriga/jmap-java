@@ -29,8 +29,8 @@ public record FileNodeFilterCondition(
         @Nullable Long maxSize,
         @Nullable String name,
         @Nullable String nameMatch,
-        @Nullable String type,
-        @Nullable String typeMatch,
+        @Nullable String mediaType,
+        @Nullable String mediaTypeMatch,
         @Nullable String text,
         @Nullable String body)
         implements FilterCondition<FileNode> {
@@ -63,8 +63,8 @@ public record FileNodeFilterCondition(
                 maxSize,
                 name,
                 nameMatch,
-                type,
-                typeMatch,
+                mediaType,
+                mediaTypeMatch,
                 text,
                 body);
     }

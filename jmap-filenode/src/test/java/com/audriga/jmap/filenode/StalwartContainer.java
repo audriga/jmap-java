@@ -20,7 +20,7 @@ import org.testcontainers.utility.DockerImageName;
 
 public final class StalwartContainer extends GenericContainer<StalwartContainer> {
     private static final DockerImageName REPOSITORY = DockerImageName.parse("stalwartlabs/stalwart");
-    private static final String LATEST = "0.16.12";
+    private static final String LATEST = "1.0.3";
     private static final String CONFIG_PATH = "/etc/stalwart/config.json";
 
     private final PostgreSQLContainer database;
@@ -67,7 +67,7 @@ public final class StalwartContainer extends GenericContainer<StalwartContainer>
                                 MethodCall.Arg.of(""),
                                 null,
                                 Map.of(
-                                        "serverHostname",
+                                        "defaultHostname",
                                         bootstrap.getHost(),
                                         "defaultDomain",
                                         "stalwart.test",

@@ -21,7 +21,7 @@ public class CopyFileNodeCallTest {
                 .create(Map.of(
                         "a",
                         FileNode.builder()
-                                .nodeType("directory")
+                                .type("Directory")
                                 .name("copied-folder")
                                 .created(Instant.now())
                                 .build()))
@@ -47,7 +47,7 @@ public class CopyFileNodeCallTest {
                         "a",
                         FileNode.builder()
                                 .id("new-id")
-                                .nodeType("directory")
+                                .type("Directory")
                                 .name("copied-folder")
                                 .created(Instant.now())
                                 .build()))

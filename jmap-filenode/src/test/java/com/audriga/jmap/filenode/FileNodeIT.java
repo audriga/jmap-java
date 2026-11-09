@@ -50,7 +50,7 @@ class FileNodeIT {
                                     MethodCall.Arg.of(Map.of(
                                             "a",
                                             FileNode.builder()
-                                                    .nodeType("directory")
+                                                    .type("Directory")
                                                     .name("test-folder")
                                                     .created(Instant.now())
                                                     .build())),
@@ -115,7 +115,7 @@ class FileNodeIT {
                                     MethodCall.Arg.of(Map.of(
                                             "b",
                                             FileNode.builder()
-                                                    .nodeType("directory")
+                                                    .type("Directory")
                                                     .name("test-folder-2")
                                                     .created(Instant.now())
                                                     .build())),
@@ -183,7 +183,7 @@ class FileNodeIT {
                                     MethodCall.Arg.of(Map.of(
                                             "f",
                                             FileNode.builder()
-                                                    .nodeType("file")
+                                                    .type("File")
                                                     .name("hello.txt")
                                                     .blobId(blobId)
                                                     .created(Instant.now())
@@ -314,7 +314,7 @@ class FileNodeIT {
                                     MethodCall.Arg.of(Map.of(
                                             "a",
                                             FileNode.builder()
-                                                    .nodeType("directory")
+                                                    .type("Directory")
                                                     .name("to-copy")
                                                     .created(Instant.now())
                                                     .build())),
@@ -340,8 +340,8 @@ class FileNodeIT {
                                     null,
                                     MethodCall.Arg.of(toAccountId),
                                     null,
-                                    MethodCall.Arg.of(
-                                            Map.of(folderId, FileNode.builder().build())),
+                                    MethodCall.Arg.of(Map.of(
+                                            "a", FileNode.builder().id(folderId).build())),
                                     null,
                                     null))
                             .get()
