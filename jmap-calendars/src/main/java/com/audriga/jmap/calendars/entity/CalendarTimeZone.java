@@ -22,7 +22,7 @@ public record CalendarTimeZone(
             LocalDateTime start,
             String offsetFrom,
             String offsetTo,
-            @Nullable RecurrenceRule recurrenceRule,
+            @Nullable List<RecurrenceRule> recurrenceRules,
             @Nullable Map<LocalDateTime, Map<String, Object>> recurrenceOverrides,
             @Nullable Map<String, Boolean> names,
             @Nullable List<String> comments) {}

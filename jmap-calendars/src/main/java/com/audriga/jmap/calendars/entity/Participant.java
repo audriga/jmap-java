@@ -15,6 +15,7 @@ public record Participant(
         @Nullable String description,
         @Nullable String descriptionContentType,
         @Nullable URI calendarAddress,
+        @Nullable Map<String, URI> sendTo,
         @Nullable String kind,
         @Nullable Set<String> roles,
         @Default("\"needs-action\"") String participationStatus,

@@ -13,6 +13,7 @@ import java.net.URI;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.Singular;
@@ -54,7 +55,7 @@ public record CalendarEvent(
         // Recurrence
         @Nullable LocalDateTime recurrenceId,
         @Nullable ZoneId recurrenceIdTimeZone,
-        @Nullable RecurrenceRule recurrenceRule,
+        @Nullable List<RecurrenceRule> recurrenceRules,
         @Nullable Map<LocalDateTime, Map<String, Object>> recurrenceOverrides,
         // Sharing and Scheduling
         @Default("0") Long priority,
