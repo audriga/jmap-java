@@ -129,6 +129,9 @@ public record DateTimePeriod(Period period, Duration duration) implements Tempor
 
     @Override
     public String toString() {
-        return period.toString() + duration.abs().toString().substring(1);
+        boolean negative = period.isNegative() || duration.isNegative();
+        Period absPeriod = negative ? period.negated() : period;
+        String result = absPeriod.toString() + duration.abs().toString().substring(1);
+        return negative ? "-" + result : result;
     }
 }
